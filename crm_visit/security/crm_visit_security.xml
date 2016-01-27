@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <record id="group_crm_visit_user" model="res.groups">
+            <field name="name">CRM Visit / User</field>
+        </record>
+
+        <record id ="group_crm_visit_manager" model="res.groups">
+            <field name="name">CRM Visit / Manager</field>
+        </record>
+
+    </data>
+</openerp>
