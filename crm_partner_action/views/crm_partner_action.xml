@@ -16,6 +16,7 @@
 					<field name="description"/>
 					<field name="comments"/>
 					<field name="state"/>
+                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
 				</tree>
 			</field>
 		</record>
@@ -43,6 +44,7 @@
 						<group>
 							<field name="followup_date"/>
 							<field name="followup_user_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
 						</group>
 					</group>
 					<separator string="Description" colspan="4"/>
