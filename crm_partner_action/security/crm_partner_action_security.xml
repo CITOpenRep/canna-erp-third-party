@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <record id="crm_partner_action_group_user" model="res.groups">
+            <field name="name">CRM Partner Action / User</field>
+        </record>
+
+        <record id ="crm_partner_action_group_manager" model="res.groups">
+            <field name="name">CRM Partner Action / Manager</field>
+        </record>
+
+    </data>
+</openerp>

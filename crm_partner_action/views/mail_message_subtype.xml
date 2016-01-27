@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+    <record id="mail_message_subtype_crm_partner_action_state" model="mail.message.subtype">
+        <field name="name">(Re)Open</field>
+        <field name="res_model">crm.partner.action</field>
+        <field name="default" eval="True"/>
+        <field name="description">State changed</field>
+    </record>
+
+</data>
+</openerp>

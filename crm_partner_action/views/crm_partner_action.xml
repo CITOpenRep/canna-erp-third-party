@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="crm_partner_action_view_tree" model="ir.ui.view">
+			<field name="name">CrmPartnerActionViewTree</field>
+			<field name="model">crm.partner.action</field>
+			<field name="arch" type="xml">
+				<tree string="Partner Actions">
+                    <field name="name"/>
+					<field name="partner_id"/>
+					<field name="create_date"/>
+					<field name="create_uid"/>
+					<field name="followup_user_id"/>
+					<field name="action_group_id"/>
+					<field name="description"/>
+					<field name="comments"/>
+					<field name="state"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="crm_partner_action_view_form" model="ir.ui.view">
+			<field name="name">CrmPartnerActionViewForm</field>
+			<field name="model">crm.partner.action</field>
+			<field name="arch" type="xml">
+				<form string="Partner Action" version="7.0">
+					<header>
+						<span>
+							<button name="action_done" states="open" string="Done" type="object"/>
+							<button name="action_open" states="done" string="Open" type="object"/>
+							<field name="state" widget="statusbar" statusbar_visible="open, cancel, done"/>
+						</span>
+					</header>
+					<sheet>
+					<group>
+						<group>
+                            <field name="name" />
+							<field name="partner_id" />
+							<field name="create_uid"/>
+							<field name="action_group_id"/>
+						</group>
+						<group>
+							<field name="followup_date"/>
+							<field name="followup_user_id"/>
+						</group>
+					</group>
+					<separator string="Description" colspan="4"/>
+					<field name="description" nolabel="1" colspan="4"/>
+					<separator string="Comments" colspan="4"/>
+					<field name="comments" nolabel="1" colspan="4"/>
+					</sheet>
+					<div class="oe_chatter">
+						<field name="message_ids" widget="mail_thread"/>
+						<field name="message_follower_ids" widget="mail_followers"/>
+					</div>
+				</form>
+			</field>
+		</record>
+
+		<record id="crm_partner_action_view_search" model="ir.ui.view">
+			<field name="name">CrmPartnerActionViewSearch</field>
+			<field name="model">crm.partner.action</field>
+			<field name="arch" type="xml">
+				<search string="Partner Action">
+                    <field name="name" string="Number" filter_domain="('name','ilike',self)"/>
+                    <field name="partner_id" string="Partner"/>
+					<filter name="filter_open" string="Open" domain="[('state','=','open')]"/>
+					<filter name="filter_done" string="Done" domain="[('state','=','done')]"/>
+					<separator/>
+					<filter domain="[('followup_user_id', '=', uid)]" help="My Actions"/>
+					<filter domain="[('followup_user_id', '=', uid), ('state', '=', 'open')]" help="My Open Actions"/>
+					<filter domain="[('followup_user_id', '=', False)]" help="Actions Without Owner"/>
+					<group expand="0" string="Group By...">
+						<filter string="State" domain="[]" context="{'group_by':'state'}" />
+						<filter string="Creator" icon="terp-go-month" domain="[]" context="{'group_by':'create_uid'}"/>
+						<filter string="Owner" icon="terp-go-month" domain="[]" context="{'group_by':'followup_user_id'}"/>
+						<filter string="Partner" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'partner_id'}"/>
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record id="crm_partner_action_action" model="ir.actions.act_window">
+			<field name="name">Partner Actions</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">crm.partner.action</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="crm_partner_action_view_tree"/>
+		</record>
+
+		<menuitem
+				id="crm_partner_action_menu"
+				action="crm_partner_action_action"
+				parent="crm_partner_action_menu_base"
+				/>
+
+
+	</data>
+</openerp>
