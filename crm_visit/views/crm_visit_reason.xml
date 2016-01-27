@@ -8,6 +8,7 @@
 			<field name="arch" type="xml">
 				<tree string="Reasons">
 					<field name="name" select="1"/>
+					<field name="company_id" groups="base.group_multi_company" readonly="1"/>
 				</tree>
 			</field>
 		</record>
@@ -19,6 +20,7 @@
 				<form string="Reason" version="7.0">
 					<group>
 						<field name="name" select="1"/>
+						<field name="company_id" groups="base.group_multi_company" readonly="1"/>
 					</group>
 				</form>
 			</field>

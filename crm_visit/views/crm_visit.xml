@@ -12,6 +12,7 @@
 					<field name="partner_id"/>
 					<field name="reason"/>
 					<field name="user_id"/>
+					<field name="company_id" groups="base.group_multi_company" readonly="1"/>
 					<field name="state"/>
 				</tree>
 			</field>
@@ -47,6 +48,7 @@
 							</group>
 							<group>
 								<field name="duration"/>
+								<field name="company_id" groups="base.group_multi_company" readonly="1"/>
 							</group>
 							<group colspan="4">
 								<field name="reason"/>
