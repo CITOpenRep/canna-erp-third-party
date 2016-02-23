@@ -32,3 +32,10 @@ class CrmVisitReason(models.Model):
         required=True,
         translate=True
     )
+
+    company_id = fields.Many2one(
+            comodel_name='res.company',
+            string='Company',
+            required=True,
+            default=lambda self: self.env['res.company']._company_default_get('crm.visit.reason')
+    )

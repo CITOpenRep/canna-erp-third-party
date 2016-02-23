@@ -40,7 +40,6 @@ class CrmVisit(models.Model):
             'crm_visit.mail_message_subtype_crm_visit_state': lambda self, cr, uid, obj, ctx=None: obj.state in [
                 'draft',
                 'planned',
-                'visited',
                 'report',
                 'cancel',
                 'done'
@@ -53,28 +52,29 @@ class CrmVisit(models.Model):
     )
     state = fields.Selection(
         selection=[
-            ("draft", _("Draft")),
-            ("planned", _("Appointment")),
+            ("draft", _("New Appointment")),
+            ("planned", _("Planned Appointment")),
             ("report", _("Needs Report")),
             ("cancel", _("Cancelled")),
             ("done", _("Done")),
         ],
         string="State",
         default='draft',
+        track_visibility='onchange',
         readonly=True
     )
     company_id = fields.Many2one(
-        comodel_name='res.company',
-        string='Company',
-        required=True,
-        default=lambda self: self.env.user.company_id
+            comodel_name='res.company',
+            string='Company',
+            required=True,
+            default=lambda self: self.env['res.company']._company_default_get('crm.visit')
     )
     user_id = fields.Many2one(
         comodel_name='res.users',
         string='Employee',
         required=True,
         default=lambda self: self.env.user,
-        states= {"draft" : [("readonly", False)]}
+        states={'draft' : [("readonly", False)]}
     )
     date = fields.Datetime(
         string="Visit Datetime",
@@ -154,7 +154,7 @@ class CrmVisit(models.Model):
 
     @api.one
     def action_process(self):
-        self.state = "visited"
+        self.state = "report"
 
     @api.one
     def action_done(self):
@@ -162,4 +162,4 @@ class CrmVisit(models.Model):
 
     @api.one
     def action_correct(self):
-        self.state = "visited"
+        self.state = "report"
