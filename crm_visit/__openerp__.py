@@ -29,7 +29,7 @@
     'summary': '',
     'description': """
 CRM Visit
-========================
+=========
 - Manage Customer visits
 - Report on Customer visits
 

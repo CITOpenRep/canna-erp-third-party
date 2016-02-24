@@ -21,8 +21,6 @@
 ##############################################################################
 
 import logging
-from urlparse import urljoin
-from urllib import urlencode
 
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning
