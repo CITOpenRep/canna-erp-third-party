@@ -37,12 +37,15 @@ class CrmPartnerAction(models.Model):
                 'open',
                 'done'
             ]
-        }
+        },
     }
 
     name = fields.Char(
             string="Number",
             readonly=True
+    )
+    color = fields.Integer(
+            string="Color Index"
     )
     state = fields.Selection(
         selection=[
@@ -59,6 +62,12 @@ class CrmPartnerAction(models.Model):
         string='Company',
         required=True,
         default=lambda self: self.env['res.company']._company_default_get('crm.partner.action')
+    )
+    user_id = fields.Many2one(
+            comodel_name='res.users',
+            string='User',
+            required=True,
+            default=lambda self: self.env.user
     )
     partner_id = fields.Many2one(
         comodel_name='res.partner',
