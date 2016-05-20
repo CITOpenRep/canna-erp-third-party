@@ -17,7 +17,7 @@
 			<field name="name">CrmPartnerActionGroupViewForm</field>
 			<field name="model">crm.partner.action.group</field>
 			<field name="arch" type="xml">
-				<form string="Action Group" version="7.0">
+				<form string="Action Group">
 					<group>
 						<group>
 							<field name="name"/>

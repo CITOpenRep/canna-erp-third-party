@@ -25,7 +25,7 @@
 			<field name="name">CrmPartnerActionViewForm</field>
 			<field name="model">crm.partner.action</field>
 			<field name="arch" type="xml">
-				<form string="Partner Action" version="7.0">
+				<form string="Partner Action">
 					<header>
 						<span>
 							<button name="action_done" states="open" string="Done" type="object"/>
