@@ -37,18 +37,18 @@ CRM Visit
     'author': 'Onestein BV, André Schenkels',
     'depends': [
         'base',
-        'mail'
+        'mail',
     ],
     'data': [
         'security/crm_visit_security.xml',
         'security/ir.model.access.csv',
-        'views/menu_item.xml',
+        'data/crm_visit_sequence.xml',
         'views/mail_message_subtype.xml',
         'views/crm_visit_feeling.xml',
         'views/crm_visit_reason.xml',
         'views/crm_visit.xml',
         'views/res_partner.xml',
-        'data/crm_visit_sequence.xml'
+        'menu_items.xml',
     ],
 
 }

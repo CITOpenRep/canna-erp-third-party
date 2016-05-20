@@ -21,7 +21,6 @@
 			<field name="inherit_id" ref="base.view_partner_form"/>
 			<field name="arch" type="xml">
 				<xpath expr="//div[@name='buttons']" position="inside">
-
 					<button
 							class="oe_inline oe_stat_button"
 							type="action"
@@ -29,12 +28,9 @@
 							icon="fa-cubes">
 						<field name="visits_count" string="Visits" widget="statinfo" />
 					</button>
-
 				</xpath>
-
 			</field>
 		</record>
-
 
 	</data>
 </openerp>

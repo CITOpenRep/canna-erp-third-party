@@ -22,6 +22,7 @@
 
 from openerp import models, fields
 
+
 class CrmVisitReason(models.Model):
     _name = "crm.visit.reason"
     _description = "Visit reason"

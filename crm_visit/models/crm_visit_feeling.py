@@ -25,6 +25,7 @@ from openerp import models, fields
 
 class CrmVisitFeeling(models.Model):
     _name = "crm.visit.feeling"
+    _description = "Visit feeling"
 
     name = fields.Char(
         string="Feeling",

@@ -17,7 +17,7 @@
 			<field name="name">CrmVisitFeelingForm</field>
 			<field name="model">crm.visit.feeling</field>
 			<field name="arch" type="xml">
-				<form string="Feeling" version="7.0">
+				<form string="Feeling">
 					<group>
 						<field name="name"/>
 						<field name="company_id" groups="base.group_multi_company" readonly="1"/>
@@ -33,11 +33,6 @@
 			<field name="view_mode">tree,form</field>
 			<field name="view_id" ref="crm_visit_feeling_view_tree"/>
 		</record>
-
-		<menuitem
-		    action="crm_visit_feeling_action"
-			id="crm_visit_feeling_menu" parent="crm_visit_menu_config"
-			sequence="6"/>
 
 	</data>
 </openerp>

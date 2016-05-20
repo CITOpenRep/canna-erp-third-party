@@ -8,6 +8,6 @@
         <field name="default" eval="True"/>
         <field name="description">State changed</field>
     </record>
-    
+
 </data>
 </openerp>
