@@ -28,7 +28,7 @@ _logger = logging.getLogger(__name__)
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    partner_actions = fields.One2many(
+    actions = fields.One2many(
         comodel_name='crm.partner.action',
         inverse_name='partner_id',
         string='Actions'
@@ -40,11 +40,11 @@ class ResPartner(models.Model):
     )
 
     @api.one
-    @api.depends('partner_actions')
+    @api.depends('actions')
     def _get_partner_action_count(self):
-        action_count = len(self.partner_actions) or 0
+        action_count = len(self.actions) or 0
         child_count = 0
         for child in self.child_ids:
-            child_count += len(child.partner_actions) or 0
-        parent_count = len(self.parent_id.partner_actions) or 0
+            child_count += len(child.actions) or 0
+        parent_count = len(self.parent_id.actions) or 0
         self.partner_action_count = action_count + child_count + parent_count
