@@ -3,7 +3,7 @@
 #
 #    OpenERP, Open Source Management Solution
 #
-#    Copyright (c) 2015 Onestein BV (www.onestein.eu).
+#    Copyright (c) 2016 Onestein BV (www.onestein.eu).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,7 @@
 
 {
     'name': 'CRM Visit Partner Action - Intermediate module',
-    'version': '8.0.1.0.0',
+    'version': '8.0.1.0.1',
     'website' : 'https://www.onestein.eu',
     'license': 'AGPL-3',
     'category': 'CRM',

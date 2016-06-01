@@ -34,6 +34,6 @@ class CrmVisit(models.Model):
     _inherit = "crm.visit"
 
     partner_actions = fields.One2many(
-        related='partner_id.partner_actions',
+        related='partner_id.actions',
         string='Actions'
     )
