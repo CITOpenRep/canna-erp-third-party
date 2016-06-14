@@ -40,5 +40,8 @@ class CrmPartnerActionGroup(models.Model):
         comodel_name='res.company',
         string='Company',
         required=True,
-        default=lambda self: self.env['res.company']._company_default_get('crm.partner.action.group')
+        default=lambda self: self.env['res.company'].browse(self.env['res.company']._company_default_get('crm.partner.action.group'))
+        # TODO test it for both openupgrade and during regular use
+        # TODO kng: comment and uncomment    default=1. Not working for migration
+        # default=1,
     )

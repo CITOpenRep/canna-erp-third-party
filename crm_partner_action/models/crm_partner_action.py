@@ -61,7 +61,12 @@ class CrmPartnerAction(models.Model):
         comodel_name='res.company',
         string='Company',
         required=True,
-        default=lambda self: self.env['res.company']._company_default_get('crm.partner.action')
+        # default=lambda self: self.env['res.company']._company_default_get('crm.partner.action')
+        default=lambda self: self.env['res.company'].browse(
+            self.env['res.company']._company_default_get(
+                'crm.partner.action'))
+        # default=1,
+        # TODO kng: comment and uncomment    default=1. Not working for migration
     )
     user_id = fields.Many2one(
             comodel_name='res.users',

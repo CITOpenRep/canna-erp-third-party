@@ -30,7 +30,8 @@
     'author': 'Onestein BV, André Schenkels',
     'depends': [
         'base',
-        'mail'
+        'mail',
+        'crm_visit',
     ],
     'data': [
         'security/crm_partner_action_security.xml',
