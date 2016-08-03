@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
+#    Odoo, Open Source Management Solution
 #
 #    Copyright (c) 2015 Onestein BV (www.onestein.eu).
 #
@@ -20,23 +20,22 @@
 #
 ##############################################################################
 
-from openerp import models, fields
+from openerp import fields, models
 
 
 class CrmVisitReason(models.Model):
-    _name = "crm.visit.reason"
+    _name = 'crm.visit.reason'
     _description = "Visit reason"
 
     name = fields.Char(
-        string="Reason",
+        string='Reason',
         size=80,
         required=True,
-        translate=True
-    )
+        translate=True)
 
     company_id = fields.Many2one(
-            comodel_name='res.company',
-            string='Company',
-            required=True,
-            default=lambda self: self.env['res.company']._company_default_get('crm.visit.reason')
-    )
+        comodel_name='res.company',
+        string='Company',
+        required=True,
+        default=lambda self:
+            self.env['res.company']._company_default_get('crm.visit.reason'))

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <menuitem id="menu_crm_visit"
+              name="Visits"
+              parent="base.menu_base_partner"/>
+    
+    <menuitem id="menu_crm_visit_config"
+              name="Visits"
+              parent="base.menu_base_config"
+              sequence="80"
+              groups="base.group_sale_manager"/>
+
+  </data>
+</openerp>

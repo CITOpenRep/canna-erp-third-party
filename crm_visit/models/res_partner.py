@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
+#    Odoo, Open Source Management Solution
 #
 #    Copyright (c) 2015 Onestein BV (www.onestein.eu).
 #
@@ -20,21 +20,19 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api
+from openerp import api, fields, models
 
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
     visit_ids = fields.One2many(
-            comodel_name='crm.visit',
-            inverse_name='partner_id',
-            string='Visits',
-    )
+        comodel_name='crm.visit',
+        inverse_name='partner_id',
+        string='Visits')
     visits_count = fields.Integer(
-            string='Number of visits',
-            compute='_get_visits_count',
-    )
+        string='Number of visits',
+        compute='_get_visits_count')
 
     @api.one
     @api.depends('visit_ids')

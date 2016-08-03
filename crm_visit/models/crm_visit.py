@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
+#    Odoo, Open Source Management Solution
 #
 #    Copyright (c) 2015 Onestein BV (www.onestein.eu).
 #
@@ -20,7 +20,7 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api, _
+from openerp import api, fields, models, _
 
 
 class CrmVisit(models.Model):
@@ -30,100 +30,80 @@ class CrmVisit(models.Model):
     _order = 'date desc'
     _track = {
         'state': {
-            'crm_visit.mail_message_subtype_crm_visit_state': lambda self, cr, uid, obj, ctx=None: obj.state in [
-                'draft',
-                'planned',
-                'report',
-                'cancel',
-                'done'
-            ]
-        }
-    }
+            'crm_visit.mail_message_subtype_crm_visit_state':
+                lambda self, cr, uid, obj, ctx=None: obj.state in
+                ['draft', 'planned', 'report', 'cancel', 'done']}}
     name = fields.Char(
-            string='Number',
-            readonly=True,
-    )
+        string='Number',
+        readonly=True)
     state = fields.Selection(
         selection=[
             ('draft', _('Draft')),
             ('planned', _('Appointment')),
             ('visited', _('Needs Report')),
             ('canceled', _('Cancelled')),
-            ('done', _('Done')),
-        ],
-        string='State',
+            ('done', _('Done'))],
         default='draft',
         track_visibility='onchange',
-        readonly=True
-    )
+        readonly=True)
     company_id = fields.Many2one(
         comodel_name='res.company',
         string='Company',
         required=True,
-        default=lambda self: self.env['res.company']._company_default_get('crm.visit')
-    )
+        default=lambda self:
+            self.env['res.company']._company_default_get('crm.visit'))
     user_id = fields.Many2one(
         comodel_name='res.users',
         string='Employee',
         required=True,
         default=lambda self: self.env.user,
-        states={'draft': [('readonly', False)]}
-    )
+        states={'draft': [('readonly', False)]})
     date = fields.Datetime(
         string='Visit Datetime',
         required=True,
         readonly=True,
         states={
             'draft': [('readonly', False)],
-            'visited': [('readonly', False)]
-        }
-    )
+            'visited': [('readonly', False)]})
     duration = fields.Integer(
         string='Duration',
         readonly=True,
         states={
             'draft': [('readonly', False)],
-            'visited': [('readonly', False)]
-        },
-        help="Estimated duration of the visit in minutes"
-    )
+            'visited': [('readonly', False)]},
+        help="Estimated duration of the visit in minutes")
     visit_reason = fields.Many2one(
         comodel_name='crm.visit.reason',
         string='Reason',
         required=True,
-        readonly=True, states={'draft': [('readonly', False)]}
-    )
+        readonly=True, states={'draft': [('readonly', False)]})
     visit_reason_details = fields.Text(
         string='Purpose',
-        readonly=True, states={'draft': [('readonly', False)]}
-    )
+        readonly=True, states={'draft': [('readonly', False)]})
     visit_feeling = fields.Many2one(
         comodel_name='crm.visit.feeling',
         string='Feeling',
-        readonly=True, states={'visited': [('readonly', False)]}
-    )
+        readonly=True, states={'visited': [('readonly', False)]})
     report = fields.Html(
         string='Report',
         readonly=True,
-        required=False, states={'visited': [('readonly', False), ('required', True)]}
-    )
+        required=False,
+        states={'visited': [('readonly', False), ('required', True)]})
     partner_id = fields.Many2one(
         comodel_name='res.partner',
         string='Partner',
-        readonly=True, states={'draft': [('readonly', False)]}
-    )
+        readonly=True,
+        states={'draft': [('readonly', False)]})
 
     @api.model
     def create(self, vals):
         """
-        This creates a new visitor.report object, and adds any information that is placed
-        in read only fields. Readonly fields don"t get send to the server, so we retreive
+        This creates a new visitor.report object and adds any information
+        that is placed in readonly fields.
+        Readonly fields don't get send to the server, so we retrieve
         those fields from previous visits.
-        :param vals:
-        :return:
         """
         vals['name'] = self.env['ir.sequence'].get('crm.visit')
-
         return super(CrmVisit, self).create(vals)
 
     @api.one

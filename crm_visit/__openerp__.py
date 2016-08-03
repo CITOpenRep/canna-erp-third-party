@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
+#    Odoo, Open Source Management Solution
 #
 #    Copyright (c) 2015 Onestein BV (www.onestein.eu).
 #
@@ -22,18 +22,11 @@
 
 {
     'name': 'CRM Visit',
-    'version': '8.0.1.0.1',
-    'website' : 'https://www.onestein.eu',
+    'version': '8.0.1.1.0',
+    'website': 'https://www.onestein.eu',
     'license': 'AGPL-3',
     'category': 'CRM',
     'summary': '',
-    'description': """
-CRM Visit
-=========
-- Manage Customer visits
-- Report on Customer visits
-
-""",
     'author': 'Onestein BV, André Schenkels',
     'depends': [
         'base',
@@ -43,12 +36,11 @@ CRM Visit
         'security/crm_visit_security.xml',
         'security/ir.model.access.csv',
         'data/crm_visit_sequence.xml',
+        'views/menu_items.xml',
         'views/mail_message_subtype.xml',
         'views/crm_visit_feeling.xml',
         'views/crm_visit_reason.xml',
         'views/crm_visit.xml',
         'views/res_partner.xml',
-        'menu_items.xml',
     ],
-
 }

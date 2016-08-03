@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-	<data>
+  <data>
 
-		<record id="crm_visit_feeling_view_tree" model="ir.ui.view">
-			<field name="name">CrmVisitFeelingViewTree</field>
-			<field name="model">crm.visit.feeling</field>
-			<field name="arch" type="xml">
-				<tree string="Feelings">
-					<field name="name"/>
-					<field name="company_id" groups="base.group_multi_company" readonly="1"/>
-				</tree>
-			</field>
-		</record>
+    <record id="crm_visit_feeling_view_tree" model="ir.ui.view">
+      <field name="name">CrmVisitFeelingViewTree</field>
+      <field name="model">crm.visit.feeling</field>
+      <field name="arch" type="xml">
+        <tree string="Feelings">
+          <field name="name"/>
+          <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+        </tree>
+      </field>
+    </record>
 
-		<record id="crm_visit_feeling_view_form" model="ir.ui.view">
-			<field name="name">CrmVisitFeelingForm</field>
-			<field name="model">crm.visit.feeling</field>
-			<field name="arch" type="xml">
-				<form string="Feeling">
-					<group>
-						<field name="name"/>
-						<field name="company_id" groups="base.group_multi_company" readonly="1"/>
-					</group>
-				</form>
-			</field>
-		</record>
+    <record id="crm_visit_feeling_view_form" model="ir.ui.view">
+      <field name="name">CrmVisitFeelingForm</field>
+      <field name="model">crm.visit.feeling</field>
+      <field name="arch" type="xml">
+        <form string="Feeling">
+          <group>
+            <field name="name"/>
+            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+          </group>
+        </form>
+      </field>
+    </record>
 
-		<record id="crm_visit_feeling_action" model="ir.actions.act_window">
-			<field name="name">Feelings</field>
-			<field name="res_model">crm.visit.feeling</field>
-			<field name="view_type">form</field>
-			<field name="view_mode">tree,form</field>
-			<field name="view_id" ref="crm_visit_feeling_view_tree"/>
-		</record>
+    <record id="crm_visit_feeling_action" model="ir.actions.act_window">
+      <field name="name">Feelings</field>
+      <field name="res_model">crm.visit.feeling</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="crm_visit_feeling_view_tree"/>
+    </record>
 
-	</data>
+    <menuitem id="crm_visit_feeling_menu"
+              action="crm_visit_feeling_action"
+              parent="menu_crm_visit_config"
+              sequence="6"/>
+
+  </data>
 </openerp>
