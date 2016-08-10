@@ -20,7 +20,7 @@
 #
 ##############################################################################
 
-from openerp import api, fields, models, _
+from openerp import api, fields, models
 
 
 class CrmVisit(models.Model):
@@ -32,17 +32,17 @@ class CrmVisit(models.Model):
         'state': {
             'crm_visit.mail_message_subtype_crm_visit_state':
                 lambda self, cr, uid, obj, ctx=None: obj.state in
-                ['draft', 'planned', 'report', 'cancel', 'done']}}
+                ['draft', 'planned', 'visited', 'cancel', 'done']}}
     name = fields.Char(
         string='Number',
         readonly=True)
     state = fields.Selection(
         selection=[
-            ('draft', _('Draft')),
-            ('planned', _('Appointment')),
-            ('visited', _('Needs Report')),
-            ('canceled', _('Cancelled')),
-            ('done', _('Done'))],
+            ('draft', 'Draft'),
+            ('planned', 'Appointment'),
+            ('visited', 'Needs Report'),
+            ('cancel', 'Cancelled'),
+            ('done', 'Done')],
         default='draft',
         track_visibility='onchange',
         readonly=True)
