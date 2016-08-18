@@ -56,7 +56,7 @@ class SaleOrder(models.Model):
     @api.depends('pricelist_id','partner_id','order_line')
     def _compute_discount(self):
 
-        order_id =self.id
+        order_id = self.id
         _logger.debug('Order_id: %s', self.id)
         grouped_discounts = {}
         sale_discount_order_lines = []
@@ -104,10 +104,12 @@ class SaleOrder(models.Model):
 
                 _logger.debug('Vals: %s', order_line_values)
                 exists, equal = self.order_line.with_context(ctx).existing_discountline(order_line_values)
-                if exists and not equal:
-                    exists.with_context(ctx).write(order_line_values)
-                elif not exists and not equal:
-                    self.order_line.with_context(ctx).create(order_line_values)
+                # Workaround for new id. Perhaps we can call a sale_order.create/write?
+                if isinstance(order_id, int):
+                    if exists and not equal:
+                        exists.with_context(ctx).write(order_line_values)
+                    elif not exists and not equal:
+                        self.order_line.with_context(ctx).create(order_line_values)
 
 
                 total_discount_amount += discount['amount'] or 0.0
