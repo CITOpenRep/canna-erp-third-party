@@ -132,7 +132,7 @@ def add_discounts(cr, env):
             WHERE id = {}
             """.format(legacy_apply_bulk_discount, line.product_id.categ_id.id)
         )
-        if openupgrade.fetchall()[0][0]:
+        if cr.fetchall()[0][0]:
         # [(True,)] [(None,)]
             highest_subtotal = 0
             minimum_amount = False
