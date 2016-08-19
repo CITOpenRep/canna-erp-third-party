@@ -63,7 +63,7 @@ def create_discounts(cr, env):
             # 'product_id': ,
             'discount_base': 'sale_line',
             'pricelists': (4, pricelist, 0),
-            'rules': (0, 0, rule_id),
+            # 'rules': (0, 0, rule_id),
         }
         discount = discount_obj.create(vals)
         rule_vals = {
@@ -93,30 +93,47 @@ def add_discounts(cr, env):
     discount_obj = env['sale.discount']
     legacy_gdc = openupgrade.get_legacy_name('global_discount_confirm')
     legacy_pt = openupgrade.get_legacy_name('payment_type')
+    legacy_apply_bulk_discount = openupgrade.get_legacy_name('apply_bulk_discount')
     legacy_discount = openupgrade.get_legacy_name('discount')
 
     minimum_discount = 1
     # orders_gdc = order_obj.search([(legacy_gdc, '=', True)])
-    orders_global_discount = order_obj.search([(legacy_gdc, '=', True)])
-    lines = line_obj.search([
-        (legacy_discount, '>=', minimum_discount),
+    openupgrade.logged_query(
+        cr,
+        """
+        SELECT id FROM sale_order_line
+        WHERE {} >= {}
+        """.format(legacy_discount, minimum_discount)
+    )
+    line_ids = [x[0] for x in cr.fetchall()]
+    # lines = line_obj.search([  # TODO legacy_discount field not in V8!
+    #     (legacy_discount, '>=', minimum_discount),
         # ('order_id', 'not in', orders_gdc)
-    ])
+    # ])
+    lines = line_obj.browse(line_ids)
     for line in lines:
         # Note: Should not use line.discount as we should separate bulk and
         # type discounts.
         discount_id = False
         # pt_id = False
         # pt_discounts = False
-        line.order_id.global_discount_confirm
+        # line.order_id.global_discount_confirm
+        # openupgrade.logged_query(
+        #     cr,
+        #     """
+        #     SELECT {} FROM sale_order WHERE id = {}
+        #     """.format(legacy_gdc, line.order_id)
+        # )
+        logger.debug("{} {} {}".format("Discount migration:", "line: ", line.id))
         openupgrade.logged_query(
             cr,
             """
-            SELECT {} FROM sale_order WHERE id = {}
-            """.format(legacy_gdc, line.order_id)
+            SELECT {} FROM product_category
+            WHERE id = {}
+            """.format(legacy_apply_bulk_discount, line.product_id.categ_id.id)
         )
-
-        if line.product_id.categ_id.apply_bulk_discount:
+        if openupgrade.fetchall()[0][0]:
+        # [(True,)] [(None,)]
             highest_subtotal = 0
             minimum_amount = False
             discount_percentage = False
