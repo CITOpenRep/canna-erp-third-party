@@ -32,7 +32,7 @@ class CrmVisitReason(models.Model):
         size=80,
         required=True,
         translate=True)
-
+    active = fields.Boolean(default=True)
     company_id = fields.Many2one(
         comodel_name='res.company',
         string='Company',

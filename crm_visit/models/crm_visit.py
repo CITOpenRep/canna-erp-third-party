@@ -20,7 +20,8 @@
 #
 ##############################################################################
 
-from openerp import api, fields, models
+from openerp import api, fields, models, _
+from openerp.exceptions import Warning as UserError
 
 
 class CrmVisit(models.Model):
@@ -105,6 +106,15 @@ class CrmVisit(models.Model):
         """
         vals['name'] = self.env['ir.sequence'].get('crm.visit')
         return super(CrmVisit, self).create(vals)
+
+    @api.multi
+    def unlink(self):
+        for visit in self:
+            if visit.state != 'draft':
+                raise UserError(
+                    _("Invalid Action !"),
+                    _("Only visits in state 'draft' can be deleted. ")
+                )
 
     @api.one
     def action_confirm(self):

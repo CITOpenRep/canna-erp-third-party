@@ -19,8 +19,13 @@
       <field name="arch" type="xml">
         <form string="Reason">
           <group>
-            <field name="name" select="1"/>
-            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+            <group name="c1">
+              <field name="name"/>
+            </group>
+            <group name="c2">
+              <field name="active"/>
+              <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+            </group>
           </group>
         </form>
       </field>
