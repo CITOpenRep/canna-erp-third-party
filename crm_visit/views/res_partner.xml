@@ -7,7 +7,7 @@
                 res_model="crm.visit"
                 view_type="form"
                 view_mode="tree,form"
-                domain="['|','|', ('partner_id', '=', active_id), ('partner_id.parent_id', '=', active_id), ('partner_id.child_ids', 'in', active_id)]"/>
+                domain="['|', '|', ('partner_id', '=', active_id), ('partner_id.parent_id', '=', active_id), ('partner_id.child_ids', 'in', active_id)]"/>
 
     <record id="view_partner_form" model="ir.ui.view">
       <field name="name">res.partner.form</field>
