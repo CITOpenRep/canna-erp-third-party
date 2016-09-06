@@ -93,6 +93,7 @@ class CrmVisit(models.Model):
     partner_id = fields.Many2one(
         comodel_name='res.partner',
         string='Partner',
+        required=True,
         readonly=True,
         states={'draft': [('readonly', False)]})
 
