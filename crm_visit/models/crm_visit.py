@@ -126,7 +126,7 @@ class CrmVisit(models.Model):
 
     @api.one
     def action_process(self):
-        self.state = 'report'
+        self.state = 'visited'
 
     @api.one
     def action_done(self):
@@ -134,4 +134,4 @@ class CrmVisit(models.Model):
 
     @api.one
     def action_correct(self):
-        self.state = 'report'
+        self.state = 'visited'
