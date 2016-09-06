@@ -14,6 +14,9 @@
                 <xpath expr="//tree/field[@name='discount']" position="after">
                     <field name="sale_discounts" widget="many2many_tags"/>
                 </xpath>
+                <xpath expr="//form//field[@name='price_unit']" position="after">
+                  <field name="sale_discounts" widget="many2many_tags"/>
+                </xpath>
             </field>
         </record>
 
