@@ -57,6 +57,7 @@ class SaleDiscount(models.Model):
         ],
         string="Discount Base on",
         required=True,
+        default='sale_order',
         help="Base the discount on "
     )
 
@@ -102,15 +103,15 @@ class SaleDiscount(models.Model):
     @api.multi
     def _calculate_discount(self, base, qty):
         assert len(self) == 1
+
         for discount in self:
             for rule in discount.rules:
-                if rule.max_base > 0 and rule.max_base > base:
-                    _logger.debug("No Discount")
+                if rule.min_base > 0 and rule.min_base > base:
+                    continue
+                if rule.max_base > 0 and rule.max_base < base:
                     continue
 
                 if rule.discount_type == 'perc':
-                    _logger.debug("Calculate Discount Perc")
                     return base * rule.discount / 100
                 else:
-                    _logger.debug("Calculate Discount Amount")
                     return min(rule.discount * qty, base)

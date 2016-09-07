@@ -57,16 +57,19 @@ class SaleOrder(models.Model):
     def _compute_discount(self):
 
         order_id = self.id
-        _logger.debug('Order_id: %s', self.id)
         grouped_discounts = {}
         sale_discount_order_lines = []
-        _logger.debug('Compute Discount')
-        _logger.debug(self.env.context)
+
         if not self.env.context.get('discount_calc'):
+            ctx = dict(self._context, discount_calc=True)
+                
             for line in self.order_line:
                 if line.sale_discount_line:
                     _logger.debug("Sale Line With Discount: %s", line.id)
-                    sale_discount_order_lines.append((2, line.id))
+                    sale_discount_order_lines.append(line.id)
+                    continue
+
+                if line.product_id and line.product_id.categ_id and line.product_id.categ_id.no_discounts:
                     continue
 
                 line_sale_discounts = []
@@ -100,20 +103,21 @@ class SaleOrder(models.Model):
                     'product_uom_qty': 1
                 }
 
-                ctx = dict(self._context, discount_calc=True)
-
-                _logger.debug('Vals: %s', order_line_values)
                 exists, equal = self.order_line.with_context(ctx).existing_discountline(order_line_values)
                 # Workaround for new id. Perhaps we can call a sale_order.create/write?
                 if isinstance(order_id, int):
                     if exists and not equal:
                         exists.with_context(ctx).write(order_line_values)
+                        if exists.id in sale_discount_order_lines:
+                            sale_discount_order_lines.remove(exists.id)
                     elif not exists and not equal:
                         self.order_line.with_context(ctx).create(order_line_values)
-
+                        
 
                 total_discount_amount += discount['amount'] or 0.0
                 total_discount_base_amount = discount['discount_base']
 
+            if isinstance(order_id, int) and sale_discount_order_lines:
+                self.with_context(ctx).write({'order_line': [(2, i) for i in sale_discount_order_lines]})
             self.discount_amount = total_discount_amount
             self.discount_base_amount = total_discount_base_amount

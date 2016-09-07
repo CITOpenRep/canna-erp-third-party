@@ -18,10 +18,13 @@
 #
 ##############################################################################
 
-from . import product_pricelist
-from . import product_category
-from . import sale_discount
-from . import sale_discount_rule
-from . import sale_order
-from . import sale_order_line
+import logging
 
+from openerp import models, fields, api, _
+
+class ProductCategory(models.Model):
+    _inherit = 'product.category'
+
+    no_discounts = fields.Boolean(
+        "Discounts do not apply"
+        )

@@ -33,5 +33,6 @@
         #'security/ir.model.access.csv',
         'views/sale_discount.xml',
         'views/sale_order.xml',
+        'views/product_category.xml',
     ],
 }

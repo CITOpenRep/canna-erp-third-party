@@ -52,6 +52,8 @@ class SaleDiscountRule(models.Model):
     discount = fields.Float('Discount amount')
 
     max_base = fields.Float("Max base amount")
+    min_base = fields.Float("Min base amount")
+
 
     @api.one
     @api.constrains('discount', 'discount_type')
