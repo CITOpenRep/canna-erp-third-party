@@ -23,7 +23,9 @@
 from openerp import models, fields, api, _
 
 import logging
+
 _logger = logging.getLogger(__name__)
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -35,8 +37,8 @@ class ResPartner(models.Model):
     )
 
     partner_action_count = fields.Integer(
-            string='Number of actions',
-            compute='_get_partner_action_count',
+        string='Number of actions',
+        compute='_get_partner_action_count',
     )
 
     @api.one

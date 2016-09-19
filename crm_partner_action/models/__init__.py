@@ -23,3 +23,4 @@
 from . import crm_partner_action_group
 from . import crm_partner_action
 from . import res_partner
+from . import sale_order

@@ -23,8 +23,8 @@
 import logging
 from openerp import models, fields, api, _
 
-
 _logger = logging.getLogger(__name__)
+
 
 class CrmPartnerAction(models.Model):
     _name = 'crm.partner.action'
@@ -33,7 +33,8 @@ class CrmPartnerAction(models.Model):
     _order = 'create_date desc'
     _track = {
         'state': {
-            'crm_partner_action.mail_message_subtype_crm_partner_action_state': lambda self, cr, uid, obj, ctx=None: obj.state in [
+            'crm_partner_action.mail_message_subtype_crm_partner_action_state': lambda
+                self, cr, uid, obj, ctx=None: obj.state in [
                 'open',
                 'done'
             ]
@@ -41,11 +42,11 @@ class CrmPartnerAction(models.Model):
     }
 
     name = fields.Char(
-            string="Number",
-            readonly=True
+        string="Number",
+        readonly=True
     )
     color = fields.Integer(
-            string="Color Index"
+        string="Color Index"
     )
     state = fields.Selection(
         selection=[
@@ -69,10 +70,13 @@ class CrmPartnerAction(models.Model):
         # TODO kng: comment and uncomment    default=1. Not working for migration
     )
     user_id = fields.Many2one(
-            comodel_name='res.users',
-            string='User',
-            required=True,
-            default=lambda self: self.env.user
+        comodel_name='res.users',
+        string='User',
+        required=False,
+        default=lambda self: self.env.user,
+        help="Pick a user who will receive a notification when choosing the"
+             " partner selected above on a Sale Order. Leave empty to have"
+             " everyone receive the notification."
     )
     partner_id = fields.Many2one(
         comodel_name='res.partner',
@@ -106,7 +110,7 @@ class CrmPartnerAction(models.Model):
     description = fields.Text(
         string='Description',
         required=True,
-        #readonly=True, states={'open': [('readonly', False)]} TODO: Move to view
+        # readonly=True, states={'open': [('readonly', False)]} TODO: Move to view
     )
     comments = fields.Text(
         string='Comments',

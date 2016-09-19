@@ -40,10 +40,10 @@
 			<field name="view_id" ref="crm_partner_action_group_view_tree"/>
 		</record>
 
-		<menuitem
-                id="crm_partner_action_group_menu"
-                action="crm_partner_action_group_action"
-                parent="crm_partner_action_menu_config"/>
+		<!--<menuitem-->
+                <!--id="crm_partner_action_group_menu"-->
+                <!--action="crm_partner_action_group_action"-->
+                <!--parent="crm_partner_action_menu_config"/>-->
 
 	</data>
 </openerp>

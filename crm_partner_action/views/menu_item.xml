@@ -4,8 +4,8 @@
 
 		<menuitem id="crm_partner_action_menu_base" name="Actions" parent="base.menu_base_partner"/>
 
-		<menuitem id="crm_partner_action_menu_config" name="Actions"
-				  parent="base.menu_base_config" sequence="90" groups="base.group_sale_manager"/>
+		<!--<menuitem id="crm_partner_action_menu_config" name="Actions"-->
+				  <!--parent="base.menu_base_config" sequence="90" groups="base.group_sale_manager"/>-->
 
 	</data>
 </openerp>
