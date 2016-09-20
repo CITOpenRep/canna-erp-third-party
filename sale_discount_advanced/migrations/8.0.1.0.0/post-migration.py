@@ -137,8 +137,22 @@ def add_discounts(cr, env):
             highest_subtotal = 0
             minimum_amount = False
             discount_percentage = False
-            for bulk_discount in \
-                    line.product_id.pricelist_id.bulk_order_discount_ids:
+
+            # bulk_order_discount_ids
+            legacy_pricelist_id = openupgrade.get_legacy_name('pricelist_id')
+            legacy_product_pricelist_bulk = openupgrade.get_legacy_name(
+                'product_pricelist_bulk')
+            openupgrade.logged_query(
+                cr,
+                """
+                SELECT id FROM {}
+                WHERE {} = {}
+                ', '
+                """.format(legacy_product_pricelist_bulk, legacy_pricelist_id,
+                           line.product_id.pricelist_id)
+            )
+            bulk_order_discount_ids = filter(None, cr.fetchall())
+            for bulk_discount, in bulk_order_discount_ids:
                 gross_subtotal = line.price_unit * line.product_uom_qty
                 if gross_subtotal > highest_subtotal and \
                                 gross_subtotal >= bulk_discount.minimum_amount:
