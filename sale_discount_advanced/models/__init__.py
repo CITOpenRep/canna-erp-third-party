@@ -19,7 +19,6 @@
 ##############################################################################
 
 from . import product_pricelist
-from . import product_category
 from . import sale_discount
 from . import sale_discount_rule
 from . import sale_order

@@ -37,7 +37,7 @@ class SaleOrder(models.Model):
     )
     discount_base_amount = fields.Float(
             compute='_compute_discount',
-            string="Order Amount before Discount",
+            string="Base Amount for Discount",
             store=True
     )
 
@@ -67,9 +67,6 @@ class SaleOrder(models.Model):
                 if line.sale_discount_line:
                     _logger.debug("Sale Line With Discount: %s", line.id)
                     sale_discount_order_lines.append(line.id)
-                    continue
-
-                if line.product_id and line.product_id.categ_id and line.product_id.categ_id.no_discounts:
                     continue
 
                 line_sale_discounts = []

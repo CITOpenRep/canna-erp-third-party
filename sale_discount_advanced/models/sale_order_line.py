@@ -46,14 +46,24 @@ class SaleOrderLine(models.Model):
     @api.one
     @api.onchange('price_unit','product_uom_qty','product_id')
     def _onchange_discount(self):
-        # if not self.env.context.get('discount_calc'):
-        active_discounts = self.order_id._get_active_discounts()
-        if not self.sale_discount_line:
-            line_sale_discounts = []
-            for discount in active_discounts:
-                if discount not in self.sale_discounts:
-                    self.sale_discounts += discount
+        if self.sale_discount_line or not self.product_id:
+            return
 
+        line_sale_discounts = []
+        for discount in self.order_id._get_active_discounts():
+            if discount in self.sale_discounts:
+                continue
+            
+            if self.product_id in discount.product_ids:
+                self.sale_discounts += discount
+            else:
+                category = self.product_id.categ_id
+                while category:
+                    if category in discount.product_category_ids:
+                        self.sale_discounts += discount
+                        break
+                    category = category.parent_id
+                
 
     @api.model
     def existing_discountline(self, values):

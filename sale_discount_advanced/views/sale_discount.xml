@@ -38,6 +38,23 @@
                         <page string="Pricelists" name="pricelists">
                             <field name="pricelists" nolabel="1" colspan="4"/>
                         </page>
+                        <page string="Products &amp; Categories" name="productsAndCategories">
+                          <label for="product_ids" string="Applicable Products"/>
+                          <field name="product_ids">
+                            <tree>
+                              <field name="name"/>
+                              <field name="ean13"/>
+                              <field name="categ_id"/>
+                            </tree>
+                          </field>
+                          <label for="product_category_ids" string="Applicable Product Categories"/>
+                          <field name="product_category_ids">
+                            <tree>
+                              <field name="name"/>
+                              <field name="complete_name"/>
+                            </tree>
+                          </field>
+                        </page>
                     </notebook>
                 </form>
             </field>

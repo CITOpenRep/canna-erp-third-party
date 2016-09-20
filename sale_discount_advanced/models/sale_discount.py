@@ -75,6 +75,16 @@ class SaleDiscount(models.Model):
             string="Discount Rules"
     )
 
+    product_category_ids = fields.Many2many(
+        comodel_name='product.category',
+        string='Product Categories'
+        )
+
+    product_ids = fields.Many2many(
+        comodel_name='product.product',
+        string='Products'
+        )
+
     # sale_discounts = fields.Many2many(
     #         comodel_name='sale.order.line',
     #         relation='sale_line_sale_discount_rel',
