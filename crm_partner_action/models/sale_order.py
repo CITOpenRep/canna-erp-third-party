@@ -38,7 +38,6 @@ class SaleOrder(models.Model):
         if not partner_id:
             return res
         part = partner_obj.browse(cr, uid, partner_id)
-        res['value']['note'] = part.delivery_instructions
         res['value'][
             'user_id'] = uid
         if 'pricelist_id' in res['value'] and res['value']['pricelist_id']:
