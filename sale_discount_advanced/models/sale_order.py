@@ -20,8 +20,7 @@
 
 import logging
 
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
+from openerp import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -29,16 +28,15 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-
     discount_amount = fields.Float(
-            compute='_compute_discount',
-            string="Total Discount Amount",
-            store=True
+        compute='_compute_discount',
+        string="Total Discount Amount",
+        store=True
     )
     discount_base_amount = fields.Float(
-            compute='_compute_discount',
-            string="Base Amount for Discount",
-            store=True
+        compute='_compute_discount',
+        string="Base Amount for Discount",
+        store=True
     )
 
     def _get_active_discounts(self):
@@ -51,10 +49,11 @@ class SaleOrder(models.Model):
         _logger.debug("Active Discounts: %s", discounts)
         return discounts
 
-
     @api.one
-    @api.depends('pricelist_id','partner_id','order_line')
+    @api.depends('pricelist_id', 'partner_id', 'order_line')
     def _compute_discount(self):
+        if self.state != 'draft':
+            return
 
         order_id = self.id
         grouped_discounts = {}
@@ -62,7 +61,7 @@ class SaleOrder(models.Model):
 
         if not self.env.context.get('discount_calc'):
             ctx = dict(self._context, discount_calc=True)
-                
+
             for line in self.order_line:
                 if line.sale_discount_line:
                     _logger.debug("Sale Line With Discount: %s", line.id)
@@ -109,7 +108,6 @@ class SaleOrder(models.Model):
                             sale_discount_order_lines.remove(exists.id)
                     elif not exists and not equal:
                         self.order_line.with_context(ctx).create(order_line_values)
-                        
 
                 total_discount_amount += discount['amount'] or 0.0
                 total_discount_base_amount = discount['discount_base']

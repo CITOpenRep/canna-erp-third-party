@@ -20,40 +20,38 @@
 
 import logging
 
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
+from openerp import api, fields, models
 
 _logger = logging.getLogger(__name__)
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     sale_discount_line = fields.Boolean(
-            #compute = '_compute_line_discount',
-            string="Line is a sale discount line",
-            help="This field is used to manage the lines made by the sale discount module."
+        string="Line is a sale discount line",
+        help="This field is used to manage the lines "
+        "made by the sale discount module."
     )
 
     sale_discounts = fields.Many2many(
-            #compute='_compute_line_discount',
-            comodel_name='sale.discount',
-            relation='sale_line_sale_discount_rel',
-            column1='sale_line_id',
-            column2='discount_id',
-            string="Discount(s)"
+        comodel_name='sale.discount',
+        relation='sale_line_sale_discount_rel',
+        column1='sale_line_id',
+        column2='discount_id',
+        string="Discount(s)"
     )
 
     @api.one
-    @api.onchange('price_unit','product_uom_qty','product_id')
+    @api.onchange('price_unit', 'product_uom_qty', 'product_id')
     def _onchange_discount(self):
         if self.sale_discount_line or not self.product_id:
             return
 
-        line_sale_discounts = []
         for discount in self.order_id._get_active_discounts():
             if discount in self.sale_discounts:
                 continue
-            
+
             if self.product_id in discount.product_ids:
                 self.sale_discounts += discount
             else:
@@ -63,26 +61,25 @@ class SaleOrderLine(models.Model):
                         self.sale_discounts += discount
                         break
                     category = category.parent_id
-                
 
     @api.model
     def existing_discountline(self, values):
         exists = self.search(
-                [
-                    ('order_id', '=', values.get('order_id')),
-                    ('product_id', '=', values.get('product_id')),
-                    ('name', '=', values.get('name')),
-                    ('sale_discount_line', '=', True)
+            [
+                ('order_id', '=', values.get('order_id')),
+                ('product_id', '=', values.get('product_id')),
+                ('name', '=', values.get('name')),
+                ('sale_discount_line', '=', True)
                 ]
         )
         equal = self.search(
-                [
-                    ('order_id', '=', values.get('order_id')),
-                    ('product_id', '=', values.get('product_id')),
-                    ('name', '=', values.get('name')),
-                    ('price_unit', '=', values.get('price_unit')),
-                    ('product_uom_qty', '=', values.get('product_uom_qty')),
-                    ('sale_discount_line', '=', True)
+            [
+                ('order_id', '=', values.get('order_id')),
+                ('product_id', '=', values.get('product_id')),
+                ('name', '=', values.get('name')),
+                ('price_unit', '=', values.get('price_unit')),
+                ('product_uom_qty', '=', values.get('product_uom_qty')),
+                ('sale_discount_line', '=', True)
                 ]
         )
 
