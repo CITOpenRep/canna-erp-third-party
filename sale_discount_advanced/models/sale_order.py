@@ -1,7 +1,8 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+#    Copyright (C) 2012-2016 Noviat nv/sa (www.noviat.com).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,98 +22,112 @@
 import logging
 
 from openerp import api, fields, models
+import openerp.addons.decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
 
 
 class SaleOrder(models.Model):
-    _inherit = "sale.order"
+    _inherit = 'sale.order'
 
     discount_amount = fields.Float(
-        compute='_compute_discount',
-        string="Total Discount Amount",
-        store=True
-    )
+        digits=dp.get_precision('Account'),
+        string='Total Discount Amount',
+        readonly=True,
+        store=True)
     discount_base_amount = fields.Float(
-        compute='_compute_discount',
-        string="Base Amount for Discount",
-        store=True
-    )
+        digits=dp.get_precision('Account'),
+        string='Base Amount before Discount',
+        readonly=True,
+        store=True)
 
-    def _get_active_discounts(self):
-        discounts = []
-        if self.pricelist_id and self.pricelist_id.sale_discounts:
-            for discount in self.pricelist_id.sale_discounts:
-                if discount.active and \
-                        discount.check_active_date(self.date_order):
-                    discounts.append(discount)
-        _logger.debug("Active Discounts: %s", discounts)
-        return discounts
+    @api.multi
+    def onchange_pricelist_id(self, pricelist_id, order_lines):
+        res = super(SaleOrder, self).onchange_pricelist_id(
+            pricelist_id, order_lines)
+        sol_model = self.env['sale.order.line']
+        for order_line in order_lines:
+            if order_line[0] == 6:
+                lines = sol_model.browse(order_line[2])
+                for line in lines:
+                    line._onchange_sale_discount()
+        return res
 
-    @api.one
-    @api.depends('pricelist_id', 'partner_id', 'order_line')
+    @api.multi
+    def button_dummy(self):
+        res = super(SaleOrder, self).button_dummy()
+        self._compute_discount()
+        return res
+
     def _compute_discount(self):
+
         if self.state != 'draft':
             return
+        if self._context.get('discount_calc'):
+            return
 
-        order_id = self.id
         grouped_discounts = {}
-        sale_discount_order_lines = []
+        sol_model = self.env['sale.order.line']
+        line_discount_amounts = {}
+        total_base_amount = 0.0
+        line_updates = []
 
-        if not self.env.context.get('discount_calc'):
-            ctx = dict(self._context, discount_calc=True)
+        for line in self.order_line:
+            base_amount = line.price_unit * line.product_uom_qty
+            total_base_amount += base_amount
 
-            for line in self.order_line:
-                if line.sale_discount_line:
-                    _logger.debug("Sale Line With Discount: %s", line.id)
-                    sale_discount_order_lines.append(line.id)
-                    continue
+            for discount in line.sale_discount_ids:
+                if discount.discount_base == 'sale_order':
+                    if discount.id not in grouped_discounts:
+                        grouped_discounts[discount.id] = {
+                            'sale_discount': discount,
+                            'lines': [(line.id, base_amount)],
+                            'disc_base_amt': base_amount}
+                    else:
+                        grouped_discounts[discount.id]['disc_base_amt'] \
+                            += base_amount
+                        grouped_discounts[
+                            discount.id]['lines'].append(
+                                (line.id, base_amount))
+                else:
+                    amt, pct = discount._calculate_discount(
+                        line.price_unit, line.product_uom_qty)
+                    line_discount_amounts[line.id] = amt
+                    line_updates.append([1, line.id, {'discount': pct}])
 
-                line_sale_discounts = []
-                for discount in line.sale_discounts:
-                    line_sale_discounts.append(discount)
-                    grouped_discounts.setdefault(discount.id,
-                                                 {
-                                                     'sale_discount': discount,
-                                                     'discount_base': 0,
-                                                     'amount': 0,
-                                                     'discount_qty': 0
-                                                 }
-                                                 )
-                    grouped_discounts[discount.id]['discount_base'] += line.price_subtotal
-                    grouped_discounts[discount.id]['discount_qty'] += line.product_uom_qty
+        for entry in grouped_discounts.values():
+            amt, pct = entry['sale_discount']._calculate_discount(
+                entry['disc_base_amt'], 1.0)
+            # redistribute the discount to the lines
+            for line in entry['lines']:
+                done = False
+                for line_update in line_updates:
+                    if line_update[1] == line[0]:
+                        pct = min(line_update[2]['discount'] + pct, 100.0)
+                        line_update[2]['discount'] = pct
+                        done = True
+                        break
+                if not done:
+                    line_updates.append(
+                        (1, line[0], {'discount': pct}))
+                if line[0] not in line_discount_amounts:
+                     line_discount_amounts[line[0]] = line[1] * pct / 100.0
+                else:
+                    line_discount_amounts[line[0]] = min(
+                        line[1],
+                        line_discount_amounts[line[0]] + line[1] * pct / 100.0
+                        )
+        total_discount_amount = sum(line_discount_amounts.values())
 
-            total_discount_amount = 0.0
-            total_discount_base_amount = 0.0
+        ctx = dict(self._context, discount_calc=True)
+        self.with_context(ctx).write({
+            'discount_amount': total_discount_amount,
+            'discount_base_amount': total_base_amount,
+            'order_line': line_updates,
+            })
 
-            for discount in grouped_discounts.values():
-                discount['amount'] = discount['sale_discount']._calculate_discount(discount['discount_base'], discount['discount_qty'])
-                if not discount['amount']:
-                    continue
-
-                order_line_values = {
-                    'order_id': order_id,
-                    'sale_discount_line': True,
-                    'name': discount['sale_discount'].name,
-                    'product_id': discount['sale_discount'].product_id.id,
-                    'price_unit': -discount['amount'],
-                    'product_uom_qty': 1
-                }
-
-                exists, equal = self.order_line.with_context(ctx).existing_discountline(order_line_values)
-                # Workaround for new id. Perhaps we can call a sale_order.create/write?
-                if isinstance(order_id, int):
-                    if exists and not equal:
-                        exists.with_context(ctx).write(order_line_values)
-                        if exists.id in sale_discount_order_lines:
-                            sale_discount_order_lines.remove(exists.id)
-                    elif not exists and not equal:
-                        self.order_line.with_context(ctx).create(order_line_values)
-
-                total_discount_amount += discount['amount'] or 0.0
-                total_discount_base_amount = discount['discount_base']
-
-            if isinstance(order_id, int) and sale_discount_order_lines:
-                self.with_context(ctx).write({'order_line': [(2, i) for i in sale_discount_order_lines]})
-            self.discount_amount = total_discount_amount
-            self.discount_base_amount = total_discount_base_amount
+    @api.multi
+    def write(self, vals):
+        if not self._context.get('discount_calc'):
+            self._compute_discount()
+        return super(SaleOrder, self).write(vals)

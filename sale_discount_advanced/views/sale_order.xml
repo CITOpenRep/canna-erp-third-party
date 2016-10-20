@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data>
+  <data>
 
-        <record id="view_order_form" model="ir.ui.view">
-            <field name="name">ViewOrderFormSaleDiscount</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='pricelist_id']" position="after">
-                    <field name="discount_amount"/>
-                    <field name="discount_base_amount"/>
-                </xpath>
-                <xpath expr="//tree/field[@name='discount']" position="after">
-                    <field name="sale_discounts" widget="many2many_tags"/>
-                </xpath>
-                <xpath expr="//form//field[@name='price_unit']" position="after">
-                  <field name="sale_discounts" widget="many2many_tags"/>
-                </xpath>
-            </field>
-        </record>
+    <record id="view_order_form" model="ir.ui.view">
+      <field name="name">ViewOrderFormSaleDiscount</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='pricelist_id']" position="after">
+          <field name="discount_amount"/>
+          <field name="discount_base_amount"/>
+        </xpath>
+        <xpath expr="//tree/field[@name='discount']" position="before">
+          <field name="sale_discount_ids" widget="many2many_tags"/>
+        </xpath>
+        <xpath expr="//form//field[@name='price_unit']" position="after">
+          <field name="sale_discount_ids" widget="many2many_tags"/>
+        </xpath>
+      </field>
+    </record>
 
-    </data>
+  </data>
 </openerp>

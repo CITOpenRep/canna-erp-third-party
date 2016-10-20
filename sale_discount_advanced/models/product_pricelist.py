@@ -1,7 +1,8 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+#    Copyright (C) 2012-2016 Noviat nv/sa (www.noviat.com).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,21 +19,24 @@
 #
 ##############################################################################
 
-import logging
+from openerp import api, fields, models
 
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
-
-_logger = logging.getLogger(__name__)
 
 class product_pricelist(models.Model):
     _inherit = 'product.pricelist'
 
-    sale_discounts = fields.Many2many(
-            comodel_name='sale.discount',
-            relation='pricelist_sale_discount_rel',
-            column1='pricelist_id',
-            column2='discount_id',
-            string="Discounts"
-    )
+    sale_discount_ids = fields.Many2many(
+        string='Sale Discounts',
+        comodel_name='sale.discount',
+        relation='pricelist_sale_discount_rel',
+        column1='pricelist_id',
+        column2='discount_id')
 
+    @api.one
+    def _get_active_sale_discounts(self, date_order):
+        discounts = self.env['sale.discount']
+        for discount in self.sale_discount_ids:
+            if discount.active and \
+                    discount.check_active_date(date_order):
+                discounts += discount
+        return discounts

@@ -1,7 +1,8 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+#    Copyright (C) 2016 Noviat nv/sa (www.noviat.com).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,19 +19,20 @@
 #
 ##############################################################################
 
-
 {
     'name': "Sale Discount Advanced",
-    'author': "ICTSTUDIO, André Schenkels",
+    'author': "ICTSTUDIO, Noviat",
     'summary': """Order Amount Discounts related to Pricelists""",
     'website': "http://www.ictstudio.eu",
     'category': 'Sales',
-    'version': '8.0.1.0.0',
+    'version': '8.0.1.2.0',
+    'license': 'AGPL-3',
     'depends': [
         'sale',
     ],
     'data': [
         'security/ir.model.access.csv',
+        'views/product_pricelist.xml',
         'views/sale_discount.xml',
         'views/sale_order.xml',
     ],

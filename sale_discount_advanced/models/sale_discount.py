@@ -1,7 +1,8 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+#    Copyright (C) 2016 Noviat nv/sa (www.noviat.com).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,110 +19,104 @@
 #
 ##############################################################################
 
-
 import logging
 
-from openerp import models, fields, api, _
-from openerp.exceptions import ValidationError
+from openerp import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
-class SaleDiscount(models.Model):
-    _name = "sale.discount"
 
+class SaleDiscount(models.Model):
+    _name = 'sale.discount'
+    _order = 'sequence'
+
+    sequence = fields.Integer()
     company_id = fields.Many2one(
-            comodel_name='res.company',
-            string='Company',
-            required=True,
-            default=lambda self: self.env.user.company_id
-    )
+        comodel_name='res.company',
+        string='Company',
+        required=True,
+        default=lambda self: self.env.user.company_id)
     name = fields.Char(
-            string="Discount",
-            required=True
-    )
+        string='Discount',
+        required=True)
     start_date = fields.Date(string='Start date')
     end_date = fields.Date(string='End date')
     active = fields.Boolean(
         string='Discount active',
-        default=lambda self: self._get_default_active()
-    ) #  TODO: Change default with lambda function
-    product_id = fields.Many2one(
-        comodel_name='product.product',
-        string="Discount Product",
-        help="This product will be used to create lines on order regarding discount"
-    )
+        default=lambda self: self._default_active())
     discount_base = fields.Selection(
-        selection=[
-            ('sale_order', 'Base discount on Order amount'),
-            ('sale_line', 'Base discount on Line amount')
-        ],
-        string="Discount Base on",
+        selection=lambda self: self._selection_discount_base(),
+        string='Discount Base on',
         required=True,
         default='sale_order',
-        help="Base the discount on "
-    )
-
-    pricelists = fields.Many2many(
-            comodel_name='product.pricelist',
-            relation='pricelist_sale_discount_rel',
-            column1='discount_id',
-            column2='pricelist_id',
-            string="Pricelists"
-    )
-
-    rules = fields.One2many(
-            comodel_name='sale.discount.rule',
-            inverse_name='sale_discount_id',
-            string="Discount Rules"
-    )
-
-    product_category_ids = fields.Many2many(
+        help="Base the discount on ")
+    pricelist_ids = fields.Many2many(
+        comodel_name='product.pricelist',
+        relation='pricelist_sale_discount_rel',
+        column1='discount_id',
+        column2='pricelist_id')
+    rule_ids = fields.One2many(
+        comodel_name='sale.discount.rule',
+        inverse_name='sale_discount_id',
+        string='Discount Rules')
+    excluded_product_category_ids = fields.Many2many(
         comodel_name='product.category',
-        string='Product Categories'
-        )
-
-    product_ids = fields.Many2many(
+        string='Excluded Product Categories',
+        help="Products in these categories will by default be excluded "
+             "from this discount.")
+    excluded_product_ids = fields.Many2many(
         comodel_name='product.product',
-        string='Products'
-        )
+        string='Excluded Products',
+        help="These products will by default be excluded "
+             "from this discount.")
 
-    # sale_discounts = fields.Many2many(
-    #         comodel_name='sale.order.line',
-    #         relation='sale_line_sale_discount_rel',
-    #         column1='discount_id',
-    #         column2='sale_line_id',
-    #         string="Order Lines"
-    # )
-
-    def _get_default_active(self):
+    @api.model
+    def _default_active(self):
         return True
+
+    @api.model
+    def _selection_discount_base(self):
+        """
+        Separate method to allow the removal of an option
+        via inherit.
+        """
+        selection = [
+            ('sale_order', 'Base discount on Order amount'),
+            ('sale_line', 'Base discount on Line amount')]
+        return selection
 
     def check_active_date(self, check_date=None):
         if not check_date:
             check_date = fields.Datetime.now()
-        if self.start_date and self.end_date and (check_date >= self.start_date and check_date < self.end_date):
+        if self.start_date and self.end_date \
+                and (check_date >= self.start_date
+                     and check_date < self.end_date):
             return True
-        if self.start_date and not self.end_date and (check_date >= self.start_date):
+        if self.start_date and not self.end_date \
+                and (check_date >= self.start_date):
             return True
-        if not self.start_date and self.end_date and (check_date < self.end_date):
+        if not self.start_date and self.end_date \
+                and (check_date < self.end_date):
             return True
         elif not self.start_date or not self.end_date:
             return True
         else:
             return False
 
-    @api.multi
-    def _calculate_discount(self, base, qty):
-        assert len(self) == 1
+    def _calculate_discount(self, price_unit, qty):
+        base = qty * price_unit
+        disc_amt = 0.0
+        disc_pct = 0.0
+        for rule in self.rule_ids:
+            if rule.min_base > 0 and rule.min_base > base:
+                continue
+            if rule.max_base > 0 and rule.max_base < base:
+                continue
 
-        for discount in self:
-            for rule in discount.rules:
-                if rule.min_base > 0 and rule.min_base > base:
-                    continue
-                if rule.max_base > 0 and rule.max_base < base:
-                    continue
-
-                if rule.discount_type == 'perc':
-                    return base * rule.discount / 100
-                else:
-                    return min(rule.discount * qty, base)
+            if rule.discount_type == 'perc':
+                disc_amt = base * rule.discount / 100
+                disc_pct = rule.discount
+            else:
+                disc_amt = min(rule.discount * qty, base)
+                disc_pct = disc_amt / base
+        return disc_amt, disc_pct
