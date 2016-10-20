@@ -63,6 +63,8 @@ class SaleOrderLine(models.Model):
         You can still add a discount manually to such a line or
         add non-product lines via an inherit on this method.
         """
+        if context == None:
+            context = {}
         self.env = api.Environment(cr, uid, context)
         discounts = self.env['sale.discount']
         pricelist = self.env['product.pricelist'].browse(pricelist_id)
