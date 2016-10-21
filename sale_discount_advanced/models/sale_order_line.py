@@ -38,11 +38,12 @@ class SaleOrderLine(models.Model):
     )
     disocunt = fields.Float(readonly=True)
 
-    def product_id_change(self, cr, uid, ids, pricelist_id, product_id, qty=0,
+    def product_id_change(
+            self, cr, uid, ids, pricelist_id, product_id, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
             lang=False, update_tax=True, date_order=False, packaging=False,
             fiscal_position=False, flag=False, context=None):
-        res = super(SaleOrderLine,self).product_id_change(
+        res = super(SaleOrderLine, self).product_id_change(
             cr, uid, ids, pricelist_id, product_id, qty=qty, uom=uom,
             qty_uos=qty_uos, uos=uos, name=name, partner_id=partner_id,
             lang=lang, update_tax=update_tax, date_order=date_order,
@@ -63,22 +64,14 @@ class SaleOrderLine(models.Model):
         You can still add a discount manually to such a line or
         add non-product lines via an inherit on this method.
         """
-        if context == None:
+        if context is None:
             context = {}
         self.env = api.Environment(cr, uid, context)
         discounts = self.env['sale.discount']
         pricelist = self.env['product.pricelist'].browse(pricelist_id)
         for discount in pricelist._get_active_sale_discounts(date_order):
-            if product_id not in discount.excluded_product_ids._ids:
+            if product_id not in discount._get_excluded_products()._ids:
                 discounts += discount
-            else:
-                product = self.env['product.product'].browse(product_id)
-                category = product.categ_id
-                while category:
-                    if category not in discount.excluded_product_category_ids:
-                        discounts += discount
-                        break
-                    category = category.parent_id
         return discounts._ids
 
     def _get_sale_discounts(self):
@@ -93,15 +86,8 @@ class SaleOrderLine(models.Model):
         active_discounts = pricelist._get_active_sale_discounts(
             self.order_id.date_order)
         for discount in active_discounts:
-            if self.product_id not in discount.excluded_product_ids:
+            if self.product_id not in discount._get_excluded_products():
                 discounts += discount
-            else:
-                category = self.product_id.categ_id
-                while category:
-                    if category not in discount.excluded_product_category_ids:
-                        discounts += discount
-                        break
-                    category = category.parent_id
         return discounts
 
     @api.onchange('product_id')

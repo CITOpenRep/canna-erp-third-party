@@ -25,7 +25,7 @@
     'summary': """Order Amount Discounts related to Pricelists""",
     'website': "http://www.ictstudio.eu",
     'category': 'Sales',
-    'version': '8.0.1.2.0',
+    'version': '8.0.1.2.1',
     'license': 'AGPL-3',
     'depends': [
         'sale',

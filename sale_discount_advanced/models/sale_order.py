@@ -67,7 +67,6 @@ class SaleOrder(models.Model):
             return
 
         grouped_discounts = {}
-        sol_model = self.env['sale.order.line']
         line_discount_amounts = {}
         total_base_amount = 0.0
         line_updates = []
@@ -111,7 +110,7 @@ class SaleOrder(models.Model):
                     line_updates.append(
                         (1, line[0], {'discount': pct}))
                 if line[0] not in line_discount_amounts:
-                     line_discount_amounts[line[0]] = line[1] * pct / 100.0
+                    line_discount_amounts[line[0]] = line[1] * pct / 100.0
                 else:
                     line_discount_amounts[line[0]] = min(
                         line[1],

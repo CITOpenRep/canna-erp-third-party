@@ -120,3 +120,20 @@ class SaleDiscount(models.Model):
                 disc_amt = min(rule.discount * qty, base)
                 disc_pct = disc_amt / base
         return disc_amt, disc_pct
+
+    def _get_excluded_products(self):
+        products = self.excluded_product_ids
+
+        def get_children_recursive(categ):
+            res = categ
+            for child in categ.child_id:
+                res += get_children_recursive(child)
+            return res
+
+        categs = self.env['product.category']
+        for categ in self.excluded_product_category_ids:
+            categs += get_children_recursive(categ)
+        products += self.env['product.product'].search(
+            [('categ_id', 'in', categs._ids)])
+
+        return products
