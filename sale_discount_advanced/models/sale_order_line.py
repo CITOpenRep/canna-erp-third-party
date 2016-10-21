@@ -59,6 +59,7 @@ class SaleOrderLine(models.Model):
     def _get_sale_discount_ids(self, cr, uid, pricelist_id,
                                date_order, product_id, context=None):
         """
+        v7 api.
         By default sale order lines without products are not
         included in the discount calculation.
         You can still add a discount manually to such a line or
@@ -76,6 +77,7 @@ class SaleOrderLine(models.Model):
 
     def _get_sale_discounts(self):
         """
+        v8 api.
         By default sale order lines without products are not
         included in the discount calculation.
         You can still add a discount manually to such a line or
