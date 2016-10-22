@@ -12,10 +12,10 @@
           <field name="discount_base_amount"/>
         </xpath>
         <xpath expr="//tree/field[@name='discount']" position="before">
-          <field name="sale_discount_ids" widget="many2many_tags"/>
+          <field name="sale_discount_ids" widget="many2many_tags" options="{'no_create': True}"/>
         </xpath>
         <xpath expr="//form//field[@name='price_unit']" position="after">
-          <field name="sale_discount_ids" widget="many2many_tags"/>
+          <field name="sale_discount_ids" widget="many2many_tags" options="{'no_create': True}"/>
         </xpath>
       </field>
     </record>
