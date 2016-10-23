@@ -22,7 +22,7 @@
 from openerp import api, fields, models
 
 
-class product_pricelist(models.Model):
+class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
     sale_discount_ids = fields.Many2many(
