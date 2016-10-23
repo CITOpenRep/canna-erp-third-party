@@ -100,21 +100,23 @@ class SaleOrder(models.Model):
             # redistribute the discount to the lines
             for line in entry['lines']:
                 done = False
+                pct_sum = pct
                 for line_update in line_updates:
                     if line_update[1] == line[0]:
-                        pct = min(line_update[2]['discount'] + pct, 100.0)
-                        line_update[2]['discount'] = pct
+                        pct_sum = min(line_update[2]['discount'] + pct, 100.0)
+                        line_update[2]['discount'] = pct_sum
                         done = True
                         break
                 if not done:
                     line_updates.append(
-                        (1, line[0], {'discount': pct}))
+                        (1, line[0], {'discount': pct_sum}))
                 if line[0] not in line_discount_amounts:
                     line_discount_amounts[line[0]] = line[1] * pct / 100.0
                 else:
                     line_discount_amounts[line[0]] = min(
                         line[1],
-                        line_discount_amounts[line[0]] + line[1] * pct / 100.0
+                        line_discount_amounts[line[0]]
+                        + line[1] * pct / 100.0
                         )
         total_discount_amount = sum(line_discount_amounts.values())
 
@@ -127,6 +129,8 @@ class SaleOrder(models.Model):
 
     @api.multi
     def write(self, vals):
-        if not self._context.get('discount_calc'):
-            self._compute_discount()
-        return super(SaleOrder, self).write(vals)
+        res = super(SaleOrder, self).write(vals)
+        for order in self:
+            if not self._context.get('discount_calc'):
+                order._compute_discount()
+        return res
