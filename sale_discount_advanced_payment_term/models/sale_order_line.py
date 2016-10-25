@@ -50,9 +50,10 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self)._get_sale_discounts()
         discounts = self.env['sale.discount']
         payterm = self.order_id.payment_term
-        active_discounts = payterm._get_active_sale_discounts(
-            self.order_id.date_order)
-        for discount in active_discounts:
-            if self.product_id not in discount._get_excluded_products():
-                discounts += discount
+        if payterm:
+            active_discounts = payterm._get_active_sale_discounts(
+                self.order_id.date_order)
+            for discount in active_discounts:
+                if self.product_id not in discount._get_excluded_products():
+                    discounts += discount
         return res + discounts
