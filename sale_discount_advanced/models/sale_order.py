@@ -45,12 +45,23 @@ class SaleOrder(models.Model):
     def onchange_pricelist_id(self, pricelist_id, order_lines):
         res = super(SaleOrder, self).onchange_pricelist_id(
             pricelist_id, order_lines)
-        sol_model = self.env['sale.order.line']
+        line_update = False
         for order_line in order_lines:
             if order_line[0] == 6:
-                lines = sol_model.browse(order_line[2])
+                lines = self.env['sale.order.line'].browse(order_line[2])
                 for line in lines:
                     line._onchange_sale_discount()
+            elif order_line[0] == 0:
+                vals = order_line[2]
+                if vals.get('product_id'):
+                    disc_ids = \
+                        self.pool['sale.order.line']._get_sale_discount_ids(
+                        self._cr, self._uid, pricelist_id, self.date_order,
+                        vals['product_id'], context=self._context)
+                    vals.update(sale_discount_ids=[(6, 0, disc_ids)])
+                    line_update = True
+        if line_update:
+            res['value']['order_line'] = order_lines
         return res
 
     @api.multi
