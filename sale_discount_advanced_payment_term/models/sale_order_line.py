@@ -36,9 +36,9 @@ class SaleOrderLine(models.Model):
             cr, uid, pricelist_id, date_order, product_id, context=context)
         if context is None:
             context = {}
+        discounts = self.env['sale.discount']
         if context.get('payment_term_id'):
             self.env = api.Environment(cr, uid, context)
-            discounts = self.env['sale.discount']
             payterm = self.env['account.payment.term'].browse(
                 context['payment_term_id'])
             for discount in payterm._get_active_sale_discounts(date_order):
