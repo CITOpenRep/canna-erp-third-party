@@ -70,9 +70,10 @@ class SaleOrderLine(models.Model):
         self.env = api.Environment(cr, uid, context)
         discounts = self.env['sale.discount']
         pricelist = self.env['product.pricelist'].browse(pricelist_id)
-        for discount in pricelist._get_active_sale_discounts(date_order):
-            if product_id not in discount._get_excluded_products()._ids:
-                discounts += discount
+        if pricelist:
+            for discount in pricelist._get_active_sale_discounts(date_order):
+                if product_id not in discount._get_excluded_products()._ids:
+                    discounts += discount
         return discounts._ids
 
     def _get_sale_discounts(self):
