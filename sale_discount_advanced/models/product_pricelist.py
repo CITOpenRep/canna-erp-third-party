@@ -32,8 +32,9 @@ class ProductPricelist(models.Model):
         column1='pricelist_id',
         column2='discount_id')
 
-    @api.one
+    @api.multi
     def _get_active_sale_discounts(self, date_order):
+        self.ensure_one()
         discounts = self.env['sale.discount']
         for discount in self.sale_discount_ids:
             if discount.active and \
