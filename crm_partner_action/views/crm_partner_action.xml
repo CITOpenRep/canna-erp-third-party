@@ -164,7 +164,7 @@
       <field name="type">ir.actions.act_window</field>
       <field name="res_model">crm.partner.action</field>
       <field name="view_type">form</field>
-      <field name="view_mode">tree,form,calendar,kanban</field>
+      <field name="view_mode">kanban,tree,form,calendar</field>
       <field name="view_id" ref="crm_partner_action_view_kanban"/>
     </record>
 
