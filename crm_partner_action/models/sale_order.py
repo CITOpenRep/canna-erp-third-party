@@ -30,24 +30,28 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    def onchange_partner_id(self, cr, uid, ids, partner_id, context):
-        partner_action_obj = self.pool.get('crm.partner.action')
-        partner_obj = self.pool.get('res.partner')
-        res = super(SaleOrder, self).onchange_partner_id(cr, uid, ids,
-                                                         partner_id)
+    def onchange_partner_id(self, cr, uid, ids, partner_id, context=None):
+        partner_action_obj = self.pool['crm.partner.action']
+        partner_obj = self.pool['res.partner']
+        res = super(SaleOrder, self).onchange_partner_id(
+            cr, uid, ids, partner_id, context=context)
         if not partner_id:
             return res
-        part = partner_obj.browse(cr, uid, partner_id)
+
         res['value'][
             'user_id'] = uid
         if 'pricelist_id' in res['value'] and res['value']['pricelist_id']:
             if isinstance(res['value']['pricelist_id'], long):
                 res['value']['pricelist_id'] = int(res['value']['pricelist_id'])
 
-        search_terms = [('partner_id', '=', part.id), ('state', '=', 'open')]
-        action_ids = partner_action_obj.search(cr, uid, search_terms)
-        actions = partner_action_obj.browse(cr, uid, action_ids,
-                                            context=context)
+        part = partner_obj.browse(cr, uid, partner_id, context=context)
+        cpart = part.commercial_partner_id
+        partner_ids = [cpart.id] + [x.id for x in cpart.child_ids]
+        dom = [('partner_id', 'in', partner_ids),
+               ('state', '=', 'open')]
+        action_ids = partner_action_obj.search(cr, uid, dom, context=context)
+        actions = partner_action_obj.browse(
+            cr, uid, action_ids, context=context)
         action_user_ids = [action.user_id.id for action in actions]
         if action_ids and (
             not any(action_user_ids) or uid in action_user_ids):
@@ -62,6 +66,8 @@ class SaleOrder(models.Model):
             res['warning'] = {
                 'title': _('Open Actions'),
                 'message': _(
-                    'There are still open actions for this partner. Please check if there are any relevant actions') + '\n\n' + message_body
+                    "There are still open actions for this partner. "
+                    "Please check if there are any relevant actions"
+                    ) + '\n\n' + message_body
             }
         return res
