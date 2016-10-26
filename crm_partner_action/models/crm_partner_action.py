@@ -42,11 +42,11 @@ class CrmPartnerAction(models.Model):
     }
 
     name = fields.Char(
-        string="Number",
+        string='Number',
         readonly=True
     )
     color = fields.Integer(
-        string="Color Index"
+        string='Color Index'
     )
     state = fields.Selection(
         selection=[
