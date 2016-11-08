@@ -3,6 +3,7 @@
 #
 #    Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
 #    Copyright (C) 2016 Noviat nv/sa (www.noviat.com).
+#    Copyright (C) 2016 Onestein (http://www.onestein.eu).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as

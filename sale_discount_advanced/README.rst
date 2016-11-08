@@ -58,3 +58,4 @@ Contributors
 ------------
 - ICTSTUDIO, André Schenkels"
 - Noviat, Luc De Meyer
+- Dennis Sluijk <d.sluijk@onestein.nl>
