@@ -24,10 +24,10 @@ from openerp.tests.common import HttpCase, TransactionCase
 from openerp.exceptions import ValidationError
 
 
-class TestSaleDiscount(TransactionCase):
+class TestSaleDiscountAdvanced(TransactionCase):
 
     def setUp(self):
-        super(TestSaleDiscount, self).setUp()
+        super(TestSaleDiscountAdvanced, self).setUp()
         self.so_obj = self.env['sale.order']
         self.sd_obj = self.env['sale.discount']
         self.sdl_obj = self.env['sale.discount.rule']
