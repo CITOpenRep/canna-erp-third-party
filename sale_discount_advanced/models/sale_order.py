@@ -72,7 +72,7 @@ class SaleOrder(models.Model):
 
     def _compute_discount(self):
 
-        if self.state != 'draft':
+        if self.state not in ['draft', 'sent']:
             return
         if self._context.get('discount_calc'):
             return
