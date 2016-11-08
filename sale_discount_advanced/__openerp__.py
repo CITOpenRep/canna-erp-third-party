@@ -3,6 +3,7 @@
 #
 #    Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
 #    Copyright (C) 2016 Noviat nv/sa (www.noviat.com).
+#    Copyright (C) 2016 Onestein (http://www.onestein.eu/).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,7 +22,7 @@
 
 {
     'name': "Sale Discount Advanced",
-    'author': "ICTSTUDIO, Noviat",
+    'author': "ICTSTUDIO,Noviat,Onestein",
     'summary': """Order Amount Discounts related to Pricelists""",
     'website': "http://www.ictstudio.eu",
     'category': 'Sales',
@@ -29,11 +30,17 @@
     'license': 'AGPL-3',
     'depends': [
         'sale',
+        'product',
     ],
     'data': [
         'security/ir.model.access.csv',
-        'views/product_pricelist.xml',
-        'views/sale_discount.xml',
-        'views/sale_order.xml',
+        'views/product_pricelist_view.xml',
+        'views/sale_discount_view.xml',
+        'views/sale_order_view.xml',
     ],
+    'demo': [
+        'demo/product_pricelist_demo.xml',
+        'demo/sale_discount_demo.xml',
+        'demo/sale_discount_rule_demo.xml',
+    ]
 }
