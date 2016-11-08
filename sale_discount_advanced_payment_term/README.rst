@@ -51,3 +51,4 @@ Credits
 Contributors
 ------------
 - Noviat, Luc De Meyer
+* Dennis Sluijk <d.sluijk@onestein.eu>

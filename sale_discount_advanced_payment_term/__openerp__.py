@@ -4,6 +4,7 @@
 #    Odoo, Open Source Management Solution
 #
 #    Copyright (c) 2009-2016 Noviat nv/sa (www.noviat.com).
+#    Copyright (c) 2016 Onestein (www.onestein.eu).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,7 +25,7 @@
     'name': 'Sale Discount on Payment Terms',
     'version': '8.0.1.0.0',
     'license': 'AGPL-3',
-    'author': 'Noviat',
+    'author': 'Noviat,Onestein',
     'website': 'http://www.noviat.com',
     'category': 'Sales',
     'depends': ['sale_discount_advanced'],
@@ -32,6 +33,9 @@
         'views/account_payment_term.xml',
         'views/sale_discount.xml',
         'views/sale_order.xml',
-        ],
+    ],
+    'demo': [
+        'demo/sale_discount_demo.xml'
+    ],
     'installable': True,
 }
