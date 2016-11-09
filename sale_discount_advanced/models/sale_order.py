@@ -66,17 +66,30 @@ class SaleOrder(models.Model):
         return res
 
     @api.multi
-    def button_dummy(self):
-        res = super(SaleOrder, self).button_dummy()
-        self._compute_discount()
+    def write(self, vals):
+        res = super(SaleOrder, self).write(vals)
+        for order in self:
+            if not self._context.get('discount_calc'):
+                order.compute_discount()
         return res
 
-    def _compute_discount(self):
+    @api.multi
+    def button_dummy(self):
+        res = super(SaleOrder, self).button_dummy()
+        self.compute_discount()
+        return res
 
-        if self.state not in ['draft', 'sent']:
-            return
-        if self._context.get('discount_calc'):
-            return
+    @api.multi
+    def compute_discount(self):
+        for order in self:
+            if order.state not in ['draft', 'sent']:
+                return
+            if order._context.get('discount_calc'):
+                return
+            order._update_discount()
+
+    def _update_discount(self):
+        self.ensure_one()
 
         grouped_discounts = {}
         line_discount_amounts = {}
@@ -138,11 +151,3 @@ class SaleOrder(models.Model):
             'discount_base_amount': total_base_amount,
             'order_line': line_updates,
             })
-
-    @api.multi
-    def write(self, vals):
-        res = super(SaleOrder, self).write(vals)
-        for order in self:
-            if not self._context.get('discount_calc'):
-                order._compute_discount()
-        return res
