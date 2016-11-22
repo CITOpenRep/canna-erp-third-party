@@ -52,7 +52,7 @@ class CrmVisit(models.Model):
         string='Company',
         required=True,
         default=lambda self:
-            self.env['res.company']._company_default_get('crm.visit'))
+            self.env['res.company'].browse(self.env['res.company']._company_default_get('crm.visit')))
     user_id = fields.Many2one(
         comodel_name='res.users',
         string='Employee',

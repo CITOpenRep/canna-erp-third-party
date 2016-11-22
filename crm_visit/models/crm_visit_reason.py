@@ -38,4 +38,4 @@ class CrmVisitReason(models.Model):
         string='Company',
         required=True,
         default=lambda self:
-            self.env['res.company']._company_default_get('crm.visit.reason'))
+            self.env['res.company'].browse(self.env['res.company']._company_default_get('crm.visit.reason')))

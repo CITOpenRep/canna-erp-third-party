@@ -38,4 +38,4 @@ class CrmVisitFeeling(models.Model):
         string='Company',
         required=True,
         default=lambda self:
-            self.env['res.company']._company_default_get('crm.visit.feeling'))
+            self.env['res.company'].browse(self.env['res.company']._company_default_get('crm.visit.feeling')))
