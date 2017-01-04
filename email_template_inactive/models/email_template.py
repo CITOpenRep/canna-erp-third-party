@@ -7,4 +7,4 @@ from openerp import fields, models
 class EmailTemplate(models.Model):
     _inherit = 'email.template'
 
-    active = fields.Boolean(select=True, default=True)
+    active = fields.Boolean(default=True)
