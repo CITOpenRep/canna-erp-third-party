@@ -87,11 +87,12 @@ class SaleOrderLine(models.Model):
         """
         discounts = self.env['sale.discount']
         pricelist = self.order_id.pricelist_id
-        active_discounts = pricelist._get_active_sale_discounts(
-            self.order_id.date_order)
-        for discount in active_discounts:
-            if self.product_id not in discount._get_excluded_products():
-                discounts += discount
+        if pricelist:
+            active_discounts = pricelist._get_active_sale_discounts(
+                self.order_id.date_order)
+            for discount in active_discounts:
+                if self.product_id not in discount._get_excluded_products():
+                    discounts += discount
         return discounts
 
     @api.onchange('product_id')

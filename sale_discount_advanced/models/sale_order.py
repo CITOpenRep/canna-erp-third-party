@@ -55,8 +55,8 @@ class SaleOrder(models.Model):
             elif order_line[0] == 0:
                 vals = order_line[2]
                 if vals.get('product_id'):
-                    disc_ids = \
-                        self.pool['sale.order.line']._get_sale_discount_ids(
+                    disc_ids = self.pool[
+                        'sale.order.line']._get_sale_discount_ids(
                         self._cr, self._uid, pricelist_id, self.date_order,
                         vals['product_id'], context=self._context)
                     vals.update(sale_discount_ids=[(6, 0, disc_ids)])

@@ -20,7 +20,7 @@
 #
 ##############################################################################
 
-from openerp.tests.common import HttpCase, TransactionCase
+from openerp.tests.common import TransactionCase
 from openerp.exceptions import ValidationError
 
 
@@ -32,10 +32,10 @@ class TestSaleDiscountAdvanced(TransactionCase):
         self.sd_obj = self.env['sale.discount']
         self.sdl_obj = self.env['sale.discount.rule']
         self.partner_id = self.ref('base.res_partner_2')
-        self.pricelist_order_id = self.ref('sale_discount_advanced.'
-                                    'pricelist_discount_on_sale_order')
-        self.pricelist_line_id = self.ref('sale_discount_advanced.'
-                                    'pricelist_discount_on_sale_order_line')
+        self.pricelist_order_id = self.ref(
+            'sale_discount_advanced.pricelist_discount_on_sale_order')
+        self.pricelist_line_id = self.ref(
+            'sale_discount_advanced.pricelist_discount_on_sale_order_line')
 
     def test_lower_min_base_threshold(self):
         so = self.so_obj.create({
