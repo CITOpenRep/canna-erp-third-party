@@ -90,7 +90,7 @@
           <filter name="cancelled" string="Cancelled" domain="[('state','=','cancel')]"/>
           <filter name="processed" string="Done" domain="[('state','=','done')]"/>
           <separator/>
-          <field name="name" string="Number" filter_domain="('name','ilike',self)"/>
+          <field name="name" string="Number" filter_domain="[('name', 'ilike', self)]"/>
           <filter domain="[('user_id','=',uid)]" help="My Visits" icon="terp-personal"/>
           <field name="partner_id"/>
           <field name="user_id" string="Employee"/>
