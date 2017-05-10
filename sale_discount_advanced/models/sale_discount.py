@@ -73,13 +73,8 @@ class SaleDiscount(models.Model):
 
     @api.multi
     def unlink(self):
-        query = """
-            SELECT 1 FROM sale_line_sale_discount_rel
-            WHERE discount_id = %s LIMIT 1 
-            """
-        args = (self.id,)
-        self._cr.execute(query, args)
-        if self._cr.fetchall():
+        if any(self.env['sale.order.line'].search(
+                [('sale_discount_ids', 'in', self.ids)], limit=1)):
             raise UserError(_(
                 'You cannot delete a discount which is used in a Sale Order!'))
         return super(SaleDiscount, self).unlink()
