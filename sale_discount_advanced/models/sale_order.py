@@ -84,7 +84,10 @@ class SaleOrder(models.Model):
 
         for line in self.order_line:
             base_amount = line.price_unit * line.product_uom_qty
-            total_base_amount += base_amount
+            if line.sale_discount_ids:
+                # only add line amount to discount base if at
+                # least one discount applies
+                total_base_amount += base_amount
 
             for discount in line.sale_discount_ids:
                 if discount.discount_base == 'sale_order':
