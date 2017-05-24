@@ -24,7 +24,9 @@ class SaleOrder(models.Model):
         digits=dp.get_precision('Account'),
         string='Base Amount before Discount',
         readonly=True,
-        store=True)
+        store=True,
+        help="Sum of the totals of all Order Lines before discount."
+             "\nAlso lines without discount are included in this total.")
 
     @api.multi
     def onchange_pricelist_id(self, pricelist_id, order_lines):
@@ -84,10 +86,7 @@ class SaleOrder(models.Model):
 
         for line in self.order_line:
             base_amount = line.price_unit * line.product_uom_qty
-            if line.sale_discount_ids:
-                # only add line amount to discount base if at
-                # least one discount applies
-                total_base_amount += base_amount
+            total_base_amount += base_amount
 
             for discount in line.sale_discount_ids:
                 if discount.discount_base == 'sale_order':
