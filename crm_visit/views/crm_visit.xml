@@ -25,12 +25,12 @@
         <form string="Appointment">
           <header>
             <span>
-              <button name="action_confirm" states="draft" type="object" string="Confirm Visit" class="oe_highlight"/>
-              <button name="action_edit" states="planned" type="object" string="Edit Visit" class="oe_highlight"/>
-              <button name="action_process" states="planned" type="object" string="Visiting/Visited" class="oe_highlight"/>
+              <button name="action_confirm" states="draft" type="object" string="Confirm Visit" class="oe_highlight" groups="crm_visit.group_crm_visit_user,crm_visit.group_crm_visit_manager"/>
+              <button name="action_edit" states="planned" type="object" string="Edit Visit" class="oe_highlight" groups="crm_visit.group_crm_visit_user,crm_visit.group_crm_visit_manager"/>
+              <button name="action_process" states="planned" type="object" string="Visiting/Visited" class="oe_highlight" groups="crm_visit.group_crm_visit_user,crm_visit.group_crm_visit_manager"/>
               <button name="action_done" states="visited" type="object" string="Finish Report"
-                      confirm="Are you sure you want to finish this report ?" class="oe_highlight"/>
-              <button name="action_correct" states="done" type="object" string="Correct" class="oe_highlight"/>
+                      confirm="Are you sure you want to finish this report ?" class="oe_highlight"  groups="crm_visit.group_crm_visit_user,crm_visit.group_crm_visit_manager"/>
+              <button name="action_correct" states="done" type="object" string="Correct" class="oe_highlight"  groups="crm_visit.group_crm_visit_user,crm_visit.group_crm_visit_manager"/>
               <field name="state" widget="statusbar" statusbar_visible="draft, planned, visited, canceled, done"/>
             </span>
           </header>
