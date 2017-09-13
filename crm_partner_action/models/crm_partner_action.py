@@ -73,6 +73,7 @@ class CrmPartnerAction(models.Model):
         comodel_name='res.users',
         string='User',
         required=False,
+        default=lambda self: self.env.user,
         help="Pick a user who will receive a notification when choosing the"
              " partner selected above on a Sale Order. Leave empty to have"
              " everyone receive the notification."
@@ -91,8 +92,8 @@ class CrmPartnerAction(models.Model):
     followup_user_id = fields.Many2one(
         comodel_name='res.users',
         string='Follow Up User',
-        help='User who is going to take this action.',
-        default=lambda self: self.env.user,
+        help="User who is going to take this action."
+            "\nLeave blank to show the action to all users",
         readonly=True, states={'open': [('readonly', False)]}
     )
     action_group_id = fields.Many2one(
