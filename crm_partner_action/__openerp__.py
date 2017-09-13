@@ -22,7 +22,7 @@
 
 {
     'name': 'CRM Partner Action',
-    'version': '8.0.1.1.2',
+    'version': '8.0.1.1.3',
     'website' : 'https://www.onestein.eu',
     'license': 'AGPL-3',
     'category': 'CRM',

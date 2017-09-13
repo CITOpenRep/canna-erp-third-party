@@ -73,7 +73,6 @@ class CrmPartnerAction(models.Model):
         comodel_name='res.users',
         string='User',
         required=False,
-        default=lambda self: self.env.user,
         help="Pick a user who will receive a notification when choosing the"
              " partner selected above on a Sale Order. Leave empty to have"
              " everyone receive the notification."
