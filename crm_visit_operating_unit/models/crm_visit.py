@@ -21,8 +21,10 @@
 ##############################################################################
 
 from openerp import fields, models, api
+from openerp.addons.operating_unit.models import ou_model
 
-class CrmVisit(models.Model):
+
+class CrmVisit(ou_model.OUModel):
     _inherit = 'crm.visit'
 
     operating_unit_id = fields.Many2one('operating.unit', 'Operating Unit',
