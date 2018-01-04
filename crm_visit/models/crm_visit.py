@@ -116,6 +116,7 @@ class CrmVisit(models.Model):
                     _("Invalid Action !"),
                     _("Only visits in state 'draft' can be deleted. ")
                 )
+        return super(CrmVisit, self).unlink()
 
     @api.one
     def action_confirm(self):
