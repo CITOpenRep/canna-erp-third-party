@@ -52,17 +52,14 @@ class SaleOrder(models.Model):
         action_ids = partner_action_obj.search(cr, uid, dom, context=context)
         actions = partner_action_obj.browse(
             cr, uid, action_ids, context=context)
-        action_user_ids = [action.user_id.id for action in actions]
-        if action_ids and (
-            not any(action_user_ids) or uid in action_user_ids):
-            message_body = ''
-            for action in partner_action_obj.browse(cr, uid, action_ids):
-                if not any(action_user_ids) or uid in action_user_ids:
-                    message_body += action.description
-                    if action.comments:
-                        message_body += '\n\n' + action.comments
-                    message_body += '\n\n'
-
+        message_body = ''
+        for action in actions:
+            if not action.user_id.id or uid == action.user_id.id:
+                message_body += action.description
+                if action.comments:
+                    message_body += '\n\n' + action.comments
+                message_body += '\n\n'
+        if message_body:
             res['warning'] = {
                 'title': _('Open Actions'),
                 'message': _(
