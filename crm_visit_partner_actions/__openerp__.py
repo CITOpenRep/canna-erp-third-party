@@ -22,7 +22,7 @@
 
 {
     'name': 'CRM Visit Partner Action - Intermediate module',
-    'version': '8.0.1.0.1',
+    'version': '8.0.1.0.2',
     'website' : 'https://www.onestein.eu',
     'license': 'AGPL-3',
     'category': 'CRM',
