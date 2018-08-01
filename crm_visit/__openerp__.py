@@ -22,7 +22,7 @@
 
 {
     'name': 'CRM Visit',
-    'version': '8.0.1.3.0',
+    'version': '8.0.1.3.1',
     'website': 'https://www.onestein.eu',
     'license': 'AGPL-3',
     'category': 'CRM',
