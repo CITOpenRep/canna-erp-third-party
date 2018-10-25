@@ -133,9 +133,8 @@ class SaleOrder(models.Model):
                 else:
                     line_discount_amounts[line[0]] = min(
                         line[1],
-                        line_discount_amounts[line[0]]
-                        + line[1] * pct / 100.0
-                        )
+                        line_discount_amounts[line[0]] + line[1] * pct / 100.0
+                    )
         total_discount_amount = sum(line_discount_amounts.values())
 
         ctx = dict(self._context, discount_calc=True)
@@ -143,4 +142,4 @@ class SaleOrder(models.Model):
             'discount_amount': total_discount_amount,
             'discount_base_amount': total_base_amount,
             'order_line': line_updates,
-            })
+        })
