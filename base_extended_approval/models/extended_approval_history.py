@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+from openerp import fields, models
+
+
+class ExtendedApprovalHistory(models.Model):
+    _name = 'extended.approval.history'
+    _order = 'date asc'
+    _rec_name = 'date'
+
+    approver_id = fields.Many2one(
+        comodel_name='res.users',
+        string='Approver',
+        readonly=True)
+
+    step_id = fields.Many2one(
+        comodel_name='extended.approval.step',
+        string='Step',
+        readonly=True)
+
+    requested_group_id = fields.Many2one(
+        comodel_name='res.groups',
+        related="step_id.group_id",
+        string='Requested',
+        readonly=True)
+
+    date = fields.Datetime(
+        readonly=True,
+        default=fields.Datetime.now,
+        string="Approval date")
+
+    source = fields.Reference(
+        selection=[('account.invoice', 'Invoice')],
+        string="Source")
