@@ -18,8 +18,8 @@ class ExtendedApprovalStep(models.Model):
 
     condition = fields.Selection(
         string="Condition",
-        selection="_get_condition_types"
-    )
+        required=True,
+        selection="_get_condition_types")
 
     limit = fields.Float(
         string="Amount")

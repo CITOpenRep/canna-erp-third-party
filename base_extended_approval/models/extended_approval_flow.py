@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import fields, models
+from openerp import api, fields, models
 
 
 class ExtendedApprovalFlow(models.Model):
@@ -12,8 +12,9 @@ class ExtendedApprovalFlow(models.Model):
         string='Priority',
         default=10)
 
-    model = fields.Char(
-        string="Model name")
+    model = fields.Selection(
+        string="Model name",
+        selection="_get_extended_approval_models")
 
     domain = fields.Char(
         string="Domain for this flow")
@@ -27,3 +28,7 @@ class ExtendedApprovalFlow(models.Model):
         comodel_name='extended.approval.step',
         inverse_name='flow_id',
         string="Steps")
+
+    @api.model
+    def _get_extended_approval_models(self):
+        return []
