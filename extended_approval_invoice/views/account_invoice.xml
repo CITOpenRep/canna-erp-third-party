@@ -10,7 +10,7 @@
       <field name="arch" type="xml">
 
         <xpath expr="//button[@name='invoice_open']" position="after">
-          <button name="invoice_open" string="Validate" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+          <button name="invoice_open" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
           <button name="abort_approval" type="object" string="Cancel Approval" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
         </xpath>
 
