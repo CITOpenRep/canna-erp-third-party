@@ -52,7 +52,7 @@ class SaleDiscount(models.Model):
         default=lambda self: self._default_active())
     discount_base = fields.Selection(
         selection=lambda self: self._selection_discount_base(),
-        string='Discount Base on',
+        string='Discount Base',
         required=True,
         default='sale_order',
         track_visibility='onchange',
@@ -142,21 +142,37 @@ class SaleDiscount(models.Model):
         else:
             return False
 
-    def _calculate_discount(self, price_unit, qty):
+    def _calculate_line_discount(self, line):
+        return self._calculate_discount(line.price_unit, line.product_uom_qty,
+                                        line=line)
+
+    def _calculate_discount(self, price_unit, qty, line=None):
         base = qty * price_unit
         disc_amt = 0.0
         disc_pct = 0.0
         for rule in self.rule_ids:
-            if rule.min_base > 0 and rule.min_base > base:
-                continue
-            if rule.max_base > 0 and rule.max_base < base:
-                continue
+            if rule.matching_type == 'amount':
+                if rule.min_base > 0 and rule.min_base > base:
+                    continue
+                if rule.max_base > 0 and rule.max_base < base:
+                    continue
+            elif rule.matching_type == 'quantity':
+                if line and line.product_id == rule.product_id:
+                    if rule.min_qty > 0 and rule.min_qty > qty:
+                        continue
+                    if rule.max_qty > 0 and rule.max_qty < qty:
+                        continue
+            else:
+                raise NotImplementedError
 
             if rule.discount_type == 'perc':
-                disc_amt = base * rule.discount / 100.0
-                disc_pct = rule.discount
+                disc_amt = base * rule.discount_pct / 100.0
+                disc_pct = rule.discount_pct
             else:
-                disc_amt = min(rule.discount * qty, base)
+                if rule.matching_type == 'quantity':
+                    disc_amt = min(rule.discount_amount_unit * qty, base)
+                else:
+                    disc_amt = min(rule.discount_amount, base)
                 disc_pct = disc_amt / base * 100.0
         return disc_amt, disc_pct
 

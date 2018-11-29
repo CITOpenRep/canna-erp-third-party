@@ -106,11 +106,12 @@ class SaleOrder(models.Model):
                         grouped_discounts[
                             discount.id]['lines'].append(
                                 (line.id, base_amount))
-                else:
-                    amt, pct = discount._calculate_discount(
-                        line.price_unit, line.product_uom_qty)
+                elif discount.discount_base == 'sale_line':
+                    amt, pct = discount._calculate_line_discount(line)
                     line_discount_amounts[line.id] = amt
                     line_updates.append([1, line.id, {'discount': pct}])
+                else:
+                    raise NotImplementedError
 
         for entry in grouped_discounts.values():
             amt, pct = entry['sale_discount']._calculate_discount(

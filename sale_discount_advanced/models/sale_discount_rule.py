@@ -1,28 +1,13 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-#    Copyright (C) 2012-2016 Noviat nv/sa (www.noviat.com).
-#    Copyright (C) 2016 Onestein (http://www.onestein.eu).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+# Copyright (C) 2016-2018 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
 
 from openerp import api, fields, models, _
+import openerp.addons.decimal_precision as dp
 from openerp.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -32,38 +17,138 @@ class SaleDiscountRule(models.Model):
     _name = 'sale.discount.rule'
     _order = 'sequence'
 
-    sequence = fields.Integer()
     sale_discount_id = fields.Many2one(
-        string='Sale Discount',
         comodel_name='sale.discount',
+        string='Sale Discount',
         required=True)
     company_id = fields.Many2one(
         comodel_name='res.company',
         string='Company',
         required=True,
         default=lambda self: self.env.user.company_id)
+    sequence = fields.Integer(default=10)
+    discount_base = fields.Selection(
+        related='sale_discount_id.discount_base', readonly=True)
+    # matching criteria
+    matching_type = fields.Selection(
+        selection=[
+            ('amount', 'Amount'),
+            ('quantity', 'Quantity')],
+        default='amount',
+        required=True,
+        help="Select if the discount will be granted based upon "
+             "value or quantity of goods sold ")
+    product_id = fields.Many2one(
+        comodel_name='product.product',
+        string='Product')
+    min_base = fields.Float(
+        string='Minimum base amount',
+        digits=dp.get_precision('Account'))
+    max_base = fields.Float(
+        string='Maximum base amount',
+        digits=dp.get_precision('Account'))
+    min_qty = fields.Float(
+        string='Minimum quantity',
+        digits=dp.get_precision('Product UoS'))
+    max_qty = fields.Float(
+        string='Maximum quantity',
+        digits=dp.get_precision('Product UoS'))
+    # the *_view fields are only used for tree view
+    # readabily purposes. All calculations are based upon the
+    # min/max_* fields.
+    min_view = fields.Float(
+        string='Minimum',
+        digits=dp.get_precision('Account'),
+        compute='_compute_min_view')
+    max_view = fields.Float(
+        string='Maximum',
+        digits=dp.get_precision('Account'),
+        compute='_compute_max_view')
+    product_view = fields.Char(
+        string='Product',
+        compute='_compute_product_view')
+    # results
     discount_type = fields.Selection(
         selection=[
             ('perc', 'Percentage'),
-            ('amnt', 'Amount')],)
-    discount = fields.Float(
-        help="- Type = Percentage: discount percentage."
-             "- Type = Amount: discount amount per unit.")
-    max_base = fields.Float('Max base amount')
-    min_base = fields.Float('Min base amount')
+            ('amnt', 'Amount')],
+        default='perc',
+        required=True,
+        help="Select if the granted discount will be "
+             "a percentage of the value of goods sold "
+             "or a fixed amount ")
+    discount_pct = fields.Float(
+        string="Discount Percentage")
+    discount_amount = fields.Float(
+        string="Discount Amount",
+        digits=dp.get_precision('Account'),)
+    discount_amount_unit = fields.Float(
+        string="Discount Amount per Unit",
+        digits=dp.get_precision('Account'))
+    discount_view = fields.Float(
+        string='Discount',
+        digits=dp.get_precision('Account'),
+        compute='_compute_discount_view')
 
     @api.one
-    @api.constrains('discount', 'discount_type')
+    @api.depends('min_base', 'min_qty')
+    def _compute_min_view(self):
+        for rule in self:
+            rule.min_view = self.matching_type == 'amount' and \
+                self.min_base or self.min_qty
+
+    @api.one
+    @api.depends('max_base', 'max_qty')
+    def _compute_max_view(self):
+        for rule in self:
+            rule.max_view = self.matching_type == 'amount'and \
+                self.max_base or self.max_qty
+
+    @api.one
+    @api.depends('discount_base')
+    def _compute_product_view(self):
+        for rule in self:
+            if rule.discount_base == "sale_order":
+                rule.product_view = 'n/a'
+            else:
+                rule.product_view = self.product_id.display_name or ''
+
+    @api.one
+    @api.depends('discount_pct', 'discount_amount', 'discount_amount_unit')
+    def _compute_discount_view(self):
+        for rule in self:
+            if (rule.discount_base == 'sale_line' and
+                    rule.matching_type == 'quantity' and
+                    rule.discount_type == 'amnt'):
+                rule.discount_view = rule.discount_amount_unit
+            else:
+                if rule.discount_type == 'perc':
+                    rule.discount_view = rule.discount_pct
+                elif rule.discount_type == 'amnt':
+                    if rule.matching_type == 'amount':
+                        rule.discount_view = rule.discount_amount
+                else:
+                    raise NotImplementedError
+
+    @api.one
+    @api.constrains('discount_pct', 'discount_amount',
+                    'discount_amount_unit', 'discount_type')
     def _check_sale_discount(self):
         """
         By default only discounts are supported, but you can
         adapt this method to allow also price increases.
         """
         # Check if amount is positive
-        if self.discount < 0:
+        if self.discount_view < 0:
             raise ValidationError(_(
                 "Discount Amount needs to be a positive number"))
         # Check if percentage is between 0 and 100
-        elif self.discount_type == 'perc' and self.discount > 100:
+        elif self.discount_type == 'perc' and self.discount_view > 100:
             raise ValidationError(_(
                 "Percentage discount must be between 0 and 100."))
+
+    @api.onchange('discount_base')
+    def _onchange_discount_base(self):
+        for rule in self:
+            if rule.discount_base == 'sale_order':
+                rule.matching_type = 'amount'

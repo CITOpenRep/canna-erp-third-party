@@ -10,7 +10,7 @@
     'summary': """Order Amount Discounts related to Pricelists""",
     'website': "http://www.ictstudio.eu",
     'category': 'Sales',
-    'version': '8.0.1.4.0',
+    'version': '8.0.2.0.0',
     'license': 'AGPL-3',
     'depends': [
         'sale',
@@ -19,9 +19,9 @@
     'data': [
         'security/ir.model.access.csv',
         'data/mail_message_subtype.xml',
-        'views/product_pricelist_view.xml',
-        'views/sale_discount_view.xml',
-        'views/sale_order_view.xml',
+        'views/product_pricelist.xml',
+        'views/sale_discount.xml',
+        'views/sale_order.xml',
     ],
     'demo': [
         'demo/product_pricelist_demo.xml',
