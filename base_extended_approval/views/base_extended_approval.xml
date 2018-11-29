@@ -29,6 +29,7 @@
         <tree string="Extended Approval Step">
           <field name="flow_id"/>
           <field name="group_id"/>
+          <field name="condition"/>
           <field name="limit"/>
         </tree>
       </field>

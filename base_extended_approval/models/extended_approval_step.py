@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import fields, models
+from openerp import api, fields, models
 
 
 class ExtendedApprovalStep(models.Model):
@@ -16,6 +16,11 @@ class ExtendedApprovalStep(models.Model):
         string='Priority',
         default=10)
 
+    condition = fields.Selection(
+        string="Condition",
+        selection="_get_condition_types"
+    )
+
     limit = fields.Float(
         string="Limit Amount")
 
@@ -23,8 +28,21 @@ class ExtendedApprovalStep(models.Model):
         comodel_name='res.groups',
         string="Approver")
 
-    def is_applicable(self, record):
-        #return True
+    @api.model
+    def _get_condition_types(self):
+        return [
+            ('always', 'No condition'),
+            ('amount_total', 'Amount Total Limit')
+        ]
 
+    def is_applicable(self, record):
+        return getattr(
+            self, '_is_applicable_' + self.condition)(
+                record)
+
+    def _is_applicable_always(self, record):
+        return True
+
+    def _is_applicable_amount_total(self, record):
         # TODO: refactor to separte class
         return record.amount_total >= self.limit
