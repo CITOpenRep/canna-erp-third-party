@@ -7,3 +7,4 @@ class PurchaseOrder(models.Model):
     _inherit = ['purchase.order', 'extended.approval.workflow.mixin']
 
     workflow_signal = 'purchase_approve'
+    workflow_start_state = 'confirmed'
