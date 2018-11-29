@@ -24,4 +24,7 @@ class ExtendedApprovalStep(models.Model):
         string="Approver")
 
     def is_applicable(self, record):
-        return True
+        #return True
+
+        # TODO: refactor to separte class
+        return record.amount_total >= self.limit
