@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import _, fields, models
+from openerp import _, api, fields, models
 from openerp.tools import safe_eval
 
 
@@ -23,6 +23,18 @@ class ExtendedApprovalMixin(models.AbstractModel):
         copy=False,
         string='Approval History')
 
+    approval_allowed = fields.Boolean(
+        string='Approval allowed',
+        compute='_compute_approval_allowed',
+        help="This option is set if you are "
+             "allowed to approve this Purchase Order.")
+
+    @api.multi
+    def _compute_approval_allowed(self):
+        for rec in self:
+            rec.approval_allowed = rec.next_approver in self.env.user.groups_id
+
+    @api.multi
     def _compute_history_ids(self):
         for rec in self:
             rec.approval_history_ids = self.env[
@@ -30,6 +42,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
                     ('source', '=', '{0},{1}'.format(rec._name, rec.id))
                 ])
 
+    @api.multi
     def _get_applicable_approval_flow(self):
         self.ensure_one()
 
@@ -43,6 +56,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
                 return c_flow
         return False
 
+    @api.multi
     def _get_current_approval_step(self):
         self.ensure_one()
 
@@ -50,10 +64,13 @@ class ExtendedApprovalMixin(models.AbstractModel):
             return self.current_step
         else:
             flow = self._get_applicable_approval_flow()
-            return flow.steps[0] if flow and flow.steps else False
+            for step in flow.steps:
+                if step.is_applicable(self):
+                    return step
 
         return False
 
+    @api.multi
     def _get_next_approval_step(self, step):
         self.ensure_one()
 
@@ -64,6 +81,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
 
         return False
 
+    @api.multi
     def approve_step(self):
         """Attempt current approval step.
 
@@ -91,9 +109,26 @@ class ExtendedApprovalMixin(models.AbstractModel):
                 'warning': {
                     'title': _('Extended approval required'),
                     'message': _('Approval by {role} required').format(
-                        role = step.group_id.full_name
+                        role=step.group_id.full_name
                     ),
                 }
             }
 
         return False
+
+    @api.multi
+    def show_approval_group_users(self):
+        a_users = self.next_approver.users
+        a_partners = a_users.mapped('partner_id')
+        ptree = self.env.ref('base.view_partner_tree')
+        action = {
+            'name': _('Approval Group Users'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'res.partner',
+            'view_type': 'form',
+            'view_mode': 'tree',
+            'view_id': ptree.id,
+            'domain': [('id', 'in', a_partners._ids)],
+            'context': self._context,
+            }
+        return action

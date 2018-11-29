@@ -7,6 +7,13 @@ class ExtendedApprovalHistory(models.Model):
     _order = 'date asc'
     _rec_name = 'date'
 
+    active = fields.Boolean(
+        string="Active",
+        default=True,
+        help="Approval is part of the "
+        "current approval process."
+    )
+
     approver_id = fields.Many2one(
         comodel_name='res.users',
         string='Approver',

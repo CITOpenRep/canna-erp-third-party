@@ -4,7 +4,7 @@
     'name': 'Base Extended Approval',
     'version': '8.0.1.0.0',
     'license': 'AGPL-3',
-    'author': 'Noviat',
+    'author': 'Onestein',
     'category': 'base',
     'depends': [
         'base',
