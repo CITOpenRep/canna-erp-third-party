@@ -127,6 +127,11 @@ class ExtendedApprovalMixin(models.AbstractModel):
         return {}
 
     @api.multi
+    def abort_approval(self):
+        self.cancel_approval()
+        return {}
+
+    @api.multi
     def show_approval_group_users(self):
         a_users = self.next_approver.users
         a_partners = a_users.mapped('partner_id')

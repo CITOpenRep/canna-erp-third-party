@@ -22,7 +22,7 @@ class ExtendedApprovalStep(models.Model):
     )
 
     limit = fields.Float(
-        string="Limit Amount")
+        string="Amount")
 
     group_id = fields.Many2one(
         comodel_name='res.groups',
@@ -32,7 +32,7 @@ class ExtendedApprovalStep(models.Model):
     def _get_condition_types(self):
         return [
             ('always', 'No condition'),
-            ('amount_total', 'Amount Total Limit')
+            ('amount_total', 'Amount Total From')
         ]
 
     def is_applicable(self, record):

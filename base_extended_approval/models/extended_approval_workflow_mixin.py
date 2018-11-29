@@ -11,16 +11,27 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
     workflow_state = 'extended_approval'
     workflow_start_state = 'draft'
 
-    def _auto_init(self, cr, context=None):
+    @api.model
+    def _setup_complete(self):
+        """Add extra workflow state to the workflow_state_field """
         super(ExtendedApprovalWorkflowMixin,
-              self)._auto_init(cr, context=context)
+              self)._setup_complete()
         field = self._columns.get(self.workflow_state_field)
         if field:
-            field.selection.append(
-                (self.workflow_state, 'Approval'))
+            try:
+                if self.workflow_state not in \
+                   [t[0] for t in field.selection]:
+                    field.selection.append(
+                        (self.workflow_state, 'Approval'))
+
+            except TypeError:
+                # probably a callable selection attribute
+                # TODO: decorated callable
+                pass
 
     @api.multi
     def signal_workflow(self, signal):
+        """Intercept workflow_signal and start extended approval"""
         if len(self) == 0:
             return super(
                 ExtendedApprovalWorkflowMixin,
@@ -52,7 +63,9 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
 
     @api.multi
     def abort_approval(self):
-        self.cancel_approval()
+        super(
+            ExtendedApprovalWorkflowMixin,
+            self).abort_approval()
         self.write({
             'state': self.workflow_start_state
         })
