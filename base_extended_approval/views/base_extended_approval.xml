@@ -16,6 +16,7 @@
               <field name="flow_id"/>
               <field name="sequence"/>
               <field name="group_id"/>
+              <field name="condition"/>
               <field name="limit"/>
             </group>
           </sheet>
@@ -74,7 +75,7 @@
               <field name="domain"/>
               <field name="steps">
                 <tree string="steps">
-                  <field name="sequence"/>
+                  <field name="sequence" widget="handle"/>
                   <field name="group_id"/>
                   <field name="condition"/>
                   <field name="limit"/>
@@ -91,7 +92,7 @@
       <field name="model">extended.approval.flow</field>
       <field name="arch" type="xml">
         <tree string="Extended Approval Flow">
-          <field name="sequence"/>
+          <field name="sequence" widget="handle"/>
           <field name="name"/>
           <field name="model"/>
         </tree>
