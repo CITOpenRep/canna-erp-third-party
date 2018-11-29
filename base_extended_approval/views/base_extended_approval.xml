@@ -14,6 +14,7 @@
             </group>
             <group name="extended-approval-step-data">
               <field name="flow_id"/>
+              <field name="sequence"/>
               <field name="group_id"/>
               <field name="limit"/>
             </group>
@@ -28,6 +29,7 @@
       <field name="arch" type="xml">
         <tree string="Extended Approval Step">
           <field name="flow_id"/>
+          <field name="sequence"/>
           <field name="group_id"/>
           <field name="condition"/>
           <field name="limit"/>
@@ -52,6 +54,67 @@
     <menuitem
         id="menu_extended_approval"
         action="action_extended_approval_step_form"
+        parent="base.menu_security"/>
+
+
+    <record model="ir.ui.view" id="view_extended_approval_flow_form">
+      <field name="name">extended.approval.flow.form</field>
+      <field name="model">extended.approval.flow</field>
+      <field name="arch" type="xml">
+        <form string="Extended Approval Flow">
+          <sheet>
+            <group name="extended-approval-help">
+              <p>
+              </p>
+            </group>
+            <group name="extended-approval-flow-data">
+              <field name="name"/>
+              <field name="sequence"/>
+              <field name="model"/>
+              <field name="domain"/>
+              <field name="steps">
+                <tree string="steps">
+                  <field name="sequence"/>
+                  <field name="group_id"/>
+                  <field name="condition"/>
+                  <field name="limit"/>
+                </tree>
+              </field>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_extended_approval_flow_tree">
+      <field name="name">extended.approval.flow.tree</field>
+      <field name="model">extended.approval.flow</field>
+      <field name="arch" type="xml">
+        <tree string="Extended Approval Flow">
+          <field name="sequence"/>
+          <field name="name"/>
+          <field name="model"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_extended_approval_flow_form">
+      <field name="name">Extended Approval Flow</field>
+      <field name="res_model">extended.approval.flow</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="view_extended_approval_flow_tree"/>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+          Click to add an extended approval flow.
+        </p>
+      </field>
+    </record>
+
+    <menuitem
+        id="menu_extended_approval_flow"
+        action="action_extended_approval_flow_form"
         parent="base.menu_security"/>
 
 
