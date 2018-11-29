@@ -100,6 +100,51 @@ class SaleDiscount(models.Model):
     def _onchange_discount_base(self):
         self.rule_ids.write({'matching_type': 'amount'})
 
+    @api.one
+    @api.constrains('rule_ids')
+    def _check_overlaps(self):
+        rulesets = []
+        if self.discount_base == 'sale_order':
+            ruleset = self.rule_ids.sorted(key=lambda r: r.min_view)
+            if ruleset:
+                rulesets.append((ruleset, 'amount'))
+        else:
+            products = self.rule_ids.mapped('product_id')
+            for matching_type in ('amount', 'quantity'):
+                for product in products:
+                    ruleset = self.rule_ids.filtered(
+                        lambda r: r.matching_type == matching_type and
+                        r.product_id == product)
+                    if ruleset:
+                        ruleset = self.rule_ids.sorted(
+                            key=lambda r: r.min_view)
+                        rulesets.append((ruleset, matching_type))
+        for ruleset in rulesets:
+            stack = []
+            overlap = False
+            if ruleset[1] == 'amount':
+                fld_min = 'min_base'
+                fld_max = 'max_base'
+            else:
+                fld_min = 'min_qty'
+                fld_max = 'max_qty'
+            for i, rule in enumerate(ruleset[0], start=1):
+                min = getattr(rule, fld_min) or 0.0
+                max = getattr(rule, fld_max) or float('inf')
+                if stack:
+                    previous = stack.pop()
+                    if min == previous[2]:
+                        overlap = True
+                        break
+                    if min <= previous[3]:
+                        overlap = True
+                        break
+                else:
+                    stack.append((i, rule, min, max))
+            if overlap:
+                raise UserError(_(
+                    "Rule %s overlaps with rule %s") % (previous[0], i))
+
     @api.model
     def create(self, vals):
         ctx = dict(self.env.context,
