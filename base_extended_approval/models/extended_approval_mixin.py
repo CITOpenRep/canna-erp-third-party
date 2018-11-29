@@ -117,6 +117,16 @@ class ExtendedApprovalMixin(models.AbstractModel):
         return False
 
     @api.multi
+    def cancel_approval(self):
+        self.approval_history_ids.sudo().write({
+            'active': False
+        })
+        self.write({
+            'current_step': False,
+        })
+        return {}
+
+    @api.multi
     def show_approval_group_users(self):
         a_users = self.next_approver.users
         a_partners = a_users.mapped('partner_id')

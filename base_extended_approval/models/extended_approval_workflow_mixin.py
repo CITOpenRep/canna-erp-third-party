@@ -21,6 +21,11 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
 
     @api.multi
     def signal_workflow(self, signal):
+        if len(self) == 0:
+            return super(
+                ExtendedApprovalWorkflowMixin,
+                self).signal_workflow(signal)
+
         self.ensure_one()
 
         if signal == self.workflow_signal:
@@ -47,11 +52,8 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
 
     @api.multi
     def abort_approval(self):
-        self.approval_history_ids.sudo().write({
-            'active': False
-        })
+        self.cancel_approval()
         self.write({
-            'current_step': False,
             'state': self.workflow_start_state
         })
         return {}
