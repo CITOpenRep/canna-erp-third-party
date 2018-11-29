@@ -58,11 +58,11 @@ class SaleDiscountRule(models.Model):
     # min/max_* fields.
     min_view = fields.Float(
         string='Minimum',
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision('Product UoS'),
         compute='_compute_min_view')
     max_view = fields.Float(
         string='Maximum',
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision('Product UoS'),
         compute='_compute_max_view')
     product_view = fields.Char(
         string='Product',
@@ -90,30 +90,26 @@ class SaleDiscountRule(models.Model):
         digits=dp.get_precision('Account'),
         compute='_compute_discount_view')
 
-    @api.one
     @api.depends('min_base', 'min_qty')
     def _compute_min_view(self):
         for rule in self:
-            rule.min_view = self.matching_type == 'amount' and \
-                self.min_base or self.min_qty
+            rule.min_view = rule.matching_type == 'amount' and \
+                rule.min_base or rule.min_qty
 
-    @api.one
     @api.depends('max_base', 'max_qty')
     def _compute_max_view(self):
         for rule in self:
-            rule.max_view = self.matching_type == 'amount'and \
-                self.max_base or self.max_qty
+            rule.max_view = rule.matching_type == 'amount'and \
+                rule.max_base or rule.max_qty
 
-    @api.one
     @api.depends('discount_base')
     def _compute_product_view(self):
         for rule in self:
             if rule.discount_base == "sale_order":
                 rule.product_view = 'n/a'
             else:
-                rule.product_view = self.product_id.display_name or ''
+                rule.product_view = rule.product_id.display_name or ''
 
-    @api.one
     @api.depends('discount_pct', 'discount_amount', 'discount_amount_unit')
     def _compute_discount_view(self):
         for rule in self:
@@ -146,9 +142,3 @@ class SaleDiscountRule(models.Model):
         elif self.discount_type == 'perc' and self.discount_view > 100:
             raise ValidationError(_(
                 "Percentage discount must be between 0 and 100."))
-
-    @api.onchange('discount_base')
-    def _onchange_discount_base(self):
-        for rule in self:
-            if rule.discount_base == 'sale_order':
-                rule.matching_type = 'amount'

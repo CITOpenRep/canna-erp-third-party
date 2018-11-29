@@ -96,6 +96,10 @@ class SaleDiscount(models.Model):
             ('sale_line', 'Base discount on Line amount')]
         return selection
 
+    @api.onchange('discount_base')
+    def _onchange_discount_base(self):
+        self.rule_ids.write({'matching_type': 'amount'})
+
     @api.model
     def create(self, vals):
         ctx = dict(self.env.context,
@@ -151,30 +155,55 @@ class SaleDiscount(models.Model):
         disc_amt = 0.0
         disc_pct = 0.0
         for rule in self.rule_ids:
+            match_min = match_max = False
             if rule.matching_type == 'amount':
-                if rule.min_base > 0 and rule.min_base > base:
+                base = self._round_amt(base)
+                rule_min_base = self._round_amt(rule.min_base)
+                rule_max_base = self._round_amt(rule.max_base)
+                if rule_min_base > 0 and rule_min_base > base:
                     continue
-                if rule.max_base > 0 and rule.max_base < base:
+                else:
+                    match_min = True
+                if rule_max_base > 0 and rule_max_base < base:
                     continue
+                else:
+                    match_max = True
             elif rule.matching_type == 'quantity':
+                qty = self._round_qty(qty)
+                rule_min_qty = self._round_qty(rule.min_qty)
+                rule_max_qty = self._round_qty(rule.max_qty)
                 if line and line.product_id == rule.product_id:
-                    if rule.min_qty > 0 and rule.min_qty > qty:
+                    if rule_min_qty > 0 and rule_min_qty > qty:
                         continue
-                    if rule.max_qty > 0 and rule.max_qty < qty:
+                    else:
+                        match_min = True
+                    if rule_max_qty > 0 and rule_max_qty < qty:
                         continue
+                    else:
+                        match_max = True
             else:
                 raise NotImplementedError
 
-            if rule.discount_type == 'perc':
-                disc_amt = base * rule.discount_pct / 100.0
-                disc_pct = rule.discount_pct
-            else:
-                if rule.matching_type == 'quantity':
-                    disc_amt = min(rule.discount_amount_unit * qty, base)
+            if match_min and match_max:
+                if rule.discount_type == 'perc':
+                    disc_amt = base * rule.discount_pct / 100.0
+                    disc_pct = rule.discount_pct
                 else:
-                    disc_amt = min(rule.discount_amount, base)
-                disc_pct = disc_amt / base * 100.0
+                    if rule.matching_type == 'quantity':
+                        disc_amt = min(rule.discount_amount_unit * qty, base)
+                    else:
+                        disc_amt = min(rule.discount_amount, base)
+                    disc_pct = disc_amt / base * 100.0
+                break
         return disc_amt, disc_pct
+
+    def _round_amt(self, val):
+        digits = self.env['sale.discount.rule']._fields['min_base'].digits[1]
+        return round(val, digits)
+
+    def _round_qty(self, val):
+        digits = self.env['sale.discount.rule']._fields['min_qty'].digits[1]
+        return round(val, digits)
 
     def _get_excluded_products(self):
         products = self.excluded_product_ids

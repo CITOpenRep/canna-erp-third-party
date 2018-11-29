@@ -35,7 +35,7 @@
                     <separator string="Conditions" colspan="2"/>
                     <group name="rule_match_left">
                       <field name="matching_type"
-                             attrs="{'readonly': [('discount_base', '=', 'sale_order')]}"/>/>
+                             attrs="{'readonly': [('discount_base', '=', 'sale_order')]}"/>
                       <field name="product_id"
                              attrs="{'invisible': [('discount_base', '=', 'sale_order')], 'required': [('matching_type', '=', 'quantity')]}"/>
                       <field name="sequence"/>
