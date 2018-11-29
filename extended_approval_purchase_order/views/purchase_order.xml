@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="0">
+
+    <record id="purchase_order_form_extended_approval" model="ir.ui.view">
+      <field name="name">purchase.order.form</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.purchase_order_form"/>
+      <field name="priority">40</field>
+      <field name="arch" type="xml">
+        <xpath expr="//button[@name='purchase_approve']" position="after">
+          <button name="purchase_approve" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+          <button name="abort_approval" type="object" string="Cancel Approval" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+        </xpath>
+
+        <xpath expr="//notebook" position="inside">
+          <page string="Approvals" name="approval">
+            <group name="g1" colspan="4" col="4">
+              <label for="next_approver"/>
+              <div>
+                <field name="next_approver" options='{"no_open":True}'/>
+                <button string="=> Users"
+                        help="Show Approval Group Users"
+                        name="show_approval_group_users" type="object"
+                        class="oe_link"/>
+              </div>
+              <field name="approval_allowed"/>
+            </group>
+            <group name="g2" colspan="4">
+              <field colspan="4" name="approval_history_ids" readonly="1">
+                <tree string="Approval History">
+                  <field name="date"/>
+                  <field name="requested_group_id"/>
+                  <field name="approver_id"/>
+                </tree>
+              </field>
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+
+  </data>
+</openerp>
