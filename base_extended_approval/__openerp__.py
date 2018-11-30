@@ -8,6 +8,7 @@
     'category': 'base',
     'depends': [
         'base',
+        'account',  # necessary for menu placement
     ],
     'data': [
         'views/base_extended_approval.xml',

@@ -2,6 +2,10 @@
 <openerp>
   <data>
 
+    <menuitem
+        id="menu_extended_approval"
+        parent="account.menu_finance_configuration"/>
+
     <record model="ir.ui.view" id="view_extended_approval_step_form">
       <field name="name">extended.approval.step.form</field>
       <field name="model">extended.approval.step</field>
@@ -53,9 +57,9 @@
     </record>
 
     <menuitem
-        id="menu_extended_approval"
+        id="menu_extended_approval_step"
         action="action_extended_approval_step_form"
-        parent="base.menu_security"/>
+        parent="menu_extended_approval"/>
 
 
     <record model="ir.ui.view" id="view_extended_approval_flow_form">
@@ -116,9 +120,9 @@
     <menuitem
         id="menu_extended_approval_flow"
         action="action_extended_approval_flow_form"
-        parent="base.menu_security"/>
+        parent="menu_extended_approval"/>
 
-
+    <!--
     <record model="ir.actions.act_window" id="action_extended_approval_history_form">
       <field name="name">Extended Approval History</field>
       <field name="res_model">extended.approval.history</field>
@@ -131,6 +135,7 @@
         id="menu_extended_approval_history"
         action="action_extended_approval_history_form"
         parent="base.menu_security"/>
+    -->
 
   </data>
 </openerp>

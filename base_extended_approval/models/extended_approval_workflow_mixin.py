@@ -19,11 +19,15 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
         field = self._columns.get(self.workflow_state_field)
         if field:
             try:
-                if self.workflow_state not in \
-                   [t[0] for t in field.selection]:
-                    field.selection.append(
-                        (self.workflow_state, 'Approval'))
-
+                state_names = [t[0] for t in field.selection]
+                if self.workflow_state not in state_names:
+                    if self.workflow_start_state in state_names:
+                        field.selection.insert(
+                            state_names.index(self.workflow_start_state) + 1,
+                            (self.workflow_state, 'Approval'))
+                    else:
+                        field.selection.append(
+                            (self.workflow_state, 'Approval'))
             except TypeError:
                 # probably a callable selection attribute
                 # TODO: decorated callable
