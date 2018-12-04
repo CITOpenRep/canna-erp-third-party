@@ -2,6 +2,28 @@
 <openerp>
   <data noupdate="0">
 
+    <record id="view_request_for_quotation_filter" model="ir.ui.view">
+      <field name="name">request.quotation.select</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.view_request_for_quotation_filter"/>
+      <field name="arch" type="xml">
+        <xpath expr="//filter[@name='approved']" position="after">
+          <filter name="to_approve" string="Awaiting my approval" domain="[('approval_allowed','=',True)]"/>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="view_purchase_order_filter" model="ir.ui.view">
+      <field name="name">request.quotation.select</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+      <field name="arch" type="xml">
+        <xpath expr="//filter[@name='approved']" position="after">
+          <filter name="to_approve" string="Awaiting my approval" domain="[('approval_allowed','=',True)]"/>
+        </xpath>
+      </field>
+    </record>
+
     <record id="purchase_order_form_extended_approval" model="ir.ui.view">
       <field name="name">purchase.order.form</field>
       <field name="model">purchase.order</field>
