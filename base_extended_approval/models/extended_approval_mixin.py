@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from openerp import _, api, fields, models
 from openerp.tools import safe_eval
+from openerp.exceptions import Warning
 
 
 class ExtendedApprovalMixin(models.AbstractModel):
@@ -26,6 +27,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
     approval_allowed = fields.Boolean(
         string='Approval allowed',
         compute='_compute_approval_allowed',
+        search='_search_approval_allowed',
         help="This option is set if you are "
              "allowed to approve this Purchase Order.")
 
@@ -33,6 +35,18 @@ class ExtendedApprovalMixin(models.AbstractModel):
     def _compute_approval_allowed(self):
         for rec in self:
             rec.approval_allowed = rec.next_approver in self.env.user.groups_id
+
+    @api.model
+    def _search_approval_allowed(self, operator, value):
+        if operator in '=':
+            return [(
+                'current_step.group_id',
+                'in',
+                self.env.user.mapped('groups_id.trans_implied_ids.id') +
+                self.env.user.mapped('groups_id.id')
+            )]
+        else:
+            raise Warning(_('Unsupported operand for search!'))
 
     @api.multi
     def _compute_history_ids(self):

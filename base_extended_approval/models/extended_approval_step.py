@@ -32,7 +32,7 @@ class ExtendedApprovalStep(models.Model):
     def _get_condition_types(self):
         return [
             ('always', 'No condition'),
-            ('amount_total', 'Amount Total From')
+            ('amount_untaxed', 'Amount Total From')
         ]
 
     def is_applicable(self, record):
@@ -45,4 +45,4 @@ class ExtendedApprovalStep(models.Model):
 
     def _is_applicable_amount_total(self, record):
         # TODO: refactor to separte class
-        return record.amount_total >= self.limit
+        return record.amount_untaxed >= self.limit
