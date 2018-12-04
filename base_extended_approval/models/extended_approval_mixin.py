@@ -64,9 +64,10 @@ class ExtendedApprovalMixin(models.AbstractModel):
             return self.current_step
         else:
             flow = self._get_applicable_approval_flow()
-            for step in flow.steps:
-                if step.is_applicable(self):
-                    return step
+            if flow:
+                for step in flow.steps:
+                    if step.is_applicable(self):
+                        return step
 
         return False
 
