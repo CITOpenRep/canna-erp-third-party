@@ -116,7 +116,7 @@ class SaleDiscount(models.Model):
                         lambda r: r.matching_type == matching_type and
                         r.product_id == product)
                     if ruleset:
-                        ruleset = self.rule_ids.sorted(
+                        ruleset = ruleset.sorted(
                             key=lambda r: r.min_view)
                         rulesets.append((ruleset, matching_type))
         for ruleset in rulesets:
