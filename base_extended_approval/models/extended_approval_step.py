@@ -16,10 +16,9 @@ class ExtendedApprovalStep(models.Model):
         string='Priority',
         default=10)
 
-    condition = fields.Selection(
-        string="Condition",
-        required=True,
-        selection="_get_condition_types")
+    condition = fields.Many2one(
+        comodel_name='extended.approval.condition',
+        string="Condition")
 
     limit = fields.Float(
         string="Amount")
@@ -28,21 +27,6 @@ class ExtendedApprovalStep(models.Model):
         comodel_name='res.groups',
         string="Approver")
 
-    @api.model
-    def _get_condition_types(self):
-        return [
-            ('always', 'No condition'),
-            ('amount_untaxed', 'Amount Total From')
-        ]
-
     def is_applicable(self, record):
-        return getattr(
-            self, '_is_applicable_' + self.condition)(
-                record)
-
-    def _is_applicable_always(self, record):
-        return True
-
-    def _is_applicable_amount_total(self, record):
-        # TODO: refactor to separte class
-        return record.amount_untaxed >= self.limit
+        return self.condition.is_applicable(record) \
+            if self.condition else True

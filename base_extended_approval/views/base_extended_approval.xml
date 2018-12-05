@@ -84,8 +84,12 @@
                   <field name="sequence" widget="handle"/>
                   <field name="group_id"/>
                   <field name="condition"/>
-                  <field name="limit"/>
                 </tree>
+                <form string="Step">
+                  <field name="condition"/>
+                  <field name="sequence"/>
+                  <field name="group_id"/>
+                </form>
               </field>
             </group>
           </sheet>
@@ -124,6 +128,52 @@
         action="action_extended_approval_flow_form"
         parent="menu_extended_approval"
         groups="base.group_erp_manager"/>
+
+
+    <record model="ir.ui.view" id="view_extended_approval_condition_tree">
+      <field name="name">extended.approval.condition.tree</field>
+      <field name="model">extended.approval.condition</field>
+      <field name="arch" type="xml">
+        <tree string="Extended Approval Condition">
+          <field name="name"/>
+          <field name="condition_type"/>
+          <field name="domain"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_extended_approval_condition_form">
+      <field name="name">extended.approval.condition.form</field>
+      <field name="model">extended.approval.condition</field>
+      <field name="arch" type="xml">
+        <form string="Extended Approval Condition">
+          <field name="name"/>
+          <field name="condition_type"/>
+          <field name="domain"/>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_extended_approval_condition_form">
+      <field name="name">Extended Approval Condition</field>
+      <field name="res_model">extended.approval.condition</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="view_extended_approval_condition_tree"/>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+          Click to add an extended approval condition.
+        </p>
+      </field>
+    </record>
+
+    <menuitem
+        id="menu_extended_approval_condition"
+        action="action_extended_approval_condition_form"
+        parent="menu_extended_approval"
+        groups="base.group_erp_manager"/>
+
 
     <!--
     <record model="ir.actions.act_window" id="action_extended_approval_history_form">

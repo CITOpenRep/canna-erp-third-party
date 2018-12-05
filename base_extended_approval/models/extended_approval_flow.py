@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from openerp import api, fields, models
+from openerp.tools import safe_eval
 
 
 class ExtendedApprovalFlow(models.Model):

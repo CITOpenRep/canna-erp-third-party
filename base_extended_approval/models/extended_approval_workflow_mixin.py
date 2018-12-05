@@ -51,15 +51,18 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
                         self.workflow_state_field,
                         self.workflow_state)
 
+            # if r:
+            #     return {self.id: {
+            #         'type': 'ir.actions.client',
+            #         'tag': 'action_warn',
+            #         'params': {
+            #             'title': r['warning'].get('title', ''),
+            #             'text': r['warning'].get('message', ''),
+            #         }
+            #     }}
+
             if r:
-                return {self.id: {
-                    'type': 'ir.actions.client',
-                    'tag': 'action_warn',
-                    'params': {
-                        'title': r['warning'].get('title', ''),
-                        'text': r['warning'].get('message', ''),
-                    }
-                }}
+                return {self.id: False}
 
         return super(
             ExtendedApprovalWorkflowMixin,
