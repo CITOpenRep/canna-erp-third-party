@@ -19,7 +19,7 @@
             <group name="g1" colspan="4" col="4">
               <label for="next_approver"/>
               <div>
-                <field name="next_approver" options='{"no_open":True}'/>
+                <field name="next_approver" widget="many2many_tags" options='{"no_open":True}'/>
                 <button string="=> Users"
                         help="Show Approval Group Users"
                         name="show_approval_group_users" type="object"
@@ -31,7 +31,7 @@
               <field colspan="4" name="approval_history_ids" readonly="1">
                 <tree string="Approval History">
                   <field name="date"/>
-                  <field name="requested_group_id"/>
+                  <field name="requested_group_ids"/>
                   <field name="approver_id"/>
                 </tree>
               </field>
