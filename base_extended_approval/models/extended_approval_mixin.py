@@ -7,9 +7,9 @@ from openerp.exceptions import Warning
 class ExtendedApprovalMixin(models.AbstractModel):
     _name = 'extended.approval.mixin'
 
-    next_approver = fields.Many2one(
+    next_approver = fields.Many2many(
         comodel_name='res.groups',
-        related="current_step.group_id",
+        related="current_step.group_ids",
         string="Next Approver")
 
     current_step = fields.Many2one(
@@ -40,7 +40,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
     def _search_approval_allowed(self, operator, value):
         if operator in '=':
             return [(
-                'current_step.group_id',
+                'current_step.group_ids',
                 'in',
                 self.env.user.mapped('groups_id.trans_implied_ids.id') +
                 self.env.user.mapped('groups_id.id')
@@ -89,7 +89,10 @@ class ExtendedApprovalMixin(models.AbstractModel):
     def _get_next_approval_step(self, step):
         self.ensure_one()
 
-        completed = self.approval_history_ids.mapped('step_id')
+        # computed field approval_history_ids is not refreshed, so search
+        completed = self.env['extended.approval.history'].search(
+            [('source', '=', '{0},{1}'.format(self._name, self.id))]).mapped(
+                'step_id')
         for n_step in step.flow_id.steps:
             if n_step not in completed and n_step.is_applicable(self):
                 return n_step
@@ -108,15 +111,19 @@ class ExtendedApprovalMixin(models.AbstractModel):
         if not step:
             return False
 
-        if step.group_id in self.env.user.groups_id:
-            self.env['extended.approval.history'].create({
-                'approver_id': self.env.user.id,
-                'source': '{0},{1}'.format(self._name, self.id),
-                'step_id': step.id,
-            })
+        prev_step = False
+        while step and step != prev_step:
+            prev_step = step
+            if any([g in self.env.user.groups_id
+                    for g in step.group_ids]):
+                self.env['extended.approval.history'].create({
+                    'approver_id': self.env.user.id,
+                    'source': '{0},{1}'.format(self._name, self.id),
+                    'step_id': step.id,
+                })
 
-            # move to next step
-            step = self._get_next_approval_step(step)
+                # move to next step
+                step = self._get_next_approval_step(step)
 
         self.current_step = step
         if step:
@@ -124,7 +131,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
                 'warning': {
                     'title': _('Extended approval required'),
                     'message': _('Approval by {role} required').format(
-                        role=step.group_id.full_name
+                        role=', '.join(step.group_ids.mapped('full_name'))
                     ),
                 }
             }

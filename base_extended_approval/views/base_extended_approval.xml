@@ -20,7 +20,7 @@
             <group name="extended-approval-step-data">
               <field name="flow_id"/>
               <field name="sequence"/>
-              <field name="group_id"/>
+              <field name="group_ids"/>
               <field name="condition"/>
               <field name="limit"/>
             </group>
@@ -36,7 +36,7 @@
         <tree string="Extended Approval Step">
           <field name="flow_id"/>
           <field name="sequence"/>
-          <field name="group_id"/>
+          <field name="group_ids"/>
           <field name="condition"/>
           <field name="limit"/>
         </tree>
@@ -82,13 +82,15 @@
               <field name="steps">
                 <tree string="steps">
                   <field name="sequence" widget="handle"/>
-                  <field name="group_id"/>
+                  <field name="group_ids"/>
                   <field name="condition"/>
                 </tree>
                 <form string="Step">
-                  <field name="condition"/>
-                  <field name="sequence"/>
-                  <field name="group_id"/>
+                  <group>
+                    <field name="condition"/>
+                    <field name="sequence"/>
+                    <field name="group_ids"/>
+                  </group>
                 </form>
               </field>
             </group>

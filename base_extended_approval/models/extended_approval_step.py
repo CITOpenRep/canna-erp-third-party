@@ -23,10 +23,11 @@ class ExtendedApprovalStep(models.Model):
     limit = fields.Float(
         string="Amount")
 
-    group_id = fields.Many2one(
+    group_ids = fields.Many2many(
         comodel_name='res.groups',
         string="Approver")
 
+    @api.multi
     def is_applicable(self, record):
         return self.condition.is_applicable(record) \
             if self.condition else True

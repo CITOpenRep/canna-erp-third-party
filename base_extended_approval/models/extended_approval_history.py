@@ -24,9 +24,9 @@ class ExtendedApprovalHistory(models.Model):
         string='Step',
         readonly=True)
 
-    requested_group_id = fields.Many2one(
+    requested_group_ids = fields.Many2many(
         comodel_name='res.groups',
-        related="step_id.group_id",
+        related="step_id.group_ids",
         string='Requested',
         readonly=True)
 
