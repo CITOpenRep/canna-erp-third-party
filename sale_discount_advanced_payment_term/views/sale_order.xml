@@ -7,6 +7,9 @@
       <field name="model">sale.order</field>
       <field name="inherit_id" ref="sale.view_order_form"/>
       <field name="arch" type="xml">
+        <field name="payment_term" position="attributes">
+          <attribute name="attrs">{'readonly': [('state', 'not in', ('draft', 'sent'))]}</attribute>
+        </field>
         <field name="order_line" position="attributes">
           <attribute name="context">{'payment_term_id': payment_term}</attribute>
         </field>
