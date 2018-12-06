@@ -90,6 +90,9 @@ class SaleOrder(models.Model):
         line_updates = []
 
         for line in self.order_line:
+            discounts = line._get_sale_discounts()
+            if discounts != line.sale_discount_ids:
+                line.sale_discount_ids = discounts
             base_amount = line.price_unit * line.product_uom_qty
             total_base_amount += base_amount
 
