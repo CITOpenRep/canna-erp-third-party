@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from openerp import api, fields, models
-from openerp.tools import safe_eval
+from .extended_approval_mixin import ExtendedApprovalMixin
+
 
 
 class ExtendedApprovalFlow(models.Model):
@@ -32,4 +33,17 @@ class ExtendedApprovalFlow(models.Model):
 
     @api.model
     def _get_extended_approval_models(self):
-        return []
+
+        def _get_subclasses(cls):
+            for sc in cls.__subclasses__():
+                for ssc in _get_subclasses(sc):
+                    yield ssc
+                yield sc
+
+        return [
+            (x, x) for x in
+            list(set([
+                c._name for c in
+                _get_subclasses(ExtendedApprovalMixin)
+                if issubclass(c, models.Model)
+                and hasattr(c, '_name')]))]
