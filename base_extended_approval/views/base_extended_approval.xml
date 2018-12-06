@@ -22,7 +22,6 @@
               <field name="sequence"/>
               <field name="group_ids"/>
               <field name="condition"/>
-              <field name="limit"/>
             </group>
           </sheet>
         </form>
@@ -38,7 +37,6 @@
           <field name="sequence"/>
           <field name="group_ids"/>
           <field name="condition"/>
-          <field name="limit"/>
         </tree>
       </field>
     </record>
