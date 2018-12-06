@@ -4,7 +4,7 @@
 
     <menuitem
         name="Extended Approval"
-        id="menu_extended_approval"
+        id="menu_extended_approval_config"
         parent="account.menu_finance_configuration"/>
 
     <record model="ir.ui.view" id="view_extended_approval_step_form">
@@ -60,7 +60,7 @@
     <menuitem
         id="menu_extended_approval_step"
         action="action_extended_approval_step_form"
-        parent="menu_extended_approval"
+        parent="menu_extended_approval_config"
         groups="base.group_erp_manager"/>
 
 
@@ -128,7 +128,7 @@
     <menuitem
         id="menu_extended_approval_flow"
         action="action_extended_approval_flow_form"
-        parent="menu_extended_approval"
+        parent="menu_extended_approval_config"
         groups="base.group_erp_manager"/>
 
 
@@ -149,9 +149,11 @@
       <field name="model">extended.approval.condition</field>
       <field name="arch" type="xml">
         <form string="Extended Approval Condition">
-          <field name="name"/>
-          <field name="condition_type"/>
-          <field name="domain"/>
+          <group>
+            <field name="name"/>
+            <field name="condition_type"/>
+            <field name="domain"/>
+          </group>
         </form>
       </field>
     </record>
@@ -173,9 +175,8 @@
     <menuitem
         id="menu_extended_approval_condition"
         action="action_extended_approval_condition_form"
-        parent="menu_extended_approval"
+        parent="menu_extended_approval_config"
         groups="base.group_erp_manager"/>
-
 
     <!--
     <record model="ir.actions.act_window" id="action_extended_approval_history_form">
