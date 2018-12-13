@@ -3,9 +3,9 @@ from openerp import api, fields, models
 from .extended_approval_mixin import ExtendedApprovalMixin
 
 
-
 class ExtendedApprovalFlow(models.Model):
     _name = 'extended.approval.flow'
+    _order = 'sequence'
 
     name = fields.Char(
         string="Name")
