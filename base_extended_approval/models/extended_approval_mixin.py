@@ -11,7 +11,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         comodel_name='res.groups',
         related="current_step.group_ids",
         readonly=True,
-        string="Next Approver")
+        string="Next Approver Role(s)")
 
     current_step = fields.Many2one(
         comodel_name='extended.approval.step',
