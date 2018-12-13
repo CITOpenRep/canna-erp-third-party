@@ -10,6 +10,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
     next_approver = fields.Many2many(
         comodel_name='res.groups',
         related="current_step.group_ids",
+        readonly=True,
         string="Next Approver")
 
     current_step = fields.Many2one(
@@ -34,7 +35,8 @@ class ExtendedApprovalMixin(models.AbstractModel):
     @api.multi
     def _compute_approval_allowed(self):
         for rec in self:
-            rec.approval_allowed = rec.next_approver in self.env.user.groups_id
+            rec.approval_allowed = any(
+                [a in self.env.user.groups_id for a in rec.next_approver])
 
     @api.model
     def _search_approval_allowed(self, operator, value):
@@ -155,8 +157,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
 
     @api.multi
     def show_approval_group_users(self):
-        a_users = self.next_approver.users
-        a_partners = a_users.mapped('partner_id')
+        a_partners = self.next_approver.mapped('users.partner_id')
         ptree = self.env.ref('base.view_partner_tree')
         action = {
             'name': _('Approval Group Users'),
