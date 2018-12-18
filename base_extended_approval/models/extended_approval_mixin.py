@@ -59,6 +59,24 @@ class ExtendedApprovalMixin(models.AbstractModel):
                 ])
 
     @api.multi
+    def write(self, values):
+        r = super(ExtendedApprovalMixin, self).write(values)
+
+        if 'approval_flow' not in self._context:
+            for rec in self:
+                completed = self.env['extended.approval.history'].search(
+                    [('source', '=', '{0},{1}'.format(
+                        rec._name, rec.id))]).mapped(
+                            'step_id')
+                if not completed:
+                    # re-evaluate current step, but not during approval ?
+                    step = rec._get_next_approval_step()
+                    if step and step != rec.current_step:
+                        rec.with_context(
+                            approval_flow=True).current_step = step
+        return r
+
+    @api.multi
     def _get_applicable_approval_flow(self):
         self.ensure_one()
 
@@ -73,31 +91,20 @@ class ExtendedApprovalMixin(models.AbstractModel):
         return False
 
     @api.multi
-    def _get_current_approval_step(self):
+    def _get_next_approval_step(self):
         self.ensure_one()
 
-        if self.current_step:
-            return self.current_step
-        else:
-            flow = self._get_applicable_approval_flow()
-            if flow:
-                for step in flow.steps:
-                    if step.is_applicable(self):
-                        return step
-
-        return False
-
-    @api.multi
-    def _get_next_approval_step(self, step):
-        self.ensure_one()
+        flow = self._get_applicable_approval_flow()
+        if not flow:
+            return False
 
         # computed field approval_history_ids is not refreshed, so search
         completed = self.env['extended.approval.history'].search(
             [('source', '=', '{0},{1}'.format(self._name, self.id))]).mapped(
                 'step_id')
-        for n_step in step.flow_id.steps:
-            if n_step not in completed and n_step.is_applicable(self):
-                return n_step
+        for step in flow.steps:
+            if step not in completed and step.is_applicable(self):
+                return step
 
         return False
 
@@ -109,7 +116,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         """
         self.ensure_one()
 
-        step = self._get_current_approval_step()
+        step = self._get_next_approval_step()
         if not step:
             return False
 
