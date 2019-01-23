@@ -142,8 +142,15 @@ class SaleOrder(models.Model):
         total_discount_amount = sum(line_discount_amounts.values())
 
         ctx = dict(self._context, discount_calc=True)
-        self.with_context(ctx).write({
-            'discount_amount': total_discount_amount,
-            'discount_base_amount': total_base_amount,
-            'order_line': line_updates,
-        })
+        vals = {}
+        if not self.currency_id.is_zero(
+                self.discount_amount - total_discount_amount):
+            vals['discount_amount'] = total_discount_amount
+        if not self.currency_id.is_zero(
+                self.discount_amount - total_discount_amount):
+            vals['discount_base_amount'] = total_base_amount
+        if line_updates:
+            vals['order_line'] = line_updates
+        if vals:
+            ctx = dict(self._context, discount_calc=True)
+            self.with_context(ctx).write(vals)
