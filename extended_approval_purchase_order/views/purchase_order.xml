@@ -30,8 +30,8 @@
       <field name="inherit_id" ref="purchase.purchase_order_form"/>
       <field name="priority">40</field>
       <field name="arch" type="xml">
-        <xpath expr="//button[@name='purchase_approve']" position="after">
-          <button name="purchase_approve" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+        <xpath expr="//button[@name='purchase_approve']" position="replace">
+          <button name="purchase_approve" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'not in', ['confirmed' ,'extended_approval']), ('approval_allowed', '!=', True)]}"/>
           <button name="abort_approval" type="object" string="Cancel Approval" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
         </xpath>
 
