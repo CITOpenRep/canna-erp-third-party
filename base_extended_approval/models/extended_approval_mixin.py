@@ -30,7 +30,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         compute='_compute_approval_allowed',
         search='_search_approval_allowed',
         help="This option is set if you are "
-             "allowed to approve this Purchase Order.")
+             "allowed to approve.")
 
     @api.multi
     def _compute_approval_allowed(self):
@@ -132,7 +132,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
                 })
 
                 # move to next step
-                step = self._get_next_approval_step(step)
+                step = self._get_next_approval_step()
 
         self.current_step = step
         if step:
