@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2018 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -41,6 +41,9 @@ class SaleDiscountRule(models.Model):
     product_id = fields.Many2one(
         comodel_name='product.product',
         string='Product')
+    product_category_id = fields.Many2one(
+        comodel_name='product.category',
+        string='Product Category')
     min_base = fields.Float(
         string='Minimum base amount',
         digits=dp.get_precision('Account'))
@@ -65,7 +68,7 @@ class SaleDiscountRule(models.Model):
         digits=dp.get_precision('Product UoS'),
         compute='_compute_max_view')
     product_view = fields.Char(
-        string='Product',
+        string='Product / Product Category',
         compute='_compute_product_view')
     # results
     discount_type = fields.Selection(
@@ -108,7 +111,9 @@ class SaleDiscountRule(models.Model):
             if rule.discount_base == "sale_order":
                 rule.product_view = 'n/a'
             else:
-                rule.product_view = rule.product_id.display_name or ''
+                rule.product_view = (
+                    rule.product_id.display_name or
+                    rule.product_category_id.display_name or '')
 
     @api.depends('discount_pct', 'discount_amount', 'discount_amount_unit')
     def _compute_discount_view(self):
@@ -142,3 +147,18 @@ class SaleDiscountRule(models.Model):
         elif self.discount_type == 'perc' and self.discount_view > 100:
             raise ValidationError(_(
                 "Percentage discount must be between 0 and 100."))
+
+    @api.onchange('matching_type')
+    def _onchange_matching_type(self):
+        if self.matching_type == 'quantity':
+            self.product_category_id = False
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_category_id = False
+
+    @api.onchange('product_category_id')
+    def _onchange_product_category_id(self):
+        if self.product_category_id:
+            self.product_id = False

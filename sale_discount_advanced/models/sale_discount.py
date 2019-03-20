@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2018 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -200,6 +200,14 @@ class SaleDiscount(models.Model):
         disc_amt = 0.0
         disc_pct = 0.0
         for rule in self.rule_ids:
+            if (line and rule.product_id and
+                    line.product_id != rule.product_id):
+                continue
+            if line and rule.product_category_id:
+                rule_categs = self.env['product.category'].search(
+                    [('child_id', 'child_of', rule.product_category_id.id)])
+                if line.product_id.categ_id not in rule_categs:
+                    continue
             match_min = match_max = False
             if rule.matching_type == 'amount':
                 base = self._round_amt(base)
