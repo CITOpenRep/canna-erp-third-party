@@ -4,7 +4,9 @@
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from datetime import datetime, timedelta
 import logging
+
 from openerp import api, fields, models, _
 from openerp.exceptions import Warning as UserError
 
@@ -176,17 +178,23 @@ class SaleDiscount(models.Model):
     def check_active_date(self, check_date=None):
         if not check_date:
             check_date = fields.Datetime.now()
-        if self.start_date and self.end_date \
+        end_date = self.end_date
+        if end_date:
+            end_date = (
+                datetime.strptime(end_date, '%Y-%m-%d') +
+                timedelta(days=1)
+            ).strftime('%Y-%m-%d')
+        if self.start_date and end_date \
                 and (check_date >= self.start_date and
-                     check_date < self.end_date):
+                     check_date < end_date):
             return True
-        if self.start_date and not self.end_date \
+        if self.start_date and not end_date \
                 and (check_date >= self.start_date):
             return True
         if not self.start_date and self.end_date \
-                and (check_date < self.end_date):
+                and (check_date < end_date):
             return True
-        elif not self.start_date or not self.end_date:
+        elif not self.start_date or not end_date:
             return True
         else:
             return False
