@@ -92,6 +92,21 @@
                 </form>
               </field>
             </group>
+            <separator name="config_help" string="Configuration Instructions" colspan="4"/>
+            <span name="extended_approval_help">
+              <p>You can use extended approval flows to define multiple approval steps for a matching object,
+              and/or define different approvers for objects of the same model based on a domain.</p>
+              <p>The extended approval works as follows:</p>
+              <ul>
+                <li>When a document enters the approval process, the first flow with the model of the document
+                for which the domain applies is selected.</li>
+                <li>Next each step of this flow for which the condition applies to the document has to be completed
+                by a user holding any of the configured roles</li>
+              </ul>
+              <p>For each step a log record will be created.</p>
+              <p>If a user can complete multiple consecutive steps, all these steps
+              will be completed at once.</p>
+            </span>
           </sheet>
         </form>
       </field>
