@@ -82,6 +82,20 @@ class SaleDiscount(models.Model):
         track_visibility='onchange',
         help="These products will by default be excluded "
              "from this discount.")
+    included_product_category_ids = fields.Many2many(
+        comodel_name='product.category',
+        relation='product_category_sale_discount_incl_rel',
+        string='Included Product Categories',
+        track_visibility='onchange',
+        help="Fill in this field to limit the discount calculation "
+             "to Products in these categories.")
+    included_product_ids = fields.Many2many(
+        comodel_name='product.product',
+        relation='product_sale_discount_incl_rel',
+        string='Included Products',
+        track_visibility='onchange',
+        help="Fill in this field to limit the discount calculation "
+             "to these products.")
 
     @api.model
     def _default_active(self):
@@ -94,8 +108,9 @@ class SaleDiscount(models.Model):
         via inherit.
         """
         selection = [
-            ('sale_order', 'Base discount on Order amount'),
-            ('sale_line', 'Base discount on Line amount')]
+            ('sale_order', 'Base discount on order'),
+            ('sale_line', 'Base discount on order line'),
+        ]
         return selection
 
     @api.onchange('discount_base')
@@ -200,10 +215,15 @@ class SaleDiscount(models.Model):
             return False
 
     def _calculate_line_discount(self, line):
-        return self._calculate_discount(line.price_unit, line.product_uom_qty,
-                                        line=line)
+        return self._calculate_discount(line.price_unit, line=line)
 
-    def _calculate_discount(self, price_unit, qty, line=None):
+    def _calculate_discount(self, price_unit, lines=None, line=None):
+        if not lines:
+            if not line:
+                raise NotImplementedError
+            qty = line.product_uom_qty
+        else:
+            qty = 1.0
         base = qty * price_unit
         disc_amt = 0.0
         disc_pct = 0.0
@@ -230,10 +250,13 @@ class SaleDiscount(models.Model):
                 else:
                     match_max = True
             elif rule.matching_type == 'quantity':
+                if lines:
+                    # discount_base == sale_order
+                    qty = sum([x[0].product_uom_qty for x in lines])
                 qty = self._round_qty(qty)
                 rule_min_qty = self._round_qty(rule.min_qty)
                 rule_max_qty = self._round_qty(rule.max_qty)
-                if line and line.product_id == rule.product_id:
+                if line and line.product_id == rule.product_id or lines:
                     if rule_min_qty > 0 and rule_min_qty > qty:
                         continue
                     else:
@@ -277,6 +300,23 @@ class SaleDiscount(models.Model):
 
         categs = self.env['product.category']
         for categ in self.excluded_product_category_ids:
+            categs += get_children_recursive(categ)
+        products += self.env['product.product'].search(
+            [('categ_id', 'in', categs._ids)])
+
+        return products
+
+    def _get_included_products(self):
+        products = self.included_product_ids
+
+        def get_children_recursive(categ):
+            res = categ
+            for child in categ.child_id:
+                res += get_children_recursive(child)
+            return res
+
+        categs = self.env['product.category']
+        for categ in self.included_product_category_ids:
             categs += get_children_recursive(categ)
         products += self.env['product.product'].search(
             [('categ_id', 'in', categs._ids)])

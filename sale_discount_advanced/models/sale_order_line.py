@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2018 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -57,7 +57,9 @@ class SaleOrderLine(models.Model):
         if pricelist:
             for discount in pricelist._get_active_sale_discounts(date_order):
                 if product_id not in discount._get_excluded_products()._ids:
-                    discounts += discount
+                    filter = discount._get_included_products()._ids
+                    if not filter or (filter and product_id in filter):
+                        discounts += discount
         return discounts._ids
 
     def _get_sale_discounts(self):
@@ -75,7 +77,9 @@ class SaleOrderLine(models.Model):
                 self.order_id.date_order)
             for discount in active_discounts:
                 if self.product_id not in discount._get_excluded_products():
-                    discounts += discount
+                    filter = discount._get_included_products()
+                    if not filter or (filter and self.product_id in filter):
+                        discounts += discount
         return discounts
 
     @api.onchange('product_id')

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2018 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -101,14 +101,14 @@ class SaleOrder(models.Model):
                     if discount.id not in grouped_discounts:
                         grouped_discounts[discount.id] = {
                             'sale_discount': discount,
-                            'lines': [(line.id, base_amount)],
+                            'lines': [(line, base_amount)],
                             'disc_base_amt': base_amount}
                     else:
                         grouped_discounts[discount.id]['disc_base_amt'] \
                             += base_amount
                         grouped_discounts[
                             discount.id]['lines'].append(
-                                (line.id, base_amount))
+                                (line, base_amount))
                 elif discount.discount_base == 'sale_line':
                     amt, pct = discount._calculate_line_discount(line)
                     line_discount_amounts[line.id] = amt
@@ -118,24 +118,24 @@ class SaleOrder(models.Model):
 
         for entry in grouped_discounts.values():
             amt, pct = entry['sale_discount']._calculate_discount(
-                entry['disc_base_amt'], 1.0)
+                entry['disc_base_amt'], lines=entry['lines'])
             # redistribute the discount to the lines
             for line in entry['lines']:
                 done = False
                 pct_sum = pct
                 for line_update in line_updates:
-                    if line_update[1] == line[0]:
+                    if line_update[1] == line[0].id:
                         pct_sum = min(line_update[2]['discount'] + pct, 100.0)
                         line_update[2]['discount'] = pct_sum
                         done = True
                         break
                 if not done:
                     line_updates.append(
-                        (1, line[0], {'discount': pct_sum}))
+                        (1, line[0].id, {'discount': pct_sum}))
                 if line[0] not in line_discount_amounts:
-                    line_discount_amounts[line[0]] = line[1] * pct / 100.0
+                    line_discount_amounts[line[0].id] = line[1] * pct / 100.0
                 else:
-                    line_discount_amounts[line[0]] = min(
+                    line_discount_amounts[line[0].id] = min(
                         line[1],
                         line_discount_amounts[line[0]] + line[1] * pct / 100.0
                     )

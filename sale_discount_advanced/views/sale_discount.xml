@@ -34,12 +34,11 @@
                     <field name="discount_base" invisible="1"/>
                     <separator string="Conditions" colspan="2"/>
                     <group name="rule_match_left">
-                      <field name="matching_type"
-                             attrs="{'readonly': [('discount_base', '=', 'sale_order')]}"/>
+                      <field name="matching_type"/>
                       <field name="product_id"
-                             attrs="{'invisible': ['|', ('discount_base', '=', 'sale_order'), ('product_category_id', '!=', False)], 'required': [('matching_type', '=', 'quantity')]}"/>
+                             attrs="{'invisible': ['|', ('discount_base', '=', 'sale_order'), ('product_category_id', '!=', False)]}"/>
                       <field name="product_category_id"
-                             attrs="{'invisible': ['|', '|', ('discount_base', '=', 'sale_order'), ('product_id', '!=', False), ('matching_type', '=', 'quantity')]}"/>
+                             attrs="{'invisible': ['|', ('discount_base', '=', 'sale_order'), ('product_id', '!=', False)]}"/>
                       <field name="sequence"/>
                     </group>
                     <group name="rule_match_right">
@@ -58,7 +57,7 @@
                       <field name="discount_amount"
                              attrs="{'invisible': ['|', ('discount_type', '=', 'perc'), ('matching_type', '=', 'quantity')]}"/>
                       <field name="discount_amount_unit"
-                             attrs="{'invisible': ['|', ('discount_type', '=', 'perc'), ('matching_type', '=', 'amount')]}"/>
+                             attrs="{'invisible': ['|', '|', ('discount_type', '=', 'perc'), ('matching_type', '=', 'amount'), ('product_category_id', '!=', False)]}"/>
                     </group>
                   </group>
                 </form>
@@ -81,7 +80,8 @@
                   <br/>
                   <ul>
                     <li>
-                      Calculation based upon the full order amount with the option to exclude certain products or product categories.
+                      Calculation based upon the full order.
+                      Extra filtering is possible via exclusion/inclusion of certain products or product categories whereby exclusion has priority over inclusion.
                     </li>
                     <li>
                       Calculation limited to the matching order lines.
@@ -98,7 +98,7 @@
             <page string="Pricelists" name="pricelists">
               <field name="pricelist_ids" nolabel="1" colspan="4"/>
             </page>
-            <page name="productsAndCategories"
+            <page name="excluded_products_and_categories"
                   string="Excluded Products &amp; Categories"
                   attrs="{'invisible': [('discount_base', '!=', 'sale_order')]}">
               <label for="excluded_product_ids"/>
@@ -111,6 +111,25 @@
               </field>
               <label for="excluded_product_category_ids"/>
               <field name="excluded_product_category_ids">
+                <tree>
+                  <field name="name"/>
+                  <field name="complete_name"/>
+                </tree>
+              </field>
+            </page>
+            <page name="included_products_and_categories"
+                  string="Included Products &amp; Categories"
+                  attrs="{'invisible': [('discount_base', '!=', 'sale_order')]}">
+              <label for="included_product_ids"/>
+              <field name="included_product_ids">
+                <tree>
+                  <field name="name"/>
+                  <field name="ean13"/>
+                  <field name="categ_id"/>
+                </tree>
+              </field>
+              <label for="included_product_category_ids"/>
+              <field name="included_product_category_ids">
                 <tree>
                   <field name="name"/>
                   <field name="complete_name"/>
