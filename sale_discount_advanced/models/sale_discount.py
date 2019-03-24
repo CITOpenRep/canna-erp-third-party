@@ -115,7 +115,15 @@ class SaleDiscount(models.Model):
 
     @api.onchange('discount_base')
     def _onchange_discount_base(self):
-        self.rule_ids.write({'matching_type': 'amount'})
+        self.rule_ids.write({
+            'matching_type': 'amount',
+            'product_id': False,
+            'product_category_id': False,
+            'discount_type': 'perc',
+            'discount_pct': 0.0,
+            'discount_amount': 0.0,
+            'discount_amount_unit': 0.0,
+        })
 
     @api.one
     @api.constrains('rule_ids')
@@ -232,9 +240,8 @@ class SaleDiscount(models.Model):
                     line.product_id != rule.product_id):
                 continue
             if line and rule.product_category_id:
-                rule_categs = self.env['product.category'].search(
-                    [('child_id', 'child_of', rule.product_category_id.id)])
-                if line.product_id.categ_id not in rule_categs:
+                if not line.product_id._belongs_to_category(
+                        rule.product_category_id):
                     continue
             match_min = match_max = False
             if rule.matching_type == 'amount':
@@ -256,15 +263,14 @@ class SaleDiscount(models.Model):
                 qty = self._round_qty(qty)
                 rule_min_qty = self._round_qty(rule.min_qty)
                 rule_max_qty = self._round_qty(rule.max_qty)
-                if line and line.product_id == rule.product_id or lines:
-                    if rule_min_qty > 0 and rule_min_qty > qty:
-                        continue
-                    else:
-                        match_min = True
-                    if rule_max_qty > 0 and rule_max_qty < qty:
-                        continue
-                    else:
-                        match_max = True
+                if rule_min_qty > 0 and rule_min_qty > qty:
+                    continue
+                else:
+                    match_min = True
+                if rule_max_qty > 0 and rule_max_qty < qty:
+                    continue
+                else:
+                    match_max = True
             else:
                 raise NotImplementedError
 
@@ -274,9 +280,11 @@ class SaleDiscount(models.Model):
                     disc_pct = rule.discount_pct
                 else:
                     if rule.matching_type == 'quantity':
-                        disc_amt = min(rule.discount_amount_unit * qty, base)
-                    else:
-                        disc_amt = min(rule.discount_amount, base)
+                        if rule.product_id:
+                            disc_amt = min(
+                                rule.discount_amount_unit * qty, base)
+                        else:
+                            disc_amt = min(rule.discount_amount, base)
                     disc_pct = disc_amt / base * 100.0
                 break
         return disc_amt, disc_pct
@@ -289,36 +297,36 @@ class SaleDiscount(models.Model):
         digits = self.env['sale.discount.rule']._fields['min_qty'].digits[1]
         return round(val, digits)
 
-    def _get_excluded_products(self):
-        products = self.excluded_product_ids
+    def _check_product_filter(self, product):
+        """
+        Checks if the discount object applies to the given product
+        """
+        self.ensure_one()
+        if self._is_excluded_product(product):
+            return False
+        else:
+            filter = self.included_product_ids or \
+                self.included_product_category_ids
+            if filter:
+                return self._is_included_product(product) and True or False
+        return True
 
-        def get_children_recursive(categ):
-            res = categ
-            for child in categ.child_id:
-                res += get_children_recursive(child)
-            return res
-
-        categs = self.env['product.category']
+    def _is_excluded_product(self, product):
+        self.ensure_one()
+        c1 = product in self.excluded_product_ids
+        c2 = False
         for categ in self.excluded_product_category_ids:
-            categs += get_children_recursive(categ)
-        products += self.env['product.product'].search(
-            [('categ_id', 'in', categs._ids)])
+            if product._belongs_to_category(categ):
+                c2 = True
+                break
+        return c1 or c2
 
-        return products
-
-    def _get_included_products(self):
-        products = self.included_product_ids
-
-        def get_children_recursive(categ):
-            res = categ
-            for child in categ.child_id:
-                res += get_children_recursive(child)
-            return res
-
-        categs = self.env['product.category']
+    def _is_included_product(self, product):
+        self.ensure_one()
+        c1 = product in self.included_product_ids
+        c2 = False
         for categ in self.included_product_category_ids:
-            categs += get_children_recursive(categ)
-        products += self.env['product.product'].search(
-            [('categ_id', 'in', categs._ids)])
-
-        return products
+            if product._belongs_to_category(categ):
+                c2 = True
+                break
+        return c1 or c2

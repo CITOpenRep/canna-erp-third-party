@@ -54,10 +54,12 @@
                     <group name="rule_result_right">
                       <field name="discount_pct"
                              attrs="{'invisible': [('discount_type', '!=', 'perc')]}"/>
+                      <field name="discount_amount_invisible" invisible="1"/>
                       <field name="discount_amount"
-                             attrs="{'invisible': ['|', ('discount_type', '=', 'perc'), ('matching_type', '=', 'quantity')]}"/>
+                             attrs="{'invisible': [('discount_amount_invisible', '=', True)]}"/>
+                      <field name="discount_amount_unit_invisible" invisible="1"/>
                       <field name="discount_amount_unit"
-                             attrs="{'invisible': ['|', '|', ('discount_type', '=', 'perc'), ('matching_type', '=', 'amount'), ('product_category_id', '!=', False)]}"/>
+                             attrs="{'invisible': [('discount_amount_unit_invisible', '=', True)]}"/>
                     </group>
                   </group>
                 </form>

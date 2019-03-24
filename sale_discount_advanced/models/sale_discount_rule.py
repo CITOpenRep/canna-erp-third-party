@@ -84,10 +84,14 @@ class SaleDiscountRule(models.Model):
         string="Discount Percentage")
     discount_amount = fields.Float(
         string="Discount Amount",
-        digits=dp.get_precision('Account'),)
+        digits=dp.get_precision('Account'))
+    discount_amount_invisible = fields.Boolean(
+        compute='_compute_discount_fields_invisible')
     discount_amount_unit = fields.Float(
         string="Discount Amount per Unit",
         digits=dp.get_precision('Account'))
+    discount_amount_unit_invisible = fields.Boolean(
+        compute='_compute_discount_fields_invisible')
     discount_view = fields.Float(
         string='Discount',
         digits=dp.get_precision('Account'),
@@ -121,15 +125,38 @@ class SaleDiscountRule(models.Model):
             if (rule.discount_base == 'sale_line' and
                     rule.matching_type == 'quantity' and
                     rule.discount_type == 'amnt'):
-                rule.discount_view = rule.discount_amount_unit
+                if rule.product_id:
+                    rule.discount_view = rule.discount_amount_unit
+                else:
+                    rule.discount_view = rule.discount_amount
             else:
                 if rule.discount_type == 'perc':
                     rule.discount_view = rule.discount_pct
                 elif rule.discount_type == 'amnt':
-                    if rule.matching_type == 'amount':
-                        rule.discount_view = rule.discount_amount
+                    rule.discount_view = rule.discount_amount
                 else:
                     raise NotImplementedError
+
+    @api.depends('discount_base', 'discount_type', 'matching_type',
+                 'product_id')
+    def _compute_discount_fields_invisible(self):
+        for rule in self:
+            if rule.discount_type == 'perc':
+                rule.discount_amount_invisible = True
+                rule.discount_amount_unit_invisible = True
+            else:
+                if rule.discount_base == 'sale_line':
+                    if rule.matching_type == 'quantity':
+                        if rule.product_id:
+                            rule.discount_amount_invisible = True
+                        else:
+                            rule.discount_amount_unit_invisible = True
+                    else:
+                        # matching_type == 'amount'
+                        rule.discount_amount_unit_invisible = True
+                else:
+                    # discount_base == 'sale_order'
+                    rule.discount_amount_unit_invisible = True
 
     @api.one
     @api.constrains('discount_pct', 'discount_amount',
