@@ -58,22 +58,34 @@ class ExtendedApprovalMixin(models.AbstractModel):
                     ('source', '=', '{0},{1}'.format(rec._name, rec.id))
                 ])
 
+    @api.model
+    def recompute_all_next_approvers(self):
+        if hasattr(self, 'workflow_start_state'):
+            self.search(
+                [('state', 'in', [self.workflow_start_state])]
+            )._recompute_next_approvers()
+
+    @api.multi
+    def _recompute_next_approvers(self):
+        for rec in self:
+            completed = self.env['extended.approval.history'].search(
+                [('source', '=', '{0},{1}'.format(
+                    rec._name, rec.id))]).mapped(
+                        'step_id')
+            if not completed:
+                # re-evaluate current step, but not during approval ?
+                step = rec._get_next_approval_step()
+                if step and step != rec.current_step:
+                    rec.with_context(
+                        approval_flow_update=True).current_step = step
+
     @api.multi
     def write(self, values):
         r = super(ExtendedApprovalMixin, self).write(values)
 
-        if 'approval_flow' not in self._context:
-            for rec in self:
-                completed = self.env['extended.approval.history'].search(
-                    [('source', '=', '{0},{1}'.format(
-                        rec._name, rec.id))]).mapped(
-                            'step_id')
-                if not completed:
-                    # re-evaluate current step, but not during approval ?
-                    step = rec._get_next_approval_step()
-                    if step and step != rec.current_step:
-                        rec.with_context(
-                            approval_flow=True).current_step = step
+        if 'approval_flow_update' not in self._context:
+            self._recompute_next_approvers()
+
         return r
 
     @api.multi

@@ -5,6 +5,7 @@ from .extended_approval_mixin import ExtendedApprovalMixin
 
 class ExtendedApprovalFlow(models.Model):
     _name = 'extended.approval.flow'
+    _inherit = ['extended.approval.config.mixin']
     _order = 'sequence'
 
     name = fields.Char(
@@ -31,6 +32,10 @@ class ExtendedApprovalFlow(models.Model):
         inverse_name='flow_id',
         string="Steps")
 
+    @api.multi
+    def get_applicable_models(self):
+        return [self.model]
+
     @api.model
     def _get_extended_approval_models(self):
 
@@ -47,25 +52,6 @@ class ExtendedApprovalFlow(models.Model):
                 _get_subclasses(ExtendedApprovalMixin)
                 if issubclass(c, models.Model)
                 and hasattr(c, '_name')]))]
-
-    @staticmethod
-    def _recompute_next_approvers(models):
-        """Do an empty write to the provided models to trigger an update of the
-        Next Approver Role(s) field on records of these models which are in
-        the approval process state."""
-        if models == set([]):
-            return
-        # Bypass __iter__
-        if len(models) == 0:
-            models = set([models, 'pass'])
-        for model in models:
-            if type(model) == str and model == 'pass':
-                continue
-            recompute_state = model.workflow_start_state
-            records = model.search(
-                [('state', 'in', [recompute_state])]
-            )
-            records.write({})
 
     @api.multi
     def write(self, values):
