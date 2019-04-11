@@ -52,22 +52,3 @@ class ExtendedApprovalFlow(models.Model):
                 _get_subclasses(ExtendedApprovalMixin)
                 if issubclass(c, models.Model)
                 and hasattr(c, '_name')]))]
-
-    @api.multi
-    def write(self, values):
-        models = set()
-        r = super(ExtendedApprovalFlow, self).write(values)
-        if values.get('sequence'):
-            for flow in self:
-                models.add(self.env[self.model])
-            self._recompute_next_approvers(models)
-        return r
-
-    @api.multi
-    def unlink(self):
-        models = set()
-        for flow in self:
-            models.add(flow.env[flow.model])
-            super(ExtendedApprovalFlow, flow).unlink()
-        self._recompute_next_approvers(models)
-        return True

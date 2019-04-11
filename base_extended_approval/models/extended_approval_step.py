@@ -35,29 +35,3 @@ class ExtendedApprovalStep(models.Model):
     def is_applicable(self, record):
         return self.condition.is_applicable(record) \
             if self.condition else True
-
-    @api.multi
-    def write(self, values):
-        models = set()
-        r = super(ExtendedApprovalStep, self).write(values)
-        for step in self:
-            models.add(self.env[self.flow_id.model])
-        self.flow_id._recompute_next_approvers(models)
-        return r
-
-    @api.multi
-    def unlink(self):
-        models = set()
-        for step in self:
-            models.add(step.env[step.flow_id.model])
-            super(ExtendedApprovalStep, step).unlink()
-        self.env['extended.approval.flow']._recompute_next_approvers(models)
-        return True
-
-    @api.model
-    def create(self, values):
-        models = set()
-        r = super(ExtendedApprovalStep, self).create(values)
-        models.add(step.env[r.flow_id.model])
-        self.flow_id._recompute_next_approvers(models)
-        return r
