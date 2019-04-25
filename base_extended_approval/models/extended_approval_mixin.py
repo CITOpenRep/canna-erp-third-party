@@ -35,7 +35,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
     @api.multi
     def _compute_approval_allowed(self):
         for rec in self:
-            rec.approval_allowed = any(
+            rec.approval_allowed = not rec.next_approver or any(
                 [a in self.env.user.groups_id for a in rec.next_approver])
 
     @api.model
