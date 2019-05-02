@@ -13,7 +13,6 @@
     ],
     'data': [
         'data/ir_sequence_data.xml',
-        'security/sale_order_group_security.xml',
         'security/ir.model.access.csv',
         'views/sale_order_views.xml',
         'views/sale_order_group_views.xml',
