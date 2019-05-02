@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <record id="view_quotation_tree" model="ir.ui.view">
+      <field name="name">sale.order.tree</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_quotation_tree"/>
+      <field name="arch" type="xml">
+        <field name="state" position="after">
+          <field name="sale_order_group_id" attrs="{'invisible': [('sale_order_group_id', '=', [])]}"/>
+        </field>
+      </field>
+    </record>
+
+    <record id="view_order_tree" model="ir.ui.view">
+      <field name="name">sale.order.tree</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_tree"/>
+      <field name="arch" type="xml">
+        <field name="state" position="after">
+          <field name="sale_order_group_id" attrs="{'invisible': [('sale_order_group_id', '=', [])]}"/>
+        </field>
+      </field>
+    </record>
+    
+    <record id="view_order_form" model="ir.ui.view">
+      <field name="name">sale.order.inherit</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <field name="currency_id" position="after">
+          <field name="sale_order_group_id"
+                 widget="many2one"
+                 attrs="{'invisible': [('sale_order_group_id', '=', False)]}"/>
+        </field>
+      </field>
+    </record>
+
+  </data>
+</openerp>
