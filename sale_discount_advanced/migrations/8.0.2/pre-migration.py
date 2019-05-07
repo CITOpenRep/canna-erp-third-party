@@ -39,4 +39,6 @@ def rename_columns(cr, column_spec):
 
 
 def migrate(cr, version):
+    if not version:
+        return
     rename_columns(cr, column_renames)

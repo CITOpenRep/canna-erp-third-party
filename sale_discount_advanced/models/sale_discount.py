@@ -118,57 +118,12 @@ class SaleDiscount(models.Model):
         self.rule_ids.write({
             'matching_type': 'amount',
             'product_id': False,
-            'product_category_id': False,
+            'product_category_ids': [(5, )],
             'discount_type': 'perc',
             'discount_pct': 0.0,
             'discount_amount': 0.0,
             'discount_amount_unit': 0.0,
         })
-
-    @api.one
-    @api.constrains('rule_ids')
-    def _check_overlaps(self):
-        rulesets = []
-        if self.discount_base == 'sale_order':
-            ruleset = self.rule_ids.sorted(key=lambda r: r.min_view)
-            if ruleset:
-                rulesets.append((ruleset, 'amount'))
-        else:
-            products = self.rule_ids.mapped('product_id')
-            for matching_type in ('amount', 'quantity'):
-                for product in products:
-                    ruleset = self.rule_ids.filtered(
-                        lambda r: r.matching_type == matching_type and
-                        r.product_id == product)
-                    if ruleset:
-                        ruleset = ruleset.sorted(
-                            key=lambda r: r.min_view)
-                        rulesets.append((ruleset, matching_type))
-        for ruleset in rulesets:
-            stack = []
-            overlap = False
-            if ruleset[1] == 'amount':
-                fld_min = 'min_base'
-                fld_max = 'max_base'
-            else:
-                fld_min = 'min_qty'
-                fld_max = 'max_qty'
-            for i, rule in enumerate(ruleset[0], start=1):
-                min = getattr(rule, fld_min) or 0.0
-                max = getattr(rule, fld_max) or float('inf')
-                if stack:
-                    previous = stack.pop()
-                    if min == previous[2]:
-                        overlap = True
-                        break
-                    if min <= previous[3]:
-                        overlap = True
-                        break
-                else:
-                    stack.append((i, rule, min, max))
-            if overlap:
-                raise UserError(_(
-                    "Rule %s overlaps with rule %s") % (previous[0], i))
 
     @api.model
     def create(self, vals):
@@ -223,28 +178,43 @@ class SaleDiscount(models.Model):
             return False
 
     def _calculate_line_discount(self, line):
-        return self._calculate_discount(line.price_unit, line=line)
+        return self._calculate_discount(line=line)
 
-    def _calculate_discount(self, price_unit, lines=None, line=None):
-        if not lines:
-            if not line:
-                raise NotImplementedError
-            qty = line.product_uom_qty
-        else:
-            qty = 1.0
-        base = qty * price_unit
-        disc_amt = 0.0
-        disc_pct = 0.0
+    def _calculate_discount(self, lines=None, line=None):
+        if line and lines:
+            raise UserError(
+                "Programming Error in %s" % self._name)
+
         for rule in self.rule_ids:
-            if (line and rule.product_id and
-                    line.product_id != rule.product_id):
-                continue
-            if line and rule.product_category_id:
-                if not line.product_id._belongs_to_category(
-                        rule.product_category_id):
+            disc_amt = 0.0
+            disc_pct = 0.0
+            qty = 0.0
+            base = 0.0
+            if line:
+                qty = line.product_uom_qty
+                base = qty * line.price_unit
+                if (line and rule.product_ids and
+                        line.product_id not in rule.product_ids):
                     continue
-            match_min = match_max = False
+                if line and rule.product_category_ids:
+                    if not any(line.product_id._belongs_to_category(categ)
+                               for categ in rule.product_category_ids):
+                        continue
+            elif lines:
+                for sol in lines:
+                    if rule.product_ids:
+                        if sol.product_id not in rule.product_ids:
+                            continue
+                    elif rule.product_category_ids:
+                        if not any(sol.product_id._belongs_to_category(categ)
+                                   for categ in rule.product_category_ids):
+                            continue
+                    qty += sol.product_uom_qty
+                    base += sol.product_uom_qty * sol.price_unit
+
+            match = False
             if rule.matching_type == 'amount':
+                match_min = match_max = False
                 base = self._round_amt(base)
                 rule_min_base = self._round_amt(rule.min_base)
                 rule_max_base = self._round_amt(rule.max_base)
@@ -256,7 +226,9 @@ class SaleDiscount(models.Model):
                     continue
                 else:
                     match_max = True
+                match = match_min and match_max
             elif rule.matching_type == 'quantity':
+                match_min = match_max = False
                 if lines:
                     # discount_base == sale_order
                     qty = sum([x[0].product_uom_qty for x in lines])
@@ -271,10 +243,18 @@ class SaleDiscount(models.Model):
                     continue
                 else:
                     match_max = True
+                match = match_min and match_max
             else:
-                raise NotImplementedError
+                method = rule._matching_type_methods().get(
+                    rule.matching_type)
+                if not method:
+                    raise UserError(_(
+                        "Programming error: no method defined for "
+                        "matching_type '%s'."
+                    ) % rule.matching_type)
+                match = getattr(rule, method)(lines=lines, line=line)
 
-            if match_min and match_max:
+            if match:
                 if rule.discount_type == 'perc':
                     disc_amt = base * rule.discount_pct / 100.0
                     disc_pct = rule.discount_pct
@@ -286,7 +266,19 @@ class SaleDiscount(models.Model):
                         else:
                             disc_amt = min(rule.discount_amount, base)
                     disc_pct = disc_amt / base * 100.0
-                break
+                if rule.matching_extra == 'none':
+                    break
+                else:
+                    method = rule._matching_extra_methods().get(
+                        rule.matching_extra)
+                    if not method:
+                        raise UserError(_(
+                            "Programming error: no method defined for "
+                            "matching_extra '%s'."
+                        ) % rule.matching_extra)
+                    if getattr(rule, method)(lines=lines, line=line):
+                        break
+
         return disc_amt, disc_pct
 
     def _round_amt(self, val):

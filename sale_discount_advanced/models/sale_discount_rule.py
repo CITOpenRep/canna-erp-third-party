@@ -31,19 +31,35 @@ class SaleDiscountRule(models.Model):
         related='sale_discount_id.discount_base', readonly=True)
     # matching criteria
     matching_type = fields.Selection(
-        selection=[
-            ('amount', 'Amount'),
-            ('quantity', 'Quantity')],
+        selection='_selection_matching_type',
         default='amount',
         required=True,
         help="Select if the discount will be granted based upon "
              "value or quantity of goods sold ")
+    matching_extra = fields.Selection(
+        selection='_selection_matching_extra',
+        string='Extra condition',
+        required=True, default='none',
+        help="This field will result on extra constraints to determine "
+             "a matching rule. These constraints may vary per country")
+    # product_id is DEPRECATED and replaced by product_ids
+    # as from version 8.0.3 of this module
     product_id = fields.Many2one(
         comodel_name='product.product',
         string='Product')
+    product_ids = fields.Many2many(
+        comodel_name='product.product',
+        relation='product_product_sale_discount_rule_rel',
+        string='Products')
+    # product_category_id is DEPRECATED and replaced by product_category_ids
+    # as from version 8.0.3 of this module
     product_category_id = fields.Many2one(
         comodel_name='product.category',
         string='Product Category')
+    product_category_ids = fields.Many2many(
+        comodel_name='product.category',
+        relation='product_category_sale_discount_rule_rel',
+        string='Product Categories')
     min_base = fields.Float(
         string='Minimum base amount',
         digits=dp.get_precision('Account'))
@@ -97,6 +113,16 @@ class SaleDiscountRule(models.Model):
         digits=dp.get_precision('Account'),
         compute='_compute_discount_view')
 
+    @api.model
+    def _selection_matching_type(self):
+        return [
+            ('amount', 'Amount'),
+            ('quantity', 'Quantity')]
+
+    @api.model
+    def _selection_matching_extra(self):
+        return [('none', 'None')]
+
     @api.depends('min_base', 'min_qty')
     def _compute_min_view(self):
         for rule in self:
@@ -112,12 +138,11 @@ class SaleDiscountRule(models.Model):
     @api.depends('discount_base')
     def _compute_product_view(self):
         for rule in self:
-            if rule.discount_base == "sale_order":
-                rule.product_view = 'n/a'
-            else:
-                rule.product_view = (
-                    rule.product_id.display_name or
-                    rule.product_category_id.display_name or '')
+            rule.product_view = (
+                rule.product_ids and
+                ', '.join(rule.product_ids.mapped('display_name')) or
+                ', '.join(rule.product_category_ids.mapped('display_name')) or
+                '')
 
     @api.depends('discount_pct', 'discount_amount', 'discount_amount_unit')
     def _compute_discount_view(self):
@@ -125,7 +150,7 @@ class SaleDiscountRule(models.Model):
             if (rule.discount_base == 'sale_line' and
                     rule.matching_type == 'quantity' and
                     rule.discount_type == 'amnt'):
-                if rule.product_id:
+                if len(rule.product_ids) == 1:
                     rule.discount_view = rule.discount_amount_unit
                 else:
                     rule.discount_view = rule.discount_amount
@@ -138,7 +163,7 @@ class SaleDiscountRule(models.Model):
                     raise NotImplementedError
 
     @api.depends('discount_base', 'discount_type', 'matching_type',
-                 'product_id')
+                 'product_ids')
     def _compute_discount_fields_invisible(self):
         for rule in self:
             if rule.discount_type == 'perc':
@@ -147,7 +172,7 @@ class SaleDiscountRule(models.Model):
             else:
                 if rule.discount_base == 'sale_line':
                     if rule.matching_type == 'quantity':
-                        if rule.product_id:
+                        if len(rule.product_ids) == 1:
                             rule.discount_amount_invisible = True
                         else:
                             rule.discount_amount_unit_invisible = True
@@ -175,17 +200,40 @@ class SaleDiscountRule(models.Model):
             raise ValidationError(_(
                 "Percentage discount must be between 0 and 100."))
 
+    @api.one
+    @api.constrains('product_ids', 'product_category_ids')
+    def _check_product_filters(self):
+        if self.product_ids and self.product_category_ids:
+            raise ValidationError(_(
+                "Products and Product Categories are mutually exclusive"))
+
     @api.onchange('matching_type')
     def _onchange_matching_type(self):
         if self.matching_type == 'quantity':
-            self.product_category_id = False
+            self.product_category_ids = False
 
-    @api.onchange('product_id')
-    def _onchange_product_id(self):
-        if self.product_id:
-            self.product_category_id = False
+    @api.onchange('product_ids')
+    def _onchange_product_ids(self):
+        if self.product_ids:
+            self.product_category_ids = False
 
-    @api.onchange('product_category_id')
-    def _onchange_product_category_id(self):
-        if self.product_category_id:
-            self.product_id = False
+    @api.onchange('product_category_ids')
+    def _onchange_product_category_ids(self):
+        if self.product_category_ids:
+            self.product_ids = False
+
+    def _matching_type_methods(self):
+        """
+        Extend this dictionary in order to add methods to support
+        custom matching_types.
+        Such a method should return True (match) of False (no match).
+        """
+        return {}
+
+    def _matching_extra_methods(self):
+        """
+        Extend this dictionary in order to add support
+        for matching_extra methods.
+        Such a method should return True (match) of False (no match).
+        """
+        return {}

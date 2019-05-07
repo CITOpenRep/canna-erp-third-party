@@ -85,7 +85,6 @@ class SaleOrder(models.Model):
             return
 
         grouped_discounts = {}
-        line_discount_amounts = {}
         total_base_amount = 0.0
         line_updates = []
 
@@ -101,24 +100,18 @@ class SaleOrder(models.Model):
                     if discount.id not in grouped_discounts:
                         grouped_discounts[discount.id] = {
                             'sale_discount': discount,
-                            'lines': [(line, base_amount)],
-                            'disc_base_amt': base_amount}
+                            'lines': line}
                     else:
-                        grouped_discounts[discount.id]['disc_base_amt'] \
-                            += base_amount
-                        grouped_discounts[
-                            discount.id]['lines'].append(
-                                (line, base_amount))
+                        grouped_discounts[discount.id]['lines'] += line
                 elif discount.discount_base == 'sale_line':
                     amt, pct = discount._calculate_line_discount(line)
-                    line_discount_amounts[line.id] = amt
                     line_updates.append([1, line.id, {'discount': pct}])
                 else:
                     raise NotImplementedError
 
         for entry in grouped_discounts.values():
             amt, pct = entry['sale_discount']._calculate_discount(
-                entry['disc_base_amt'], lines=entry['lines'])
+                lines=entry['lines'])
             # redistribute the discount to the lines
             for line in entry['lines']:
                 done = False
@@ -132,25 +125,22 @@ class SaleOrder(models.Model):
                 if not done:
                     line_updates.append(
                         (1, line[0].id, {'discount': pct_sum}))
-                if line[0] not in line_discount_amounts:
-                    line_discount_amounts[line[0].id] = line[1] * pct / 100.0
-                else:
-                    line_discount_amounts[line[0].id] = min(
-                        line[1],
-                        line_discount_amounts[line[0]] + line[1] * pct / 100.0
-                    )
-        total_discount_amount = sum(line_discount_amounts.values())
 
-        ctx = dict(self._context, discount_calc=True)
         vals = {}
+        if line_updates:
+            vals['order_line'] = line_updates
+
+        total_discount_amount = 0.0
+        for line in self.order_line:
+            base_amount = line.price_unit * line.product_uom_qty
+            discount_pct = line.discount
+            total_discount_amount += base_amount * discount_pct / 100.0
         if not self.currency_id.is_zero(
                 self.discount_amount - total_discount_amount):
             vals['discount_amount'] = total_discount_amount
         if not self.currency_id.is_zero(
-                self.discount_amount - total_discount_amount):
+                self.discount_base_amount - total_base_amount):
             vals['discount_base_amount'] = total_base_amount
-        if line_updates:
-            vals['order_line'] = line_updates
         if vals:
             ctx = dict(self._context, discount_calc=True)
             self.with_context(ctx).write(vals)

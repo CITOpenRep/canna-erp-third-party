@@ -26,6 +26,7 @@
                   <field name="product_view"/>
                   <field name="min_view"/>
                   <field name="max_view"/>
+                  <field name="matching_extra"/>
                   <field name="discount_type"/>
                   <field name="discount_view"/>
                 </tree>
@@ -35,10 +36,10 @@
                     <separator string="Conditions" colspan="2"/>
                     <group name="rule_match_left">
                       <field name="matching_type"/>
-                      <field name="product_id"
-                             attrs="{'invisible': ['|', ('discount_base', '=', 'sale_order'), ('product_category_id', '!=', False)]}"/>
-                      <field name="product_category_id"
-                             attrs="{'invisible': ['|', ('discount_base', '=', 'sale_order'), ('product_id', '!=', False)]}"/>
+                      <field name="product_ids"
+                             widget="many2many_tags"/>
+                      <field name="product_category_ids"
+                             widget="many2many_tags"/>
                       <field name="sequence"/>
                     </group>
                     <group name="rule_match_right">
@@ -46,6 +47,7 @@
                       <field name="max_base" attrs="{'invisible': [('matching_type', '!=', 'amount')]}"/>
                       <field name="min_qty" attrs="{'invisible': [('matching_type', '=', 'amount')]}"/>
                       <field name="max_qty" attrs="{'invisible': [('matching_type', '=', 'amount')]}"/>
+                      <field name="matching_extra"/>
                     </group>
                     <separator string="Result" colspan="2"/>
                     <group name="rule_result_left">
