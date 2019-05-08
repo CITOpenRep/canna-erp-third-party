@@ -20,6 +20,7 @@
             </h1>
             <group>
               <field name="partner_id"/>
+              <field name="company_id" groups="base.group_multi_company" options="{'no_open': True}"/>
             </group>
             <group>
               <group col="1">

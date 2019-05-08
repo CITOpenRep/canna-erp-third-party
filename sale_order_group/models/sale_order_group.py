@@ -32,6 +32,11 @@ class SaleOrderGroup(models.Model):
                " ('partner_id.commercial_partner_id', '=', partner_id)]",
         string='Orders',
         copy=False)
+    company_id = fields.Many2one(
+        comodel_name='res.company',
+        string='Company',
+        required=True, readonly=True,
+        default=lambda self: self.env.user.company_id)
 
     @api.model
     def _default_name(self):
