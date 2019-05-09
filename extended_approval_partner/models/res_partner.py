@@ -30,3 +30,7 @@ class ResPartner(models.Model):
             return r
         else:
             self.state = 'confirmed'
+
+    @api.multi
+    def reset_to_draft(self):
+        self.state = 'draft'

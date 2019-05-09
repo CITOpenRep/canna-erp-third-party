@@ -10,6 +10,8 @@
       <field name="arch" type="xml">
         <xpath expr="/form/sheet" position="before">
           <header>
+            <button type="object" name="reset_to_draft" string="Reset to draft"
+                    attrs="{'invisible': ['|', ('state', 'not in', ['confirmed'])]}"/>
             <button type="object" name="set_state_to_confirmed" string="Confirm partner"
                     attrs="{'invisible': ['|', ('state', 'not in', ['draft' ,'extended_approval']), ('approval_allowed', '!=', True)]}"/>
             <field name="state" widget="statusbar"/>
