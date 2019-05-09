@@ -53,6 +53,12 @@ class SaleOrder(models.Model):
             res['value']['order_line'] = order_lines
         return res
 
+    @api.model
+    def create(self, vals):
+        order = super(SaleOrder, self).create(vals)
+        order.compute_discount()
+        return order
+
     @api.multi
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
@@ -117,19 +123,22 @@ class SaleOrder(models.Model):
                 done = False
                 pct_sum = pct
                 for line_update in line_updates:
-                    if line_update[1] == line[0].id:
+                    if line_update[1] == line.id:
                         pct_sum = min(line_update[2]['discount'] + pct, 100.0)
                         line_update[2]['discount'] = pct_sum
                         done = True
                         break
                 if not done:
                     line_updates.append(
-                        (1, line[0].id, {'discount': pct_sum}))
+                        (1, line.id, {'discount': pct_sum}))
 
         vals = {}
+        ctx = dict(self._context, discount_calc=True)
         if line_updates:
             vals['order_line'] = line_updates
+            self.with_context(ctx).write(vals)
 
+        vals = {}
         total_discount_amount = 0.0
         for line in self.order_line:
             base_amount = line.price_unit * line.product_uom_qty
@@ -142,5 +151,4 @@ class SaleOrder(models.Model):
                 self.discount_base_amount - total_base_amount):
             vals['discount_base_amount'] = total_base_amount
         if vals:
-            ctx = dict(self._context, discount_calc=True)
             self.with_context(ctx).write(vals)
