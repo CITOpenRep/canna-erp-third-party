@@ -9,7 +9,7 @@ def get_applicable_models(browselist):
 
 def update_model_flows(env, models):
     for model in models:
-        env[model].recompute_all_next_approvers()
+        env[model].sudo().recompute_all_next_approvers()
 
 
 def update_flows(browselist):
