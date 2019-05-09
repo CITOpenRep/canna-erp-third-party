@@ -255,6 +255,19 @@ class SaleDiscount(models.Model):
                 match = getattr(rule, method)(lines=lines, line=line)
 
             if match:
+                if rule.matching_extra != 'none':
+                    method = rule._matching_extra_methods().get(
+                        rule.matching_extra)
+                    if not method:
+                        raise UserError(_(
+                            "Programming error: no method defined for "
+                            "matching_extra '%s'."
+                        ) % rule.matching_extra)
+                    if not getattr(rule, method)(lines=lines, line=line):
+                        # The extra matching condition is only applied if all
+                        # other conditions match. If the extra matching
+                        # condition returns False, then do not apply this rule.
+                        break
                 if rule.discount_type == 'perc':
                     disc_amt = base * rule.discount_pct / 100.0
                     disc_pct = rule.discount_pct
@@ -266,18 +279,8 @@ class SaleDiscount(models.Model):
                         else:
                             disc_amt = min(rule.discount_amount, base)
                     disc_pct = disc_amt / base * 100.0
-                if rule.matching_extra == 'none':
-                    break
-                else:
-                    method = rule._matching_extra_methods().get(
-                        rule.matching_extra)
-                    if not method:
-                        raise UserError(_(
-                            "Programming error: no method defined for "
-                            "matching_extra '%s'."
-                        ) % rule.matching_extra)
-                    if getattr(rule, method)(lines=lines, line=line):
-                        break
+                # Do not apply any other rules for this discount.
+                break
 
         return disc_amt, disc_pct
 
