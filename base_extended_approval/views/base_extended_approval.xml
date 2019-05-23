@@ -42,7 +42,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_extended_approval_step_form">
-      <field name="name">Extended Approval Step</field>
+      <field name="name">Approval Step</field>
       <field name="res_model">extended.approval.step</field>
       <field name="type">ir.actions.act_window</field>
       <field name="view_type">form</field>
@@ -59,7 +59,8 @@
         id="menu_extended_approval_step"
         action="action_extended_approval_step_form"
         parent="menu_extended_approval_config"
-        groups="base.group_erp_manager"/>
+        groups="base.group_erp_manager"
+        sequence="20"/>
 
 
     <record model="ir.ui.view" id="view_extended_approval_flow_form">
@@ -125,7 +126,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_extended_approval_flow_form">
-      <field name="name">Extended Approval Flow</field>
+      <field name="name">Approval Flow</field>
       <field name="res_model">extended.approval.flow</field>
       <field name="type">ir.actions.act_window</field>
       <field name="view_type">form</field>
@@ -142,8 +143,8 @@
         id="menu_extended_approval_flow"
         action="action_extended_approval_flow_form"
         parent="menu_extended_approval_config"
-        groups="base.group_erp_manager"/>
-
+        groups="base.group_erp_manager"
+        sequence="30"/>
 
     <record model="ir.ui.view" id="view_extended_approval_condition_tree">
       <field name="name">extended.approval.condition.tree</field>
@@ -172,7 +173,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_extended_approval_condition_form">
-      <field name="name">Extended Approval Condition</field>
+      <field name="name">Approval Condition</field>
       <field name="res_model">extended.approval.condition</field>
       <field name="type">ir.actions.act_window</field>
       <field name="view_type">form</field>
@@ -189,7 +190,8 @@
         id="menu_extended_approval_condition"
         action="action_extended_approval_condition_form"
         parent="menu_extended_approval_config"
-        groups="base.group_erp_manager"/>
+        groups="base.group_erp_manager"
+        sequence="10"/>
 
     <!--
     <record model="ir.actions.act_window" id="action_extended_approval_history_form">

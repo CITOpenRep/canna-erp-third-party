@@ -16,9 +16,8 @@ class ExtendedApprovalCondition(models.Model):
         required=True,
         selection="_get_condition_types")
 
-    domain = fields.Char(
-        string="Domain expression",
-        size=512)
+    domain = fields.Text(
+        string="Expression")
 
     @api.multi
     def get_applicable_models(self):
@@ -30,7 +29,8 @@ class ExtendedApprovalCondition(models.Model):
     def _get_condition_types(self):
         return [
             ('always', 'No condition'),
-            ('domain', 'Domain condition')
+            ('domain', 'Domain condition'),
+            ('expression', 'Python expression'),
         ]
 
     def is_applicable(self, record):
@@ -46,3 +46,6 @@ class ExtendedApprovalCondition(models.Model):
             [('id', 'in', record._ids)]
             + safe_eval(self.domain) if self.domain else []
         )
+
+    def _is_applicable_expression(self, record):
+        return safe_eval(self.domain, {'record': record})
