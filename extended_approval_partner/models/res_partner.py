@@ -33,4 +33,5 @@ class ResPartner(models.Model):
 
     @api.multi
     def reset_to_draft(self):
+        self.cancel_approval()
         self.state = 'draft'
