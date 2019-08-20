@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016-2018 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import fields, models
@@ -13,4 +13,4 @@ class SaleDiscount(models.Model):
         relation='payterm_sale_discount_rel',
         column1='discount_id',
         column2='payterm_id',
-        track_visibility='onchange')
+        readonly=True)

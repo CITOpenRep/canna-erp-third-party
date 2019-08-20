@@ -13,12 +13,15 @@ _logger = logging.getLogger(__name__)
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    def _get_sale_discount_ids(self, cr, uid, pricelist_id,
-                               date_order, product_id, context=None):
+    def _get_sale_discount_ids(self, cr, uid, product_id, date_order,
+                               context=None):
         res = super(SaleOrderLine, self)._get_sale_discount_ids(
-            cr, uid, pricelist_id, date_order, product_id, context=context)
+            cr, uid, product_id, date_order, context=context)
+        if not product_id:
+            return []
         if context is None:
             context = {}
+        self.env = api.Environment(cr, uid, context)
         discounts = self.env['sale.discount']
         if context.get('payment_term_id'):
             self.env = api.Environment(cr, uid, context)
@@ -28,10 +31,12 @@ class SaleOrderLine(models.Model):
             for discount in payterm._get_active_sale_discounts(date_order):
                 if discount._check_product_filter(product):
                     discounts += discount
-        return res + discounts._ids
+        return res + discounts.ids
 
     def _get_sale_discounts(self):
         res = super(SaleOrderLine, self)._get_sale_discounts()
+        if not self.product_id:
+            return res
         discounts = self.env['sale.discount']
         payterm = self.order_id.payment_term
         if payterm:

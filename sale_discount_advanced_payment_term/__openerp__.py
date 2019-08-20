@@ -5,19 +5,19 @@
 
 {
     'name': 'Sale Discount on Payment Terms',
-    'version': '8.0.1.2.0',
+    'version': '8.0.1.3.0',
     'license': 'AGPL-3',
     'author': 'Noviat,Onestein',
     'website': 'http://www.noviat.com',
     'category': 'Sales',
     'depends': ['sale_discount_advanced'],
     'data': [
-        'views/account_payment_term.xml',
-        'views/sale_discount.xml',
-        'views/sale_order.xml',
+        'views/account_payment_term_views.xml',
+        'views/sale_discount_views.xml',
+        'views/sale_order_views.xml',
     ],
     'demo': [
-        'demo/sale_discount_demo.xml'
+        'demo/sale_discount.xml'
     ],
     'installable': True,
 }
