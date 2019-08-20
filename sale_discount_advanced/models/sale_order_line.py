@@ -33,15 +33,13 @@ class SaleOrderLine(models.Model):
             lang=lang, update_tax=update_tax, date_order=date_order,
             packaging=packaging, fiscal_position=fiscal_position,
             flag=flag, context=context)
-        if product_id:
-            disc_ids = self._get_sale_discount_ids(
-                cr, uid, pricelist_id, date_order, product_id,
-                context=context)
-            res['value'].update(sale_discount_ids=[(6, 0, disc_ids)])
+        disc_ids = self._get_sale_discount_ids(
+            cr, uid, product_id, date_order, context=context)
+        res['value'].update(sale_discount_ids=[(6, 0, disc_ids)])
         return res
 
-    def _get_sale_discount_ids(self, cr, uid, pricelist_id,
-                               date_order, product_id, context=None):
+    def _get_sale_discount_ids(self, cr, uid, product_id, date_order,
+                               context=None):
         """
         v7 api.
         By default sale order lines without products are not
@@ -49,17 +47,19 @@ class SaleOrderLine(models.Model):
         You can still add a discount manually to such a line or
         add non-product lines via an inherit on this method.
         """
-        if context is None:
-            context = {}
+        if not product_id:
+            return []
+        discount_ctx = context['discount_ids']
+        discount_ids = discount_ctx[0][2]
         self.env = api.Environment(cr, uid, context)
         discounts = self.env['sale.discount']
-        pricelist = self.env['product.pricelist'].browse(pricelist_id)
-        if pricelist:
-            product = self.env['product.product'].browse(product_id)
-            for discount in pricelist._get_active_sale_discounts(date_order):
-                if discount._check_product_filter(product):
-                    discounts += discount
-        return discounts._ids
+        so_discounts = self.env['sale.discount'].browse(discount_ids)
+        product = self.env['product.product'].browse(product_id)
+        for discount in so_discounts:
+            if discount._check_product_filter(product) and \
+                    discount._check_active_date(check_date=date_order):
+                discounts += discount
+        return discounts.ids
 
     def _get_sale_discounts(self):
         """
@@ -69,22 +69,13 @@ class SaleOrderLine(models.Model):
         You can still add a discount manually to such a line or
         add non-product lines via an inherit on this method.
         """
+        self.ensure_one()
         discounts = self.env['sale.discount']
-        pricelist = self.order_id.pricelist_id
-        if pricelist:
-            active_discounts = pricelist._get_active_sale_discounts(
-                self.order_id.date_order)
-            for discount in active_discounts:
-                if discount._check_product_filter(self.product_id):
-                    discounts += discount
+        if not self.product_id:
+            return discounts
+        date_order = self.order_id.date_order
+        for discount in self.order_id.discount_ids:
+            if discount._check_product_filter(self.product_id) and \
+                    discount._check_active_date(check_date=date_order):
+                discounts += discount
         return discounts
-
-    @api.onchange('product_id')
-    def _onchange_sale_discount(self):
-        """
-        The '@api.onchange' has no effect installing this module
-        on a standard Odoo V8 system due to presence of
-        old style onchange ('product_id_change').
-        """
-        self.sale_discount_ids = self._get_sale_discounts()
-        self.discount = 0.0

@@ -42,35 +42,25 @@ class SaleDiscountRule(models.Model):
         required=True, default='none',
         help="This field will result on extra constraints to determine "
              "a matching rule. These constraints may vary per country")
-    # product_id is DEPRECATED and replaced by product_ids
-    # as from version 8.0.3 of this module
-    product_id = fields.Many2one(
-        comodel_name='product.product',
-        string='Product')
     product_ids = fields.Many2many(
         comodel_name='product.product',
         relation='product_product_sale_discount_rule_rel',
         string='Products')
-    # product_category_id is DEPRECATED and replaced by product_category_ids
-    # as from version 8.0.3 of this module
-    product_category_id = fields.Many2one(
-        comodel_name='product.category',
-        string='Product Category')
     product_category_ids = fields.Many2many(
         comodel_name='product.category',
         relation='product_category_sale_discount_rule_rel',
         string='Product Categories')
     min_base = fields.Float(
-        string='Minimum base amount',
+        string='Minimum Base Amount',
         digits=dp.get_precision('Account'))
     max_base = fields.Float(
-        string='Maximum base amount',
+        string='Maximum Base Amount',
         digits=dp.get_precision('Account'))
     min_qty = fields.Float(
-        string='Minimum quantity',
+        string='Minimum Quantity',
         digits=dp.get_precision('Product UoS'))
     max_qty = fields.Float(
-        string='Maximum quantity',
+        string='Maximum Quantity',
         digits=dp.get_precision('Product UoS'))
     # the *_view fields are only used for tree view
     # readabily purposes. All calculations are based upon the
@@ -165,6 +155,11 @@ class SaleDiscountRule(models.Model):
     @api.depends('discount_base', 'discount_type', 'matching_type',
                  'product_ids')
     def _compute_discount_fields_invisible(self):
+        self._onchange_discount_fields_invisible()
+
+    @api.onchange('discount_base', 'discount_type', 'matching_type',
+                  'product_ids')
+    def _onchange_discount_fields_invisible(self):
         for rule in self:
             if rule.discount_type == 'perc':
                 rule.discount_amount_invisible = True
@@ -192,11 +187,13 @@ class SaleDiscountRule(models.Model):
         adapt this method to allow also price increases.
         """
         # Check if amount is positive
-        if self.discount_view < 0:
+        if self.discount_type == 'amnt' and (self.discount_amount < 0 or
+                                             self.discount_amount_unit < 0):
             raise ValidationError(_(
                 "Discount Amount needs to be a positive number"))
         # Check if percentage is between 0 and 100
-        elif self.discount_type == 'perc' and self.discount_view > 100:
+        elif self.discount_type == 'perc' and (self.discount_pct < 0 or
+                                               self.discount_pct > 100):
             raise ValidationError(_(
                 "Percentage discount must be between 0 and 100."))
 
@@ -206,6 +203,24 @@ class SaleDiscountRule(models.Model):
         if self.product_ids and self.product_category_ids:
             raise ValidationError(_(
                 "Products and Product Categories are mutually exclusive"))
+
+    @api.one
+    @api.constrains('min_base', 'max_base')
+    def _check_min_max_base(self):
+        if self.min_base and self.max_base:
+            if self.max_base < self.min_base:
+                raise ValidationError(
+                    _("The 'Maximum Base Amount' may not be lower "
+                      "than the 'Minimum Base Amount'."))
+
+    @api.one
+    @api.constrains('min_qty', 'max_qty')
+    def _check_min_max_qty(self):
+        if self.min_qty and self.max_qty:
+            if self.max_qty < self.min_qty:
+                raise ValidationError(
+                    _("The 'Maximum Quantity' may not be lower "
+                      "than the 'Minimum Quantity'."))
 
     @api.onchange('matching_type')
     def _onchange_matching_type(self):

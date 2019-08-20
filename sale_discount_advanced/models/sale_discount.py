@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import logging
 
 from openerp import api, fields, models, _
-from openerp.exceptions import Warning as UserError
+from openerp.exceptions import ValidationError, Warning as UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -59,12 +59,17 @@ class SaleDiscount(models.Model):
         default='sale_order',
         track_visibility='onchange',
         help="Base the discount on ")
-    pricelist_ids = fields.Many2many(
-        comodel_name='product.pricelist',
-        relation='pricelist_sale_discount_rel',
-        column1='discount_id',
-        column2='pricelist_id',
-        track_visibility='onchange')
+    exclusive = fields.Boolean(
+        string='Exclusive',
+        help="This discount engine will be used exclusively for the "
+             "sale order line discount calculation "
+             "if a rule of this engine matches for the line."
+             "\nThe order of the discount object will determine which one of "
+             "the 'exclusive' discount engines will be selected "
+             "in case multiple 'exclusive' discount objects have been set "
+             "on this sales order (the order is set via the discount "
+             "'sequence' field, the lowest sequence will be selected)."
+    )
     rule_ids = fields.One2many(
         comodel_name='sale.discount.rule',
         inverse_name='sale_discount_id',
@@ -118,12 +123,21 @@ class SaleDiscount(models.Model):
         self.rule_ids.write({
             'matching_type': 'amount',
             'product_id': False,
+            'exclusive': False,
             'product_category_ids': [(5, )],
             'discount_type': 'perc',
             'discount_pct': 0.0,
             'discount_amount': 0.0,
             'discount_amount_unit': 0.0,
         })
+
+    @api.one
+    @api.constrains('start_date', 'end_date')
+    def _check_dates(self):
+        if self.start_date and self.end_date:
+            if self.end_date < self.start_date:
+                raise ValidationError(
+                    _("The end date may not be lower than the start date."))
 
     @api.model
     def create(self, vals):
@@ -153,7 +167,7 @@ class SaleDiscount(models.Model):
         return super(SaleDiscount, self).message_track(
             tracked_fields, initial_values)
 
-    def check_active_date(self, check_date=None):
+    def _check_active_date(self, check_date=None):
         if not check_date:
             check_date = fields.Datetime.now()
         end_date = self.end_date
@@ -184,6 +198,7 @@ class SaleDiscount(models.Model):
         if line and lines:
             raise UserError(
                 "Programming Error in %s" % self._name)
+        match = False
 
         for rule in self.rule_ids:
             disc_amt = 0.0
@@ -272,17 +287,17 @@ class SaleDiscount(models.Model):
                     disc_amt = base * rule.discount_pct / 100.0
                     disc_pct = rule.discount_pct
                 else:
-                    if rule.matching_type == 'quantity':
-                        if rule.product_id:
-                            disc_amt = min(
-                                rule.discount_amount_unit * qty, base)
-                        else:
-                            disc_amt = min(rule.discount_amount, base)
+                    if rule.matching_type == 'quantity' and \
+                            len(rule.product_ids) == 1:
+                        disc_amt = min(
+                            rule.discount_amount_unit * qty, base)
+                    else:
+                        disc_amt = min(rule.discount_amount, base)
                     disc_pct = disc_amt / base * 100.0
                 # Do not apply any other rules for this discount.
                 break
 
-        return disc_amt, disc_pct
+        return match, disc_pct
 
     def _round_amt(self, val):
         digits = self.env['sale.discount.rule']._fields['min_base'].digits[1]

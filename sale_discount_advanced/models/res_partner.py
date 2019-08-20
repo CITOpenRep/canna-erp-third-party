@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2012-2016 Noviat nv/sa (www.noviat.com).
-# Copyright (C) 2016 Onestein (http://www.onestein.eu).
+# Copyright (C) 2019 Noviat nv/sa (www.noviat.com).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 
 from openerp import api, fields, models
 
 
-class ProductPricelist(models.Model):
-    _inherit = 'product.pricelist'
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
 
     sale_discount_ids = fields.Many2many(
         string='Sale Discounts',
         comodel_name='sale.discount',
-        relation='pricelist_sale_discount_rel',
-        column1='pricelist_id',
+        relation='partner_sale_discount_rel',
+        column1='partner_id',
         column2='discount_id')
 
     @api.multi
@@ -24,6 +22,6 @@ class ProductPricelist(models.Model):
         discounts = self.env['sale.discount']
         for discount in self.sale_discount_ids:
             if discount.active and \
-                    discount.check_active_date(date_order):
+                    discount._check_active_date(date_order):
                 discounts += discount
         return discounts

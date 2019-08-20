@@ -14,6 +14,7 @@
             <field name="start_date"/>
             <field name="end_date"/>
             <field name="discount_base"/>
+            <field name="exclusive"/>
             <field name="sequence"/>
           </group>
           <notebook>
@@ -71,7 +72,7 @@
                 <p>
                   You can use discount objects to pre-calculate the discount percentage per sale order line.
                   <br/>
-                  The discount will be set automatically by configuring them on pricelists.
+                  The discount will be set automatically by configuring them on the customer record.
                   <br/>
                   Multiple discount objects can be combined e.g. to give extra discount for certain products.
                 </p>
@@ -98,9 +99,6 @@
                   The order of the discount rules is important. The first matching rule will be used for the discount calculation.
                 </p>
               </span>
-            </page>
-            <page string="Pricelists" name="pricelists">
-              <field name="pricelist_ids" nolabel="1" colspan="4"/>
             </page>
             <page name="excluded_products_and_categories"
                   string="Excluded Products &amp; Categories"
@@ -158,6 +156,7 @@
           <field name="name"/>
           <field name="start_date"/>
           <field name="end_date"/>
+          <field name="exclusive"/>
           <field name="active"/>
         </tree>
       </field>

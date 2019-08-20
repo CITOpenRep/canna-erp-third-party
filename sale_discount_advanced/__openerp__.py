@@ -7,27 +7,22 @@
 {
     'name': "Sale Discount Advanced",
     'author': "ICTSTUDIO,Noviat,Onestein",
-    'summary': """Order Amount Discounts related to Pricelists""",
     'website': "http://www.ictstudio.eu",
     'category': 'Sales',
-    'version': '8.0.3.0.0',
+    'version': '8.0.3.1.0',
     'license': 'AGPL-3',
     'depends': [
         'sale',
-        'product',
     ],
     'data': [
         'security/ir.model.access.csv',
         'data/mail_message_subtype.xml',
-        'views/product_pricelist.xml',
-        'views/sale_discount.xml',
-        'views/sale_order.xml',
+        'views/res_partner_views.xml',
+        'views/sale_discount_views.xml',
+        'views/sale_order_views.xml',
     ],
     'demo': [
-        'demo/product_pricelist_demo.xml',
-        'demo/product_pricelist_version_demo.xml',
-        'demo/product_pricelist_item_demo.xml',
-        'demo/sale_discount_demo.xml',
-        'demo/sale_discount_rule_demo.xml',
+        'demo/sale_discount.xml',
+        'demo/sale_discount_rule.xml',
     ]
 }
