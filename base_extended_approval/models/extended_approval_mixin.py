@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openerp import _, api, fields, models
-from openerp.tools import safe_eval
+from openerp.tools.safe_eval import safe_eval
 from openerp.exceptions import Warning
 
 
