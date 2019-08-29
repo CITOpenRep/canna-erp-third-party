@@ -31,7 +31,6 @@
       <field name="arch" type="xml">
         <field name="currency_id" position="after">
           <field name="sale_order_group_id"
-                 widget="many2one"
                  attrs="{'invisible': [('sale_order_group_id', '=', False)]}"/>
         </field>
       </field>

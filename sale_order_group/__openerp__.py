@@ -4,7 +4,7 @@
 
 {
     'name': 'Sale Order Group',
-    'version': '8.0.1.0.0.',
+    'version': '8.0.1.0.3',
     'license': 'AGPL-3',
     'author': 'Noviat',
     'category': 'Sales',
@@ -17,6 +17,7 @@
         'security/ir.model.access.csv',
         'views/sale_order_views.xml',
         'views/sale_order_group_views.xml',
+        'wizards/sale_order_group_add_order.xml',
         'wizards/sale_order_group_create.xml',
     ],
     'installable': True,

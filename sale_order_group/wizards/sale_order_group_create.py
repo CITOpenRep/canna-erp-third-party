@@ -63,6 +63,11 @@ class SaleOrderGroupCreate(models.TransientModel):
 
     @api.multi
     def group_orders(self):
+        vals = self._prepare_sale_order_group_vals()
+        self.env['sale.order.group'].create(vals)
+        return {'type': 'ir.actions.act_window_close'}
+
+    def _prepare_sale_order_group_vals(self):
         orders = self.env['sale.order'].browse(
             self.env.context.get('active_ids'))
         partner = orders[0].partner_id.commercial_partner_id
@@ -71,5 +76,4 @@ class SaleOrderGroupCreate(models.TransientModel):
             'sale_order_ids': [(6, 0, orders.ids)],
             'partner_id': partner.id,
         }
-        self.env['sale.order.group'].create(vals)
-        return {'type': 'ir.actions.act_window_close'}
+        return vals

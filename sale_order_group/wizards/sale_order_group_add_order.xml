@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <record id="sale_order_group_add_order_view_form" model="ir.ui.view">
+      <field name="name">sale.order.group.add.order.form</field>
+      <field name="model">sale.order.group.add.order</field>
+      <field name="arch" type="xml">
+        <form string="Add Sale Orders">
+          <group name="g1">
+            <group name="g1l">
+              <field name="sale_order_group_id" invisible="1"/>
+            </group>
+            <group name="g1r">
+              <field name="partner_id" invisible="1"/>
+            </group>
+          </group>
+          <group name="g2">
+            <field name="sale_order_ids" nolabel="1"/>
+          </group>
+          <footer>
+            <button string="Add Orders" name="add_to_group" type="object" class="oe_highlight"/>
+            <span> or </span>
+            <button string="Cancel" class="oe_link" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</openerp>

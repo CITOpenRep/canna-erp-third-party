@@ -14,7 +14,7 @@
           <footer>
             <button string="Group Orders" name="group_orders" type="object"
                     class="oe_highlight" attrs="{'invisible': [('state', '=', 'error')]}"/>
-            <span attrs="{'invisible': [('state', '=', 'error')]}">or</span>
+            <span attrs="{'invisible': [('state', '=', 'error')]}"> or </span>
             <button string="Cancel" class="oe_link" special="cancel"/>
           </footer>
         </form>

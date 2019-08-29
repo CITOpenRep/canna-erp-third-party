@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 
-from openerp import api, fields, models
+from openerp import api, fields, models, _
 
 
 class SaleOrderGroup(models.Model):
@@ -23,13 +23,9 @@ class SaleOrderGroup(models.Model):
         comodel_name='res.partner',
         string='Partner',
         readonly=True)
-    sale_order_ids = fields.Many2many(
+    sale_order_ids = fields.One2many(
         comodel_name='sale.order',
-        relation='sale_order_group_rel',
-        column1='group_id',
-        column2='order_id',
-        domain="[('state', 'in', ['draft', 'sent']),"
-               " ('partner_id.commercial_partner_id', '=', partner_id)]",
+        inverse_name='sale_order_group_id',
         string='Orders',
         copy=False)
     company_id = fields.Many2one(
@@ -56,3 +52,20 @@ class SaleOrderGroup(models.Model):
         res = self.sale_order_ids.with_context(ctx).action_cancel()
         self.state = 'cancel'
         return res
+
+    @api.multi
+    def add_orders(self):
+        self.ensure_one()
+        ctx = dict(
+            self.env.context,
+            default_sale_order_group_id=self.id)
+        return {
+            'name': _("Add Orders"),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order.group.add.order',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': ctx,
+            'target': 'new',
+        }

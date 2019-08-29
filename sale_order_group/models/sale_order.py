@@ -9,13 +9,14 @@ from openerp.exceptions import Warning as UserError
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    sale_order_group_id = fields.Many2many(
+    sale_order_group_id = fields.Many2one(
         comodel_name='sale.order.group',
-        relation='sale_order_group_rel',
-        column1='order_id',
-        column2='group_id',
         string='Sale Order Group',
+        ondelete='set null',
         copy=False)
+    sale_order_group_state = fields.Selection(
+        related='sale_order_group_id.state',
+        string='Sale Order Group State')
 
     @api.multi
     def action_button_confirm(self):
@@ -41,3 +42,9 @@ class SaleOrder(models.Model):
                         "in this group."
                     ) % so.name)
         return super(SaleOrder, self).action_cancel()
+
+    @api.multi
+    def remove_from_sale_order_group(self):
+        for so in self:
+            so.sale_order_group_id = False
+        return True
