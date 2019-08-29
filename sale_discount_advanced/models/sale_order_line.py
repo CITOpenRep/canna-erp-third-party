@@ -49,7 +49,11 @@ class SaleOrderLine(models.Model):
         """
         if not product_id:
             return []
-        discount_ctx = context['discount_ids']
+        if context is None:
+            context = {}
+        discount_ctx = context.get('discount_ids')
+        if not discount_ctx:
+            return []
         discount_ids = discount_ctx[0][2]
         self.env = api.Environment(cr, uid, context)
         discounts = self.env['sale.discount']

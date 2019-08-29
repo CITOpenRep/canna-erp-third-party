@@ -77,9 +77,9 @@ class SaleOrder(models.Model):
     @api.multi
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
-        for order in self:
-            if not self._context.get('discount_calc'):
-                order.compute_discount()
+        for so in self:
+            if not self._context.get('skip_discount_calc'):
+                so.compute_discount()
         return res
 
     @api.model
@@ -119,39 +119,43 @@ class SaleOrder(models.Model):
 
     @api.multi
     def compute_discount(self):
-        for order in self:
-            if order.state not in ['draft', 'sent']:
+        for so in self:
+            if so.state not in ['draft', 'sent']:
                 return
-            order._update_discount()
+        self._update_discount()
 
     def _update_discount(self):
-        self.ensure_one()
-        if self._context.get('discount_calc'):
+        if self._context.get('skip_discount_calc'):
             return
 
         grouped_discounts = {}
-        total_base_amount = 0.0
+        base_amount_totals = {}
         line_updates = {}
 
-        for line in self.order_line:
-            base_amount = line.price_unit * line.product_uom_qty
-            total_base_amount += base_amount
-            line_discounts = []
-            for discount in line.sale_discount_ids:
-                if discount.discount_base == 'sale_order':
-                    if discount.id not in grouped_discounts:
-                        grouped_discounts[discount.id] = {
-                            'sale_discount': discount,
-                            'lines': line}
+        orders = self.with_context(
+            dict(self._context, skip_discount_calc=True))
+        for so in orders:
+            total_base_amount = 0.0
+            for line in so.order_line:
+                base_amount = line.price_unit * line.product_uom_qty
+                total_base_amount += base_amount
+                line_discounts = []
+                for discount in line.sale_discount_ids:
+                    if discount.discount_base == 'sale_order':
+                        if discount.id not in grouped_discounts:
+                            grouped_discounts[discount.id] = {
+                                'sale_discount': discount,
+                                'lines': line}
+                        else:
+                            grouped_discounts[discount.id]['lines'] += line
+                    elif discount.discount_base == 'sale_line':
+                        match, pct = discount._calculate_line_discount(line)
+                        if match:
+                            line_discounts += [(discount, pct)]
                     else:
-                        grouped_discounts[discount.id]['lines'] += line
-                elif discount.discount_base == 'sale_line':
-                    match, pct = discount._calculate_line_discount(line)
-                    if match:
-                        line_discounts += [(discount, pct)]
-                else:
-                    raise NotImplementedError
-            line_updates[line.id] = line_discounts
+                        raise NotImplementedError
+                line_updates[line] = line_discounts
+            base_amount_totals[so] = total_base_amount
 
         # redistribute the discount to the lines
         # when discount_base == 'sale_order'
@@ -161,13 +165,13 @@ class SaleOrder(models.Model):
             if not match:
                 continue
             for line in entry['lines']:
-                if line.id not in line_updates:
-                    line_updates[line.id] = [(entry['sale_discount'], pct)]
+                if line not in line_updates:
+                    line_updates[line] = [(entry['sale_discount'], pct)]
                 else:
-                    line_updates[line.id] += [(entry['sale_discount'], pct)]
+                    line_updates[line] += [(entry['sale_discount'], pct)]
 
-        line_vals = []
-        for line_id, line_discounts in line_updates.iteritems():
+        line_update_vals = []
+        for line, line_discounts in line_updates.iteritems():
             pct_sum = 0.0
             exclusives = [x for x in line_discounts if x[0].exclusive]
             if exclusives:
@@ -176,25 +180,23 @@ class SaleOrder(models.Model):
             for disc in line_discounts:
                 pct_sum += disc[1]
             pct_sum = min(pct_sum, 100.0)
-            line_vals.append([1, line_id, {'discount': pct_sum}])
+            line_update_vals.append([line, {'discount': pct_sum}])
 
-        vals = {}
-        ctx = dict(self._context, discount_calc=True)
-        if line_updates:
-            vals['order_line'] = line_vals
-            self.with_context(ctx).write(vals)
+        for line_update in line_update_vals:
+            line_update[0].write(line_update[1])
 
-        vals = {}
-        total_discount_amount = 0.0
-        for line in self.order_line:
-            base_amount = line.price_unit * line.product_uom_qty
-            discount_pct = line.discount
-            total_discount_amount += base_amount * discount_pct / 100.0
-        if not self.currency_id.is_zero(
-                self.discount_amount - total_discount_amount):
-            vals['discount_amount'] = total_discount_amount
-        if not self.currency_id.is_zero(
-                self.discount_base_amount - total_base_amount):
-            vals['discount_base_amount'] = total_base_amount
-        if vals:
-            self.with_context(ctx).write(vals)
+        for so in orders:
+            vals = {}
+            total_discount_amount = 0.0
+            for line in so.order_line:
+                base_amount = line.price_unit * line.product_uom_qty
+                discount_pct = line.discount
+                total_discount_amount += base_amount * discount_pct / 100.0
+            if not so.currency_id.is_zero(
+                    so.discount_amount - total_discount_amount):
+                vals['discount_amount'] = total_discount_amount
+            if not so.currency_id.is_zero(
+                    so.discount_base_amount - base_amount_totals[so]):
+                vals['discount_base_amount'] = base_amount_totals[so]
+            if vals:
+                so.write(vals)
