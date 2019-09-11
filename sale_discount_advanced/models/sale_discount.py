@@ -56,10 +56,12 @@ class SaleDiscount(models.Model):
         selection=lambda self: self._selection_discount_base(),
         string='Discount Base',
         required=True,
-        default='sale_order',
+        default='sale_order_group',
         track_visibility='onchange',
         help="Base the discount on ")
-    exclusive = fields.Boolean(
+    exclusive = fields.Selection(
+        selection=[('always', 'Always'),
+                   ('highest', 'Use Highest')],
         string='Exclusive',
         help="This discount engine will be used exclusively for the "
              "sale order line discount calculation "
@@ -69,6 +71,11 @@ class SaleDiscount(models.Model):
              "in case multiple 'exclusive' discount objects have been set "
              "on this sales order (the order is set via the discount "
              "'sequence' field, the lowest sequence will be selected)."
+             "\nThe 'Use Highest' option will change this behaviour: "
+             "when the granted exclusive discount is lower than the sum of "
+             "the discounts calculated by the other discount engines "
+             "than the exclusive discount will be dropped "
+             "in favour of the other engines."
     )
     rule_ids = fields.One2many(
         comodel_name='sale.discount.rule',
@@ -114,6 +121,7 @@ class SaleDiscount(models.Model):
         """
         selection = [
             ('sale_order', 'Base discount on order'),
+            ('sale_order_group', 'Base discount on group of orders'),
             ('sale_line', 'Base discount on order line'),
         ]
         return selection
@@ -191,41 +199,23 @@ class SaleDiscount(models.Model):
         else:
             return False
 
-    def _calculate_line_discount(self, line):
-        return self._calculate_discount(line=line)
-
-    def _calculate_discount(self, lines=None, line=None):
-        if line and lines:
-            raise UserError(
-                "Programming Error in %s" % self._name)
-        match = False
+    def _calculate_discount(self, lines):
 
         for rule in self.rule_ids:
             disc_amt = 0.0
             disc_pct = 0.0
             qty = 0.0
             base = 0.0
-            if line:
-                qty = line.product_uom_qty
-                base = qty * line.price_unit
-                if (line and rule.product_ids and
-                        line.product_id not in rule.product_ids):
-                    continue
-                if line and rule.product_category_ids:
-                    if not any(line.product_id._belongs_to_category(categ)
+            for sol in lines:
+                if rule.product_ids:
+                    if sol.product_id not in rule.product_ids:
+                        continue
+                elif rule.product_category_ids:
+                    if not any(sol.product_id._belongs_to_category(categ)
                                for categ in rule.product_category_ids):
                         continue
-            elif lines:
-                for sol in lines:
-                    if rule.product_ids:
-                        if sol.product_id not in rule.product_ids:
-                            continue
-                    elif rule.product_category_ids:
-                        if not any(sol.product_id._belongs_to_category(categ)
-                                   for categ in rule.product_category_ids):
-                            continue
-                    qty += sol.product_uom_qty
-                    base += sol.product_uom_qty * sol.price_unit
+                qty += sol.product_uom_qty
+                base += sol.product_uom_qty * sol.price_unit
 
             match = False
             if rule.matching_type == 'amount':
@@ -244,9 +234,7 @@ class SaleDiscount(models.Model):
                 match = match_min and match_max
             elif rule.matching_type == 'quantity':
                 match_min = match_max = False
-                if lines:
-                    # discount_base == sale_order
-                    qty = sum([x[0].product_uom_qty for x in lines])
+                qty = sum([x.product_uom_qty for x in lines])
                 qty = self._round_qty(qty)
                 rule_min_qty = self._round_qty(rule.min_qty)
                 rule_max_qty = self._round_qty(rule.max_qty)
@@ -267,7 +255,7 @@ class SaleDiscount(models.Model):
                         "Programming error: no method defined for "
                         "matching_type '%s'."
                     ) % rule.matching_type)
-                match = getattr(rule, method)(lines=lines, line=line)
+                match = getattr(rule, method)(lines)
 
             if match:
                 if rule.matching_extra != 'none':
@@ -278,7 +266,7 @@ class SaleDiscount(models.Model):
                             "Programming error: no method defined for "
                             "matching_extra '%s'."
                         ) % rule.matching_extra)
-                    if not getattr(rule, method)(lines=lines, line=line):
+                    if not getattr(rule, method)(lines):
                         # The extra matching condition is only applied if all
                         # other conditions match. If the extra matching
                         # condition returns False, then do not apply this rule.

@@ -9,7 +9,7 @@
     'author': "ICTSTUDIO,Noviat,Onestein",
     'website': "http://www.ictstudio.eu",
     'category': 'Sales',
-    'version': '8.0.3.1.1',
+    'version': '8.0.3.2.0',
     'license': 'AGPL-3',
     'depends': [
         'sale',

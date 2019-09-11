@@ -141,34 +141,35 @@ class SaleOrder(models.Model):
                 total_base_amount += base_amount
                 line_discounts = []
                 for discount in line.sale_discount_ids:
-                    if discount.discount_base == 'sale_order':
-                        if discount.id not in grouped_discounts:
-                            grouped_discounts[discount.id] = {
-                                'sale_discount': discount,
-                                'lines': line}
-                        else:
-                            grouped_discounts[discount.id]['lines'] += line
-                    elif discount.discount_base == 'sale_line':
-                        match, pct = discount._calculate_line_discount(line)
-                        if match:
-                            line_discounts += [(discount, pct)]
+                    if discount not in grouped_discounts:
+                        grouped_discounts[discount] = line
                     else:
-                        raise NotImplementedError
+                        grouped_discounts[discount] += line
                 line_updates[line] = line_discounts
             base_amount_totals[so] = total_base_amount
 
         # redistribute the discount to the lines
         # when discount_base == 'sale_order'
-        for entry in grouped_discounts.values():
-            match, pct = entry['sale_discount']._calculate_discount(
-                lines=entry['lines'])
-            if not match:
-                continue
-            for line in entry['lines']:
-                if line not in line_updates:
-                    line_updates[line] = [(entry['sale_discount'], pct)]
-                else:
-                    line_updates[line] += [(entry['sale_discount'], pct)]
+        for discount, lines in grouped_discounts.iteritems():
+            if discount.discount_base == 'sale_order':
+                for so in orders:
+                    so_lines = lines.filtered(lambda r: r.order_id == so)
+                    match, pct = discount._calculate_discount(so_lines)
+                    if match:
+                        for line in so_lines:
+                            if line not in line_updates:
+                                line_updates[line] = [(discount, pct)]
+                            else:
+                                line_updates[line] += [(discount, pct)]
+            else:  # 'sale_line' or 'sale_order_group'
+                match, pct = discount._calculate_discount(
+                    lines=lines)
+                if match:
+                    for line in lines:
+                        if line not in line_updates:
+                            line_updates[line] = [(discount, pct)]
+                        else:
+                            line_updates[line] += [(discount, pct)]
 
         line_update_vals = []
         for line, line_discounts in line_updates.iteritems():
@@ -176,11 +177,26 @@ class SaleOrder(models.Model):
             exclusives = [x for x in line_discounts if x[0].exclusive]
             if exclusives:
                 exclusives.sort(key=lambda x: x[0].sequence)
-                line_discounts = [exclusives[0]]
-            for disc in line_discounts:
-                pct_sum += disc[1]
+                exclusive = exclusives[0]
+                if exclusive[0].exclusive == 'highest':
+                    pct_exclusive = exclusive[1]
+                    pct_other = sum(
+                        [x[1] for x in line_discounts if x not in exclusives])
+                    if pct_other > pct_exclusive:
+                        line_discounts = [
+                            x for x in line_discounts if x not in exclusives]
+                    else:
+                        line_discounts = [exclusive]
+                else:
+                    line_discounts = [exclusive]
+            pct_sum = sum([x[1] for x in line_discounts])
             pct_sum = min(pct_sum, 100.0)
-            line_update_vals.append([line, {'discount': pct_sum}])
+            line_discount_ids = [x[0].id for x in line_discounts]
+            line_update_vals.append([
+                line,
+                {'discount': pct_sum,
+                 'sale_discount_ids': [(6, 0, line_discount_ids)]}
+            ])
 
         for line_update in line_update_vals:
             line_update[0].write(line_update[1])
