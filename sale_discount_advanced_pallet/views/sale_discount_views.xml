@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+
+    <record id="sale_discount_view_form" model="ir.ui.view">
+      <field name="name">SaleDiscountViewForm</field>
+      <field name="model">sale.discount</field>
+      <field name="inherit_id" ref="sale_discount_advanced.sale_discount_view_form"/>
+      <field name="arch" type="xml">
+        <field name="min_qty" position="attributes">
+          <attribute name="attrs">{'invisible': [('matching_type', '!=', 'quantity')]}</attribute>
+        </field>
+        <field name="max_qty" position="attributes">
+          <attribute name="attrs">{'invisible': [('matching_type', '!=', 'quantity')]}</attribute>
+        </field>
+        <field name="max_qty" position="after">
+          <field name="min_pallet" attrs="{'invisible': [('matching_type', '!=', 'pallet')]}"/>
+          <field name="max_pallet" attrs="{'invisible': [('matching_type', '!=', 'pallet')]}"/>
+        </field>
+      </field>
+    </record>
+
+  </data>
+</openerp>
