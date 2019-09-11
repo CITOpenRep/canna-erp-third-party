@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2019 Noviat nv/sa (www.noviat.com).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import logging
@@ -32,14 +32,14 @@ class SaleDiscountRule(models.Model):
         methods['extra'] = '_extra_matching'
         return methods
 
-    def _pallet_matching(self, lines=None, line=None):
+    def _pallet_matching(self, lines):
         _logger.warn(
-            '_pallet_matching for rule %s, lines=%s, line=%s',
-            self, lines, line)
+            '_pallet_matching for rule %s, lines=%s',
+            self, lines)
         return True
 
-    def _extra_matching(self, lines=None, line=None):
+    def _extra_matching(self, lines):
         _logger.warn(
-            '_extra_matching for rule %s, lines=%s, line=%s',
-            self, lines, line)
+            '_extra_matching for rule %s, lines=%s',
+            self, lines)
         return True

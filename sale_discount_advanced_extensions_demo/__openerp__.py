@@ -6,7 +6,7 @@
     'name': "Sale Discount Advanced Extensions Demo",
     'author': 'Noviat',
     'category': 'CES',
-    'version': '8.0.1.0.0',
+    'version': '8.0.1.0.1',
     'license': 'AGPL-3',
     'depends': [
         'sale_discount_advanced',
