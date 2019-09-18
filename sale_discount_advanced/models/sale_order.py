@@ -45,15 +45,18 @@ class SaleOrder(models.Model):
                 line.sale_discount_ids = discounts
                 line.discount = 0.0
 
-    @api.multi
-    def onchange_partner_id_with_date(self, partner_id, date_order):
-        res = super(
-            SaleOrder, self).onchange_partner_id(partner_id)
-        if partner_id and not self or len(self) == 1:
-            partner = self.env['res.partner'].browse(partner_id)
-            cpartner = partner.commercial_partner_id
-            discounts = cpartner._get_active_sale_discounts(date_order)
-            res['value']['discount_ids'] = [(6, 0, discounts.ids)]
+    @api.onchange('partner_id', 'date_order')
+    def _onchange_sale_discount_advanced_partner_id_(self):
+        res = self.onchange_partner_id(self.partner_id.id)
+        if res:
+            vals = res.get('value') or {}
+            for k, v in vals.iteritems():
+                setattr(self, k, v)
+            del res['value']
+        if self.partner_id:
+            cpartner = self.partner_id.commercial_partner_id
+            self.discount_ids = cpartner._get_active_sale_discounts(
+                self.date_order)
         return res
 
     @api.onchange('date_order')

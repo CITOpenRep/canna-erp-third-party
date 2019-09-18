@@ -8,7 +8,7 @@
       <field name="inherit_id" ref="sale.view_order_form"/>
       <field name="arch" type="xml">
         <field name="partner_id" position="attributes">
-          <attribute name="on_change">onchange_partner_id_with_date(partner_id, date_order, context)</attribute>
+          <attribute name="on_change" eval="1"/>
         </field>
         <xpath expr="//field[@name='pricelist_id']" position="after">
           <field name="discount_amount"/>
