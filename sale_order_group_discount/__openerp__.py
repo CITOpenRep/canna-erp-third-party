@@ -4,7 +4,7 @@
 
 {
     'name': 'Sale Order Group Discount',
-    'version': '8.0.1.0.0.',
+    'version': '8.0.1.0.1.',
     'license': 'AGPL-3',
     'author': 'Noviat',
     'category': 'Sales',
