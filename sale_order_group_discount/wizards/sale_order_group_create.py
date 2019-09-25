@@ -14,6 +14,7 @@ class SaleOrderGroupCreate(models.TransientModel):
         orders = self.env['sale.order'].browse(
             self.env.context.get('active_ids'))
         discounts = orders[0].discount_ids
+        currency = orders[0].currency_id
         for order in orders[1:]:
             if order.discount_ids != discounts:
                 msg = '\n\n' + _("Warning:") + '\n'
@@ -21,6 +22,14 @@ class SaleOrderGroupCreate(models.TransientModel):
                     "The selected orders have different discounts. "
                     "Align these discounts first if you want to apply "
                     "the discount calculation on the combined set of orders."
+                )
+                res['note'] += msg
+                break
+            if order.currency_id != currency:
+                msg = '\n\n' + _("Warning:") + '\n'
+                msg += _(
+                    "The selected orders have different currencies. "
+                    "Such orders cannot be grouped together."
                 )
                 res['note'] += msg
                 break

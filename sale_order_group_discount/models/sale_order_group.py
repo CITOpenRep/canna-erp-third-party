@@ -41,6 +41,15 @@ class SaleOrderGroup(models.Model):
                         sog.discount_ids = False
                         continue
 
+    @api.constrains('sale_order_ids')
+    def _check_sale_order_ids(self):
+        for group in self:
+            if len(group.sale_order_ids.mapped('currency_id')) > 1:
+                raise UserError(_(
+                    "The selected orders have different currencies. "
+                    "Such orders cannot be grouped together."
+                ))
+
     @api.multi
     def calculate_discount(self):
         self.ensure_one()
