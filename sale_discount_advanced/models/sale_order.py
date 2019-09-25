@@ -176,7 +176,7 @@ class SaleOrder(models.Model):
             line_update_vals[line] = {
                 'sale_discount_ids': [(6, 0, discount_ids)]}
             pct_sum = 0.0
-            exclusives = [x for x in line_discounts if x[0].exclusive]
+            exclusives = [x for x in line_discounts if x[0].exclusive and x[1]]
             if exclusives:
                 exclusives.sort(key=lambda x: x[0].sequence)
                 exclusive = exclusives[0]
@@ -195,16 +195,14 @@ class SaleOrder(models.Model):
                                 (6, 0, applied_discount_ids)],
                         }
                     else:
-                        applied_discount_ids = \
-                            pct_exclusive and exclusive[0].ids or []
+                        applied_discount_ids = exclusive[0].ids
                         line_update_vals[line] = {
                             'discount': pct_exclusive,
                             'applied_sale_discount_ids': [
                                 (6, 0, applied_discount_ids)],
                         }
                 else:
-                    applied_discount_ids = \
-                        pct_exclusive and exclusive[0].ids or []
+                    applied_discount_ids = exclusive[0].ids
                     line_update_vals[line] = {
                         'discount': pct_exclusive,
                         'applied_sale_discount_ids': [
