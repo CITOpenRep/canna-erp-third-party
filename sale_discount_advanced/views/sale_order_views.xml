@@ -17,6 +17,8 @@
         </xpath>
         <xpath expr="//tree/field[@name='discount']" position="before">
           <field name="sale_discount_ids" widget="many2many_tags" options="{'no_create': True}"/>
+          <field name="applied_sale_discount_ids" invisible="1"
+                 widget="many2many_tags" options="{'no_create': True}"/>
         </xpath>
         <xpath expr="//tree/field[@name='discount']" position="attributes">
           <attribute name="readonly">1</attribute>
