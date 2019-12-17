@@ -11,7 +11,7 @@
 
         <xpath expr="//button[@name='invoice_open']" position="after">
           <button name="invoice_open" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
-          <button name="abort_approval" type="object" string="Cancel Approval" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+          <button name="abort_approval" type="object" string="Reject" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
         </xpath>
 
         <xpath expr="//notebook" position="inside">
