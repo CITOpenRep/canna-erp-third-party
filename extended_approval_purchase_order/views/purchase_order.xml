@@ -32,7 +32,7 @@
       <field name="arch" type="xml">
         <xpath expr="//button[@name='purchase_approve']" position="replace">
           <button name="purchase_approve" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'not in', ['confirmed' ,'extended_approval']), ('approval_allowed', '!=', True)]}"/>
-          <button name="abort_approval" type="object" string="Cancel Approval" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+          <button name="abort_approval" type="object" string="Reject" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
         </xpath>
 
         <xpath expr="//notebook" position="inside">
