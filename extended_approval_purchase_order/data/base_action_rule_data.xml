@@ -1,0 +1,24 @@
+<openerp>
+
+  <data noupdate="1">
+
+    <record id="base_action_rule_apprv_notify_mpo" model="base.action.rule">
+      <field name="name">Send email to approvers for Marketing Purchase Orders</field>
+      <field name="model_id" ref="purchase.model_purchase_order"/>
+      <field name="sequence">1</field>
+      <field name="kind">on_create_or_write</field>
+      <field name="filter_id" ref="ir_filters_mpo_to_apprv"/>
+      <field name="server_action_ids" eval="[(6,0,[ref('ir_actions_server_appr_mpo')])]"/>
+    </record>
+
+    <record id="base_action_rule_apprv_notify_po" model="base.action.rule">
+      <field name="name">Send email to approvers for Purchase Orders</field>
+      <field name="model_id" ref="purchase.model_purchase_order"/>
+      <field name="sequence">1</field>
+      <field name="kind">on_create_or_write</field>
+      <field name="filter_id" ref="ir_filters_po_to_apprv"/>
+      <field name="server_action_ids" eval="[(6,0,[ref('ir_actions_server_appr_po')])]"/>
+    </record>
+
+  </data>
+</openerp>
