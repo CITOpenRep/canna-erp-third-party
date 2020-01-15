@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="1">
+
+    <record id="ir_filters_partner_to_apprv" model="ir.filters">
+      <field name="name">Partners to Approve</field>
+      <field name="model_id">res.partner</field>
+      <field name="user_id" eval="False"/>
+      <field name="domain">[['state', '=', 'extended_approval'], ['next_approver', '!=', False]]</field>
+    </record>
+
+  </data>
+</openerp>

@@ -1,0 +1,15 @@
+<openerp>
+
+  <data noupdate="1">
+
+    <record id="base_action_rule_apprv_notify_partner" model="base.action.rule">
+      <field name="name">Send email to approvers for Partners</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="sequence">1</field>
+      <field name="kind">on_create_or_write</field>
+      <field name="filter_id" ref="ir_filters_partner_to_apprv"/>
+      <field name="server_action_ids" eval="[(6,0,[ref('ir_actions_server_appr_partner')])]"/>
+    </record>
+
+  </data>
+</openerp>
