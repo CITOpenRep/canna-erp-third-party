@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="import_price_catalog_view_form" model="ir.ui.view">
+    <field name="name">import.price.catalog.form</field>
+    <field name="model">import.price.catalog</field>
+    <field name="arch" type="xml">
+      <form string="Import Price Catalog">
+        <separator string="File Settings"/>
+        <group colspan="4">
+          <field name="data"/>
+        </group>
+        <group colspan="4">
+          <span>You have to import a .CSV file wich is encoded in UTF-8.</span>
+        </group>
+        <group>
+          <group>
+            <field name="subcatalog_id"/>
+          </group>
+          <group>
+            <field name="company_id"/>
+          </group>
+        </group>
+        <group>
+          <field name="remove_data"/>
+        </group>
+        <footer>
+          <button string="Import" name="import_catalog" type="object" class="oe_highlight"/>
+          or <button string="Cancel" class="oe_link" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="import_price_catalog_action" model="ir.actions.act_window">
+    <field name="name">Import Catalog</field>
+    <field name="res_model">import.price.catalog</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="import_price_catalog_view_form"/>
+    <field name="target">new</field>
+  </record>
+
+  <menuitem
+    action="import_price_catalog_action"
+    id="import_price_catalog_menu_sale"
+    parent="sale.menu_sale_config"/>
+
+  <menuitem
+    action="import_price_catalog_action"
+    id="import_price_catalog_menu_purchase"
+    parent="purchase.menu_purchase_config"/>
+
+  <record id="data_price_catalog_view_form" model="ir.ui.view">
+    <field name="name">data.price.catalog.form</field>
+    <field name="model">data.price.catalog</field>
+    <field name="arch" type="xml">
+      <form string="Import Price Catalog">
+        <group>
+          <span>Import Completed"</span>
+          <separator string="Report" colspan="4"/>
+          <field name="status_report" nolabel="1" width="300"/>
+        </group>
+        <footer>
+          <button string="Close" class="oe_link" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+</odoo>

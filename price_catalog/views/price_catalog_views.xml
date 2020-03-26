@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<odoo>
+
+  <record id="price_catalog_view_search" model="ir.ui.view">
+    <field name="name">price.catalog.search</field>
+    <field name="model">price.catalog</field>
+    <field name="arch" type="xml">
+      <search string="Search Price Catalog">
+        <field name="name" string="Price Catalog"
+               filter_domain="[('name', 'ilike', self)]"/>
+        <separator/>
+        <filter string="Inactive Price Catalogs" name="inactive"
+                domain="[('active', '=', False)]"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="price_catalog_view_tree" model="ir.ui.view">
+    <field name="name">price.catalog.tree</field>
+    <field name="model">price.catalog</field>
+    <field name="arch" type="xml">
+      <tree string="Price Catalogs">
+        <field name="name"/>
+        <field name="currency_id"/>
+        <field name="catalog_type"/>
+        <field name="active"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="price_catalog_view_form" model="ir.ui.view">
+    <field name="name">price.catalog.form</field>
+    <field name="model">price.catalog</field>
+    <field name="arch" type="xml">
+      <form string="Price Catalog">
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" type="object"
+              name="toggle_active"
+              icon="fa-archive">
+              <field name="active" widget="boolean_button"
+                options="{'terminology': 'archive'}"/>
+            </button>
+          </div>
+          <group name="main">
+            <field name="name"/>
+            <field name="currency_id"/>
+            <field name="catalog_type" readonly="1" force_save="1"/>
+          </group>
+          <notebook>
+            <page string="Subcatalogs" id="subcatalog_ids">
+              <field name="subcatalog_ids" mode="tree" context="{'default_catalog_id': id}">
+                <tree string="Price Subcatalogs" editable="bottom">
+                  <field name="sequence" widget="handle"/>
+                  <field name="name"/>
+                  <field name="catalog_id" required="False" readonly="False" invisible="True"/>
+                  <field name="start_date"/>
+                  <field name="end_date"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+</odoo>
