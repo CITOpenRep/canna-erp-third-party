@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<odoo>
+
+  <menuitem id="price_catalog_menu_main"
+          name="Price Catalogs"
+          parent="sale.menu_sale_config"
+          sequence="5"/>
+
+  <menuitem id="price_catalog_menu"
+          name="Price Catalogs"
+          parent="price_catalog_menu_main"
+          action="price_catalog_action"
+          sequence="1"/>
+
+  <menuitem id="price_subcatalog_menu"
+            name="Price Subcatalogs"
+            parent="price_catalog_menu_main"
+            action="price_subcatalog_action"
+            sequence="2"/>
+
+</odoo>

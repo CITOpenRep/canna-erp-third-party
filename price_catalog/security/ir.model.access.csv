@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_price_catalog_admin,access_price_catalog_admin,model_price_catalog,base.group_system,1,1,1,1
+access_price_catalog_item_admin,access_price_catalog_item_admin,model_price_catalog_item,base.group_system,1,1,1,1
+access_price_subcatalog_admin,access_price_subcatalog_admin,model_price_subcatalog,base.group_system,1,1,1,1
+access_price_catalog,access_price_catalog,model_price_catalog,base.group_user,1,0,0,0
+access_price_catalog_item,access_price_catalog_item,model_price_catalog_item,base.group_user,1,0,0,0
+access_price_subcatalog,access_price_subcatalog,model_price_subcatalog,base.group_user,1,0,0,0
