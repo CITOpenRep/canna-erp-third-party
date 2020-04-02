@@ -3,7 +3,7 @@
 {
     "name": "Price Catalog",
     "summary": "Catalog Style Pricelists",
-    "version": "13.0.0.0.1",
+    "version": "13.0.0.1.0",
     "development_status": "Alpha",
     "category": "Sales",
     "website": "https://onestein.nl/",

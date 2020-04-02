@@ -17,7 +17,7 @@ class PriceCatalogItem(models.Model):
 
     _name = "price.catalog.item"
     _description = "Price Catalog Item"
-    _order = "id desc"
+    _order = "sequence"
     _sql_constraints = [
         (
             "price_catalog_item_uniq",
@@ -32,3 +32,4 @@ class PriceCatalogItem(models.Model):
     product_id = fields.Many2one(comodel_name="product.product", required=True)
     price = fields.Float(digits="Product Price")
     subcatalog_id = fields.Many2one(comodel_name="price.subcatalog", required=True)
+    sequence = fields.Integer()
