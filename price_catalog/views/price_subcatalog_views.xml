@@ -57,6 +57,7 @@
             <page string="Catalog Items" id="item_ids">
               <field name="item_ids" mode="tree" context="{'default_subcatalog_id': id}">
                 <tree string="Price Catalog Items" editable="bottom">
+                  <field name="sequence" widget="handle"/>
                   <field name="product_id"/>
                   <field name="price"/>
                   <field name="subcatalog_id" readonly="False" required="False" invisible="True"/>
