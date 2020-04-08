@@ -7,10 +7,10 @@
     <field name="inherit_id" ref="sale.view_order_form"/>
     <field name="arch" type="xml">
       <field name="pricelist_id" position="before">
-        <field name="price_catalog_id"/>
+        <field name="allowed_price_catalog_ids" invisible="1"/>
       </field>
-      <field name="pricelist_id" position="attributes">
-        <attribute name="invisible">1</attribute>
+      <field name="price_catalog_id" position="attributes">
+        <attribute name="domain">[('id', 'in', allowed_price_catalog_ids)]</attribute>
       </field>
     </field>
   </record>
