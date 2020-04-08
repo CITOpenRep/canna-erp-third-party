@@ -2,7 +2,7 @@
 <odoo>
 
   <record id="price_catalog_action" model="ir.actions.act_window">
-    <field name="name">Price Catalogs</field>
+    <field name="name">Price Catalogs - sale</field>
     <field name="res_model">price.catalog</field>
     <field name="view_mode">tree,form</field>
     <field name="domain">[('catalog_type', '=', 'sale')]</field>
@@ -10,7 +10,7 @@
   </record>
 
   <record id="price_subcatalog_action" model="ir.actions.act_window">
-    <field name="name">Price Subcatalog</field>
+    <field name="name">Price Subcatalogs - sale</field>
     <field name="res_model">price.subcatalog</field>
     <field name="view_mode">tree,form</field>
     <field name="domain">[('catalog_type', '=', 'sale')]</field>

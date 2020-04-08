@@ -7,7 +7,7 @@
     <field name="inherit_id" ref="base.view_partner_form"/>
     <field name="arch" type="xml">
       <group name="purchase" position="inside">
-        <field name="purchase_catalog_ids" widget="many2many_tags" required="0"/>
+        <field name="purchase_catalog_id" required="0"/>
       </group>
     </field>
   </record>

@@ -36,10 +36,10 @@
         <sheet>
           <div class="oe_button_box" name="button_box">
             <button class="oe_stat_button" type="object"
-              name="toggle_active"
-              icon="fa-archive">
+                    name="toggle_active"
+                    icon="fa-archive">
               <field name="active" widget="boolean_button"
-                options="{'terminology': 'archive'}"/>
+                     options="{'terminology': 'archive'}"/>
             </button>
           </div>
           <group name="main">
@@ -49,13 +49,13 @@
           </group>
           <notebook>
             <page string="Subcatalogs" id="subcatalog_ids">
-              <field name="subcatalog_ids" mode="tree" context="{'default_catalog_id': id}">
-                <tree string="Price Subcatalogs" editable="bottom">
+              <field name="subcatalog_ids" context="{'hide_catalog': 1}">
+                <tree string="Price Subcatalogs">
                   <field name="sequence" widget="handle"/>
                   <field name="name"/>
-                  <field name="catalog_id" required="False" readonly="False" invisible="True"/>
                   <field name="start_date"/>
                   <field name="end_date"/>
+                  <field name="active" optional="hide"/>
                 </tree>
               </field>
             </page>

@@ -6,9 +6,12 @@
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_form"/>
     <field name="arch" type="xml">
-      <group name="sale" position="inside">
-        <field name="sale_catalog_id" required="0"/>
-      </group>
+      <field name="sale_catalog_id" position="after">
+        <field name="sale_catalog_ids"
+               domain="[('catalog_type', '=', 'sale'), ('id', '!=', sale_catalog_id)]"
+               widget="many2many_tags"
+               options="{'no_create': True}"/>
+      </field>
     </field>
   </record>
 

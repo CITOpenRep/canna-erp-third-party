@@ -1,4 +1,5 @@
 # Copyright 2020 Onestein B.V.
+# Copyright 2020 Noviat
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import fields, models
@@ -9,19 +10,15 @@ class ResPartner(models.Model):
 
     _inherit = "res.partner"
 
-    sale_catalog_ids = fields.Many2many(
+    sale_catalog_id = fields.Many2one(
         comodel_name="price.catalog",
-        relation="partner_price_catalog_sale_rel",
-        column1="partner_id",
-        column2="catalog_id",
-        string="Customer Price Catalogs",
+        string="Customer Price Catalog",
+        company_dependent=True,
         domain=[("catalog_type", "=", "sale")],
     )
-    purchase_catalog_ids = fields.Many2many(
+    purchase_catalog_id = fields.Many2one(
         comodel_name="price.catalog",
-        relation="partner_price_catalog_purchase_rel",
-        column1="partner_id",
-        column2="catalog_id",
-        string="Supplier Price Catalogs",
+        string="Supplier Price Catalog",
+        company_dependent=True,
         domain=[("catalog_type", "=", "purchase")],
     )
