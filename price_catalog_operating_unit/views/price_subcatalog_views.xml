@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<odoo>
+
+  <record id="price_subcatalog_view_search" model="ir.ui.view">
+    <field name="name">price.subcatalog.search</field>
+    <field name="model">price.subcatalog</field>
+    <field name="inherit_id" ref="price_catalog.price_subcatalog_view_search"/>
+    <field name="arch" type="xml">
+      <field name="name" position="after">
+        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
+      </field>
+    </field>
+  </record>
+
+  <record id="price_subcatalog_view_tree" model="ir.ui.view">
+    <field name="name">price.subcatalog.tree</field>
+    <field name="model">price.subcatalog</field>
+    <field name="inherit_id" ref="price_catalog.price_subcatalog_view_tree"/>
+    <field name="arch" type="xml">
+      <field name="catalog_id" position="after">
+        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
+      </field>
+    </field>
+  </record>
+
+  <record id="price_subcatalog_view_form" model="ir.ui.view">
+    <field name="name">price.subcatalog.form</field>
+    <field name="model">price.subcatalog</field>
+    <field name="inherit_id"
+      ref="price_catalog.price_subcatalog_view_form"/>
+    <field name="arch" type="xml">
+      <field name="catalog_id" position="after">
+        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"
+          options="{'no_create': True}"/>
+      </field>
+    </field>
+  </record>
+
+</odoo>
+
