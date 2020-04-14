@@ -8,22 +8,25 @@ from odoo import api, fields, models
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    discount_amount = fields.Float(
-        digits=("Discount"), string="Total Discount Amount", readonly=True, store=True
+    discount_amount = fields.Monetary(
+        string="Total Discount Amount",
+        readonly=True,
+        store=True,
+        currency_field="currency_id",
     )
-    discount_base_amount = fields.Float(
-        digits=("Discount"),
+    discount_base_amount = fields.Monetary(
         string="Base Amount before Discount",
         readonly=True,
         store=True,
+        currency_field="currency_id",
         help="Sum of the totals of all Order Lines before discount."
         "\nAlso lines without discount are included in this total.",
     )
     discount_ids = fields.Many2many(
-        "sale.discount",
-        "sale_order_discount_rel",
-        "order_id",
-        "discount_id",
+        comodel_name="sale.discount",
+        relation="sale_order_discount_rel",
+        column1="order_id",
+        column2="discount_id",
         string="Sale Discount engines",
         help="Sale Discount engines for this order.",
     )
@@ -63,12 +66,12 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
-        order = super(SaleOrder, self).create(vals)
+        order = super().create(vals)
         order.compute_discount()
         return order
 
     def write(self, vals):
-        res = super(SaleOrder, self).write(vals)
+        res = super().write(vals)
         for so in self:
             if not self._context.get("skip_discount_calc"):
                 so.compute_discount()
@@ -78,7 +81,7 @@ class SaleOrder(models.Model):
     def fields_view_get(
         self, view_id=None, view_type=False, toolbar=False, submenu=False
     ):
-        res = super(SaleOrder, self).fields_view_get(
+        res = super().fields_view_get(
             view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
         )
         context = self._context
@@ -100,14 +103,14 @@ class SaleOrder(models.Model):
                     res["arch"] = etree.tostring(view_obj)
         return res
 
-    def button_dummy(self):
-        res = super(SaleOrder, self).button_dummy()
+    def button_update_prices(self):
+        res = super().button_update_prices()
         self.compute_discount()
         return res
 
-    def action_button_confirm(self):
+    def action_confirm(self):
         self.compute_discount()
-        return super(SaleOrder, self).action_button_confirm()
+        return super().action_confirm()
 
     def compute_discount(self):
         for so in self:
@@ -115,15 +118,15 @@ class SaleOrder(models.Model):
                 return
         self._update_discount()
 
-    def _update_discount(self):
-        if self._context.get("skip_discount_calc"):
+    def _update_discount(self):  # noqa: C901
+        if self.env.context.get("skip_discount_calc"):
             return
 
         grouped_discounts = {}
         base_amount_totals = {}
         line_updates = {}
 
-        orders = self.with_context(dict(self._context, skip_discount_calc=True))
+        orders = self.with_context(dict(self.env.context, skip_discount_calc=True))
         for so in orders:
             total_base_amount = 0.0
             for line in so.order_line:

@@ -6,6 +6,7 @@ from odoo.exceptions import ValidationError
 
 class SaleDiscountRule(models.Model):
     _name = "sale.discount.rule"
+    _description = "Sale Order Discount Rule"
     _order = "sequence"
 
     sale_discount_id = fields.Many2one(
@@ -47,8 +48,8 @@ class SaleDiscountRule(models.Model):
         relation="product_category_sale_discount_rule_rel",
         string="Product Categories",
     )
-    min_base = fields.Float(string="Minimum Base Amount", digits=("Discount"))
-    max_base = fields.Float(string="Maximum Base Amount", digits=("Discount"))
+    min_base = fields.Float(string="Minimum Base Amount", digits=("Product Price"))
+    max_base = fields.Float(string="Maximum Base Amount", digits=("Product Price"))
     min_qty = fields.Float(
         string="Minimum Quantity", digits=("Product Unit of Measure")
     )
@@ -80,13 +81,13 @@ class SaleDiscountRule(models.Model):
         "a percentage of the value of goods sold "
         "or a fixed amount ",
     )
-    discount_pct = fields.Float(string="Discount Percentage")
-    discount_amount = fields.Float(string="Discount Amount", digits=("Discount"))
+    discount_pct = fields.Float(string="Discount Percentage", digits="Discount")
+    discount_amount = fields.Float(string="Discount Amount", digits=("Product Price"))
     discount_amount_invisible = fields.Boolean(
         compute="_compute_discount_fields_invisible"
     )
     discount_amount_unit = fields.Float(
-        string="Discount Amount per Unit", digits=("Discount")
+        string="Discount Amount per Unit", digits=("Product Price")
     )
     discount_amount_unit_invisible = fields.Boolean(
         compute="_compute_discount_fields_invisible"
@@ -163,11 +164,9 @@ class SaleDiscountRule(models.Model):
                         if len(rule.product_ids) == 1:
                             rule.discount_amount_invisible = True
                         else:
-                            rule.discount_amount_invisible = False
                             rule.discount_amount_unit_invisible = True
                     else:
                         # matching_type == 'amount'
-                        rule.discount_amount_invisible = False
                         rule.discount_amount_unit_invisible = True
                 else:
                     # discount_base == 'sale_order'

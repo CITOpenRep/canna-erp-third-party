@@ -2,15 +2,15 @@
 
 {
     "name": "Sale Discount Advanced",
-    "author": "ICTSTUDIO,Noviat,Onestein, " "Serpent Consulting Services Pvt. Ltd.",
+    "author": "ICTSTUDIO,Noviat,Onestein,Serpent Consulting Services Pvt. Ltd.",
     "website": "http://www.ictstudio.eu",
     "category": "Sales",
     "version": "13.0.1.0.0",
     "license": "AGPL-3",
-    "depends": ["sale"],
+    "depends": ["sale_apply_price_update"],
     "data": [
         "security/ir.model.access.csv",
-        "data/mail_message_subtype.xml",
+        "data/mail_message_subtype_data.xml",
         "data/product_data.xml",
         "views/res_partner_views.xml",
         "views/sale_discount_views.xml",

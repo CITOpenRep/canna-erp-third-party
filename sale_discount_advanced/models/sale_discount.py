@@ -1,12 +1,14 @@
 # See LICENSE file for full copyright and licensing details.
 
+from datetime import timedelta
+
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError, Warning as UserError
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DTF
+from odoo.exceptions import UserError, ValidationError
 
 
 class SaleDiscount(models.Model):
     _name = "sale.discount"
+    _description = "Sale Order Discount"
     _inherit = "mail.thread"
     _order = "sequence"
 
@@ -126,20 +128,18 @@ class SaleDiscount(models.Model):
                     _("The end date may not be lower than the start date.")
                 )
 
-    @api.model
-    def create(self, vals):
-        ctx = dict(
-            self.env.context,
-            mail_create_nolog=True,
-            mail_create_nosubscribe=True,
-            skip_message_track=True,
-        )
-        discount = super(SaleDiscount, self.with_context(ctx)).create(vals)
-        msg = _("Discount object created")
-        discount.message_post(
-            body=msg, subtype="sale_discount_advanced.mt_discount_new"
-        )
-        return discount
+    def _creation_subtype(self):
+        return self.env.ref("sale_discount_advanced.mt_discount_new")
+
+    def _track_subtype(self, init_values):
+        self.ensure_one()
+        if "active" in init_values:
+            return self.env.ref("sale_discount_advanced.mt_discount_active")
+        if "start_date" in init_values:
+            return self.env.ref("sale_discount_advanced.mt_discount_start_date")
+        if "end_date" in init_values:
+            return self.env.ref("sale_discount_advanced.mt_discount_end_date")
+        return super()._track_subtype(init_values)
 
     def unlink(self):
         if any(
@@ -154,31 +154,28 @@ class SaleDiscount(models.Model):
 
     def _check_active_date(self, check_date=None):
         if not check_date:
-            check_date = fields.Datetime.now()
-        check_date = check_date.strftime(DTF)
-        start_date = ""
-        end_date = ""
-        if self.start_date:
-            start_date = self.start_date.strftime(DTF)
-        elif self.end_date:
-            end_date = self.end_date.strftime(DTF)
-
+            check_date = fields.Date.today()
+        else:
+            check_date = check_date.date()
+        end_date = self.end_date
+        if end_date:
+            end_date = end_date + timedelta(days=1)
         if (
-            start_date
+            self.start_date
             and end_date
-            and (check_date >= start_date and check_date < end_date)
+            and (check_date >= self.start_date and check_date < end_date)
         ):
             return True
-        if start_date and not end_date and (check_date >= start_date):
+        if self.start_date and not end_date and (check_date >= self.start_date):
             return True
-        if not start_date and end_date and (check_date < end_date):
+        if not self.start_date and self.end_date and (check_date < end_date):
             return True
-        elif not start_date or not end_date:
+        elif not self.start_date or not end_date:
             return True
         else:
             return False
 
-    def _calculate_discount(self, lines):
+    def _calculate_discount(self, lines):  # noqa: C901
         for rule in self.rule_ids:
             disc_amt = 0.0
             disc_pct = 0.0
@@ -270,20 +267,16 @@ class SaleDiscount(models.Model):
         return match, disc_pct
 
     def _round_amt(self, val):
-        dp_obj = self.env["decimal.precision"]
-        dp_rec = dp_obj.search([("name", "=", "Discount")], limit=1)
-        if dp_rec:
-            return round(val, dp_rec.digits)
-        else:
-            return val
+        digits = (
+            self.env["sale.discount.rule"]._fields["min_base"].get_digits(self.env)[1]
+        )
+        return round(val, digits)
 
     def _round_qty(self, val):
-        dp_obj = self.env["decimal.precision"]
-        dp_rec = dp_obj.search([("name", "=", "Discount")], limit=1)
-        if dp_rec:
-            return round(val, dp_rec.digits)
-        else:
-            return val
+        digits = (
+            self.env["sale.discount.rule"]._fields["min_qty"].get_digits(self.env)[1]
+        )
+        return round(val, digits)
 
     def _check_product_filter(self, product):
         """
@@ -293,8 +286,10 @@ class SaleDiscount(models.Model):
         if self._is_excluded_product(product):
             return False
         else:
-            filter = self.included_product_ids or self.included_product_category_ids
-            if filter:
+            product_filter = (
+                self.included_product_ids or self.included_product_category_ids
+            )
+            if product_filter:
                 return self._is_included_product(product) and True or False
         return True
 

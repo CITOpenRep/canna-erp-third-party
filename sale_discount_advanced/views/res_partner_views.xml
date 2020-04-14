@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
-  <data>
+<odoo>
 
-    <record id="view_partner_form" model="ir.ui.view">
-      <field name="name">res.partner.form.sale_discount</field>
-      <field name="model">res.partner</field>
-      <field name="inherit_id" ref="base.view_partner_form"/>
-      <field name="arch" type="xml">
-        <page name="sales_purchases" position="inside">
-          <group name="sale_discounts" attrs="{'invisible': [('is_company', '=', False), ('parent_id', '!=', False)]}">
-            <field name="sale_discount_ids"
-                   widget="many2many_tags"
-                   options="{'no_create': True}"/>
-          </group>
-        </page>
-      </field>
-    </record>
+  <record id="view_partner_form" model="ir.ui.view">
+    <field name="name">res.partner.form.sale_discount</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+      <page name="sales_purchases" position="inside">
+        <group name="sale_discounts" attrs="{'invisible': [('is_company', '=', False), ('parent_id', '!=', False)]}">
+          <field name="sale_discount_ids"
+                 widget="many2many_tags"
+                 options="{'no_create': True}"/>
+        </group>
+      </page>
+    </field>
+  </record>
 
-  </data>
-</openerp>
+</odoo>
