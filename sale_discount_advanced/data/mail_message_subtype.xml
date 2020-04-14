@@ -1,34 +1,31 @@
-<?xml version="1.0"?>
-<openerp>
-  <data>
+<odoo>
 
     <record id="mt_discount_new" model="mail.message.subtype">
-      <field name="name">mt_discount_new</field>
-      <field name="res_model">sale.discount</field>
-      <field name="default" eval="True"/>
-      <field name="description">Discount object created</field>
+        <field name="name">mt_discount_new</field>
+        <field name="res_model">sale.discount</field>
+        <field name="default" eval="True"/>
+        <field name="description">Discount object created</field>
     </record>
 
     <record id="mt_discount_active" model="mail.message.subtype">
-      <field name="name">mt_discount_active</field>
-      <field name="res_model">sale.discount</field>
-      <field name="default" eval="True"/>
-      <field name="description">Active Flag Changed</field>
+        <field name="name">mt_discount_active</field>
+        <field name="res_model">sale.discount</field>
+        <field name="default" eval="True"/>
+        <field name="description">Active Flag Changed</field>
     </record>
 
     <record id="mt_discount_start_date" model="mail.message.subtype">
-      <field name="name">mt_discount_start_date</field>
-      <field name="res_model">sale.discount</field>
-      <field name="default" eval="True"/>
-      <field name="description">Start date changed</field>
+        <field name="name">mt_discount_start_date</field>
+        <field name="res_model">sale.discount</field>
+        <field name="default" eval="True"/>
+        <field name="description">Start date changed</field>
     </record>
 
     <record id="mt_discount_end_date" model="mail.message.subtype">
-      <field name="name">mt_discount_end_date</field>
-      <field name="res_model">sale.discount</field>
-      <field name="default" eval="True"/>
-      <field name="description">End date changed</field>
+        <field name="name">mt_discount_end_date</field>
+        <field name="res_model">sale.discount</field>
+        <field name="default" eval="True"/>
+        <field name="description">End date changed</field>
     </record>
 
-  </data>
-</openerp>
+</odoo>

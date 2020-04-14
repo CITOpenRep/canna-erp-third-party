@@ -1,22 +1,19 @@
-# Copyright (C) 2019 Noviat nv/sa (www.noviat.com).
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# See LICENSE file for full copyright and licensing details.
 
-
-from openerp import api, fields, models
+from odoo import fields, models
 
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
     sale_discount_ids = fields.Many2many(
+        "sale.discount",
+        "partner_sale_discount_rel",
+        "partner_id",
+        "discount_id",
         string="Sale Discounts",
-        comodel_name="sale.discount",
-        relation="partner_sale_discount_rel",
-        column1="partner_id",
-        column2="discount_id",
     )
 
-    @api.multi
     def _get_active_sale_discounts(self, date_order):
         self.ensure_one()
         discounts = self.env["sale.discount"]

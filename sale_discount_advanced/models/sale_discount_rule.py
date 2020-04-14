@@ -1,15 +1,7 @@
-# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
-# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# See LICENSE file for full copyright and licensing details.
 
-import logging
-
-import openerp.addons.decimal_precision as dp
-from openerp import _, api, fields, models
-from openerp.exceptions import ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class SaleDiscountRule(models.Model):
@@ -55,29 +47,25 @@ class SaleDiscountRule(models.Model):
         relation="product_category_sale_discount_rule_rel",
         string="Product Categories",
     )
-    min_base = fields.Float(
-        string="Minimum Base Amount", digits=dp.get_precision("Account")
-    )
-    max_base = fields.Float(
-        string="Maximum Base Amount", digits=dp.get_precision("Account")
-    )
+    min_base = fields.Float(string="Minimum Base Amount", digits=("Discount"))
+    max_base = fields.Float(string="Maximum Base Amount", digits=("Discount"))
     min_qty = fields.Float(
-        string="Minimum Quantity", digits=dp.get_precision("Product UoS")
+        string="Minimum Quantity", digits=("Product Unit of Measure")
     )
     max_qty = fields.Float(
-        string="Maximum Quantity", digits=dp.get_precision("Product UoS")
+        string="Maximum Quantity", digits=("Product Unit of Measure")
     )
     # the *_view fields are only used for tree view
     # readabily purposes. All calculations are based upon the
     # min/max_* fields.
     min_view = fields.Float(
         string="Minimum",
-        digits=dp.get_precision("Product UoS"),
+        digits=("Product Unit of Measure"),
         compute="_compute_min_view",
     )
     max_view = fields.Float(
         string="Maximum",
-        digits=dp.get_precision("Product UoS"),
+        digits=("Product Unit of Measure"),
         compute="_compute_max_view",
     )
     product_view = fields.Char(
@@ -93,22 +81,18 @@ class SaleDiscountRule(models.Model):
         "or a fixed amount ",
     )
     discount_pct = fields.Float(string="Discount Percentage")
-    discount_amount = fields.Float(
-        string="Discount Amount", digits=dp.get_precision("Account")
-    )
+    discount_amount = fields.Float(string="Discount Amount", digits=("Discount"))
     discount_amount_invisible = fields.Boolean(
         compute="_compute_discount_fields_invisible"
     )
     discount_amount_unit = fields.Float(
-        string="Discount Amount per Unit", digits=dp.get_precision("Account")
+        string="Discount Amount per Unit", digits=("Discount")
     )
     discount_amount_unit_invisible = fields.Boolean(
         compute="_compute_discount_fields_invisible"
     )
     discount_view = fields.Float(
-        string="Discount",
-        digits=dp.get_precision("Account"),
-        compute="_compute_discount_view",
+        string="Discount", digits=("Discount"), compute="_compute_discount_view"
     )
 
     @api.model
@@ -179,15 +163,16 @@ class SaleDiscountRule(models.Model):
                         if len(rule.product_ids) == 1:
                             rule.discount_amount_invisible = True
                         else:
+                            rule.discount_amount_invisible = False
                             rule.discount_amount_unit_invisible = True
                     else:
                         # matching_type == 'amount'
+                        rule.discount_amount_invisible = False
                         rule.discount_amount_unit_invisible = True
                 else:
                     # discount_base == 'sale_order'
                     rule.discount_amount_unit_invisible = True
 
-    @api.one
     @api.constrains(
         "discount_pct", "discount_amount", "discount_amount_unit", "discount_type"
     )
@@ -207,7 +192,6 @@ class SaleDiscountRule(models.Model):
         ):
             raise ValidationError(_("Percentage discount must be between 0 and 100."))
 
-    @api.one
     @api.constrains("product_ids", "product_category_ids")
     def _check_product_filters(self):
         if self.product_ids and self.product_category_ids:
@@ -215,7 +199,6 @@ class SaleDiscountRule(models.Model):
                 _("Products and Product Categories are mutually exclusive")
             )
 
-    @api.one
     @api.constrains("min_base", "max_base")
     def _check_min_max_base(self):
         if self.min_base and self.max_base:
@@ -227,7 +210,6 @@ class SaleDiscountRule(models.Model):
                     )
                 )
 
-    @api.one
     @api.constrains("min_qty", "max_qty")
     def _check_min_max_qty(self):
         if self.min_qty and self.max_qty:

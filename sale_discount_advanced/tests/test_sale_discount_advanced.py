@@ -1,10 +1,7 @@
-# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
-# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# See LICENSE file for full copyright and licensing details.
 
-from openerp.exceptions import ValidationError
-from openerp.tests.common import TransactionCase
+from odoo.exceptions import ValidationError
+from odoo.tests.common import TransactionCase
 
 
 class TestSaleDiscountAdvanced(TransactionCase):

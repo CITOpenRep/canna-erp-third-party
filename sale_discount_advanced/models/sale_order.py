@@ -1,28 +1,18 @@
-# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
-# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# See LICENSE file for full copyright and licensing details.
 
-import logging
-
-import openerp.addons.decimal_precision as dp
 from lxml import etree
-from openerp import api, fields, models
 
-_logger = logging.getLogger(__name__)
+from odoo import api, fields, models
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     discount_amount = fields.Float(
-        digits=dp.get_precision("Account"),
-        string="Total Discount Amount",
-        readonly=True,
-        store=True,
+        digits=("Discount"), string="Total Discount Amount", readonly=True, store=True
     )
     discount_base_amount = fields.Float(
-        digits=dp.get_precision("Account"),
+        digits=("Discount"),
         string="Base Amount before Discount",
         readonly=True,
         store=True,
@@ -30,11 +20,11 @@ class SaleOrder(models.Model):
         "\nAlso lines without discount are included in this total.",
     )
     discount_ids = fields.Many2many(
+        "sale.discount",
+        "sale_order_discount_rel",
+        "order_id",
+        "discount_id",
         string="Sale Discount engines",
-        comodel_name="sale.discount",
-        relation="sale_order_discount_rel",
-        column1="order_id",
-        column2="discount_id",
         help="Sale Discount engines for this order.",
     )
 
@@ -49,10 +39,10 @@ class SaleOrder(models.Model):
 
     @api.onchange("partner_id", "date_order")
     def _onchange_sale_discount_advanced_partner_id_(self):
-        res = self.onchange_partner_id(self.partner_id.id)
+        res = self.onchange_partner_id()
         if res:
             vals = res.get("value") or {}
-            for k, v in vals.iteritems():
+            for k, v in vals.items():
                 setattr(self, k, v)
             del res["value"]
         if self.partner_id:
@@ -77,7 +67,6 @@ class SaleOrder(models.Model):
         order.compute_discount()
         return order
 
-    @api.multi
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
         for so in self:
@@ -111,18 +100,15 @@ class SaleOrder(models.Model):
                     res["arch"] = etree.tostring(view_obj)
         return res
 
-    @api.multi
     def button_dummy(self):
         res = super(SaleOrder, self).button_dummy()
         self.compute_discount()
         return res
 
-    @api.multi
     def action_button_confirm(self):
         self.compute_discount()
         return super(SaleOrder, self).action_button_confirm()
 
-    @api.multi
     def compute_discount(self):
         for so in self:
             if so.state not in ["draft", "sent"]:
@@ -152,7 +138,7 @@ class SaleOrder(models.Model):
 
         # redistribute the discount to the lines
         # when discount_base == 'sale_order' | 'sale_order_group'
-        for discount, lines in grouped_discounts.iteritems():
+        for discount, lines in grouped_discounts.items():
             if discount.discount_base == "sale_order":
                 for so in orders:
                     so_lines = lines.filtered(lambda r: r.order_id == so)
@@ -171,7 +157,7 @@ class SaleOrder(models.Model):
                         line_updates[line] += [(discount, pct)]
 
         line_update_vals = {}
-        for line, line_discounts in line_updates.iteritems():
+        for line, line_discounts in line_updates.items():
             discount_ids = [x[0].id for x in line_discounts]
             line_update_vals[line] = {"sale_discount_ids": [(6, 0, discount_ids)]}
             pct_sum = 0.0
