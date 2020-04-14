@@ -10,7 +10,5 @@
     "application": False,
     "installable": True,
     "depends": ["price_catalog", "operating_unit"],
-    "data": [
-        "views/price_subcatalog_views.xml",
-    ],
+    "data": ["views/price_subcatalog_views.xml"],
 }
