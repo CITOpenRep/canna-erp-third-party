@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
 # Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
@@ -6,167 +5,177 @@
 
 import logging
 
-from openerp import api, fields, models, _
 import openerp.addons.decimal_precision as dp
+from openerp import _, api, fields, models
 from openerp.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
 
 class SaleDiscountRule(models.Model):
-    _name = 'sale.discount.rule'
-    _order = 'sequence'
+    _name = "sale.discount.rule"
+    _order = "sequence"
 
     sale_discount_id = fields.Many2one(
-        comodel_name='sale.discount',
-        string='Sale Discount',
-        required=True)
+        comodel_name="sale.discount", string="Sale Discount", required=True
+    )
     company_id = fields.Many2one(
-        comodel_name='res.company',
-        string='Company',
+        comodel_name="res.company",
+        string="Company",
         required=True,
-        default=lambda self: self.env.user.company_id)
+        default=lambda self: self.env.user.company_id,
+    )
     sequence = fields.Integer(default=10)
     discount_base = fields.Selection(
-        related='sale_discount_id.discount_base', readonly=True)
+        related="sale_discount_id.discount_base", readonly=True
+    )
     # matching criteria
     matching_type = fields.Selection(
-        selection='_selection_matching_type',
-        default='amount',
+        selection="_selection_matching_type",
+        default="amount",
         required=True,
         help="Select if the discount will be granted based upon "
-             "value or quantity of goods sold ")
+        "value or quantity of goods sold ",
+    )
     matching_extra = fields.Selection(
-        selection='_selection_matching_extra',
-        string='Extra condition',
-        required=True, default='none',
+        selection="_selection_matching_extra",
+        string="Extra condition",
+        required=True,
+        default="none",
         help="This field will result on extra constraints to determine "
-             "a matching rule. These constraints may vary per country")
+        "a matching rule. These constraints may vary per country",
+    )
     product_ids = fields.Many2many(
-        comodel_name='product.product',
-        relation='product_product_sale_discount_rule_rel',
-        string='Products')
+        comodel_name="product.product",
+        relation="product_product_sale_discount_rule_rel",
+        string="Products",
+    )
     product_category_ids = fields.Many2many(
-        comodel_name='product.category',
-        relation='product_category_sale_discount_rule_rel',
-        string='Product Categories')
+        comodel_name="product.category",
+        relation="product_category_sale_discount_rule_rel",
+        string="Product Categories",
+    )
     min_base = fields.Float(
-        string='Minimum Base Amount',
-        digits=dp.get_precision('Account'))
+        string="Minimum Base Amount", digits=dp.get_precision("Account")
+    )
     max_base = fields.Float(
-        string='Maximum Base Amount',
-        digits=dp.get_precision('Account'))
+        string="Maximum Base Amount", digits=dp.get_precision("Account")
+    )
     min_qty = fields.Float(
-        string='Minimum Quantity',
-        digits=dp.get_precision('Product UoS'))
+        string="Minimum Quantity", digits=dp.get_precision("Product UoS")
+    )
     max_qty = fields.Float(
-        string='Maximum Quantity',
-        digits=dp.get_precision('Product UoS'))
+        string="Maximum Quantity", digits=dp.get_precision("Product UoS")
+    )
     # the *_view fields are only used for tree view
     # readabily purposes. All calculations are based upon the
     # min/max_* fields.
     min_view = fields.Float(
-        string='Minimum',
-        digits=dp.get_precision('Product UoS'),
-        compute='_compute_min_view')
+        string="Minimum",
+        digits=dp.get_precision("Product UoS"),
+        compute="_compute_min_view",
+    )
     max_view = fields.Float(
-        string='Maximum',
-        digits=dp.get_precision('Product UoS'),
-        compute='_compute_max_view')
+        string="Maximum",
+        digits=dp.get_precision("Product UoS"),
+        compute="_compute_max_view",
+    )
     product_view = fields.Char(
-        string='Product / Product Category',
-        compute='_compute_product_view')
+        string="Product / Product Category", compute="_compute_product_view"
+    )
     # results
     discount_type = fields.Selection(
-        selection=[
-            ('perc', 'Percentage'),
-            ('amnt', 'Amount')],
-        default='perc',
+        selection=[("perc", "Percentage"), ("amnt", "Amount")],
+        default="perc",
         required=True,
         help="Select if the granted discount will be "
-             "a percentage of the value of goods sold "
-             "or a fixed amount ")
-    discount_pct = fields.Float(
-        string="Discount Percentage")
+        "a percentage of the value of goods sold "
+        "or a fixed amount ",
+    )
+    discount_pct = fields.Float(string="Discount Percentage")
     discount_amount = fields.Float(
-        string="Discount Amount",
-        digits=dp.get_precision('Account'))
+        string="Discount Amount", digits=dp.get_precision("Account")
+    )
     discount_amount_invisible = fields.Boolean(
-        compute='_compute_discount_fields_invisible')
+        compute="_compute_discount_fields_invisible"
+    )
     discount_amount_unit = fields.Float(
-        string="Discount Amount per Unit",
-        digits=dp.get_precision('Account'))
+        string="Discount Amount per Unit", digits=dp.get_precision("Account")
+    )
     discount_amount_unit_invisible = fields.Boolean(
-        compute='_compute_discount_fields_invisible')
+        compute="_compute_discount_fields_invisible"
+    )
     discount_view = fields.Float(
-        string='Discount',
-        digits=dp.get_precision('Account'),
-        compute='_compute_discount_view')
+        string="Discount",
+        digits=dp.get_precision("Account"),
+        compute="_compute_discount_view",
+    )
 
     @api.model
     def _selection_matching_type(self):
-        return [
-            ('amount', 'Amount'),
-            ('quantity', 'Quantity')]
+        return [("amount", "Amount"), ("quantity", "Quantity")]
 
     @api.model
     def _selection_matching_extra(self):
-        return [('none', 'None')]
+        return [("none", "None")]
 
-    @api.depends('min_base', 'min_qty')
+    @api.depends("min_base", "min_qty")
     def _compute_min_view(self):
         for rule in self:
-            rule.min_view = rule.matching_type == 'amount' and \
-                rule.min_base or rule.min_qty
+            rule.min_view = (
+                rule.matching_type == "amount" and rule.min_base or rule.min_qty
+            )
 
-    @api.depends('max_base', 'max_qty')
+    @api.depends("max_base", "max_qty")
     def _compute_max_view(self):
         for rule in self:
-            rule.max_view = rule.matching_type == 'amount'and \
-                rule.max_base or rule.max_qty
+            rule.max_view = (
+                rule.matching_type == "amount" and rule.max_base or rule.max_qty
+            )
 
-    @api.depends('discount_base')
+    @api.depends("discount_base")
     def _compute_product_view(self):
         for rule in self:
             rule.product_view = (
-                rule.product_ids and
-                ', '.join(rule.product_ids.mapped('display_name')) or
-                ', '.join(rule.product_category_ids.mapped('display_name')) or
-                '')
+                rule.product_ids
+                and ", ".join(rule.product_ids.mapped("display_name"))
+                or ", ".join(rule.product_category_ids.mapped("display_name"))
+                or ""
+            )
 
-    @api.depends('discount_pct', 'discount_amount', 'discount_amount_unit')
+    @api.depends("discount_pct", "discount_amount", "discount_amount_unit")
     def _compute_discount_view(self):
         for rule in self:
-            if (rule.discount_base == 'sale_line' and
-                    rule.matching_type == 'quantity' and
-                    rule.discount_type == 'amnt'):
+            if (
+                rule.discount_base == "sale_line"
+                and rule.matching_type == "quantity"
+                and rule.discount_type == "amnt"
+            ):
                 if len(rule.product_ids) == 1:
                     rule.discount_view = rule.discount_amount_unit
                 else:
                     rule.discount_view = rule.discount_amount
             else:
-                if rule.discount_type == 'perc':
+                if rule.discount_type == "perc":
                     rule.discount_view = rule.discount_pct
-                elif rule.discount_type == 'amnt':
+                elif rule.discount_type == "amnt":
                     rule.discount_view = rule.discount_amount
                 else:
                     raise NotImplementedError
 
-    @api.depends('discount_base', 'discount_type', 'matching_type',
-                 'product_ids')
+    @api.depends("discount_base", "discount_type", "matching_type", "product_ids")
     def _compute_discount_fields_invisible(self):
         self._onchange_discount_fields_invisible()
 
-    @api.onchange('discount_base', 'discount_type', 'matching_type',
-                  'product_ids')
+    @api.onchange("discount_base", "discount_type", "matching_type", "product_ids")
     def _onchange_discount_fields_invisible(self):
         for rule in self:
-            if rule.discount_type == 'perc':
+            if rule.discount_type == "perc":
                 rule.discount_amount_invisible = True
                 rule.discount_amount_unit_invisible = True
             else:
-                if rule.discount_base == 'sale_line':
-                    if rule.matching_type == 'quantity':
+                if rule.discount_base == "sale_line":
+                    if rule.matching_type == "quantity":
                         if len(rule.product_ids) == 1:
                             rule.discount_amount_invisible = True
                         else:
@@ -179,60 +188,68 @@ class SaleDiscountRule(models.Model):
                     rule.discount_amount_unit_invisible = True
 
     @api.one
-    @api.constrains('discount_pct', 'discount_amount',
-                    'discount_amount_unit', 'discount_type')
+    @api.constrains(
+        "discount_pct", "discount_amount", "discount_amount_unit", "discount_type"
+    )
     def _check_sale_discount(self):
         """
         By default only discounts are supported, but you can
         adapt this method to allow also price increases.
         """
         # Check if amount is positive
-        if self.discount_type == 'amnt' and (self.discount_amount < 0 or
-                                             self.discount_amount_unit < 0):
-            raise ValidationError(_(
-                "Discount Amount needs to be a positive number"))
+        if self.discount_type == "amnt" and (
+            self.discount_amount < 0 or self.discount_amount_unit < 0
+        ):
+            raise ValidationError(_("Discount Amount needs to be a positive number"))
         # Check if percentage is between 0 and 100
-        elif self.discount_type == 'perc' and (self.discount_pct < 0 or
-                                               self.discount_pct > 100):
-            raise ValidationError(_(
-                "Percentage discount must be between 0 and 100."))
+        elif self.discount_type == "perc" and (
+            self.discount_pct < 0 or self.discount_pct > 100
+        ):
+            raise ValidationError(_("Percentage discount must be between 0 and 100."))
 
     @api.one
-    @api.constrains('product_ids', 'product_category_ids')
+    @api.constrains("product_ids", "product_category_ids")
     def _check_product_filters(self):
         if self.product_ids and self.product_category_ids:
-            raise ValidationError(_(
-                "Products and Product Categories are mutually exclusive"))
+            raise ValidationError(
+                _("Products and Product Categories are mutually exclusive")
+            )
 
     @api.one
-    @api.constrains('min_base', 'max_base')
+    @api.constrains("min_base", "max_base")
     def _check_min_max_base(self):
         if self.min_base and self.max_base:
             if self.max_base < self.min_base:
                 raise ValidationError(
-                    _("The 'Maximum Base Amount' may not be lower "
-                      "than the 'Minimum Base Amount'."))
+                    _(
+                        "The 'Maximum Base Amount' may not be lower "
+                        "than the 'Minimum Base Amount'."
+                    )
+                )
 
     @api.one
-    @api.constrains('min_qty', 'max_qty')
+    @api.constrains("min_qty", "max_qty")
     def _check_min_max_qty(self):
         if self.min_qty and self.max_qty:
             if self.max_qty < self.min_qty:
                 raise ValidationError(
-                    _("The 'Maximum Quantity' may not be lower "
-                      "than the 'Minimum Quantity'."))
+                    _(
+                        "The 'Maximum Quantity' may not be lower "
+                        "than the 'Minimum Quantity'."
+                    )
+                )
 
-    @api.onchange('matching_type')
+    @api.onchange("matching_type")
     def _onchange_matching_type(self):
-        if self.matching_type == 'quantity':
+        if self.matching_type == "quantity":
             self.product_category_ids = False
 
-    @api.onchange('product_ids')
+    @api.onchange("product_ids")
     def _onchange_product_ids(self):
         if self.product_ids:
             self.product_category_ids = False
 
-    @api.onchange('product_category_ids')
+    @api.onchange("product_category_ids")
     def _onchange_product_category_ids(self):
         if self.product_category_ids:
             self.product_ids = False
