@@ -1,4 +1,7 @@
-# See LICENSE file for full copyright and licensing details.
+# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+# Copyright (C) 2016-2020 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -164,12 +167,15 @@ class SaleDiscountRule(models.Model):
                         if len(rule.product_ids) == 1:
                             rule.discount_amount_invisible = True
                         else:
+                            rule.discount_amount_invisible = False
                             rule.discount_amount_unit_invisible = True
                     else:
                         # matching_type == 'amount'
+                        rule.discount_amount_invisible = False
                         rule.discount_amount_unit_invisible = True
                 else:
                     # discount_base == 'sale_order'
+                    rule.discount_amount_invisible = False
                     rule.discount_amount_unit_invisible = True
 
     @api.constrains(

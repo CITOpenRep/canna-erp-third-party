@@ -1,4 +1,7 @@
-# See LICENSE file for full copyright and licensing details.
+# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+# Copyright (C) 2016-2020 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from lxml import etree
 
@@ -90,7 +93,7 @@ class SaleOrder(models.Model):
                 view_obj = etree.XML(res["arch"])
                 order_line = view_obj.xpath("//field[@name='order_line']")
                 extra_ctx = (
-                    "'sale_discount_advanced': 1, " "'discount_ids': discount_ids"
+                    "'sale_discount_advanced': 1, 'so_discount_ids': discount_ids"
                 )
                 for el in order_line:
                     ctx = el.get("context")

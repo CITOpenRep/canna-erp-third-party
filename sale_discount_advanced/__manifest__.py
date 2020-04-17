@@ -1,4 +1,8 @@
-# See LICENSE file for full copyright and licensing details.
+# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+# Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
+# Copyright (C) 2020 Serpent Consulting Svc (<http://www.serpentcs.com>).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
     "name": "Sale Discount Advanced",
@@ -11,10 +15,13 @@
     "data": [
         "security/ir.model.access.csv",
         "data/mail_message_subtype_data.xml",
-        "data/product_data.xml",
         "views/res_partner_views.xml",
         "views/sale_discount_views.xml",
         "views/sale_order_views.xml",
     ],
-    "demo": ["demo/sale_discount.xml", "demo/sale_discount_rule.xml"],
+    "demo": [
+        "demo/product_product_demo.xml",
+        "demo/sale_discount_demo.xml",
+        "demo/sale_discount_rule_demo.xml",
+    ],
 }

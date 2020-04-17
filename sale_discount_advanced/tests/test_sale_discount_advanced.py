@@ -1,4 +1,7 @@
-# See LICENSE file for full copyright and licensing details.
+# Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
+# Copyright (C) 2016-2020 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016 Onestein (http://www.onestein.eu/).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
@@ -20,7 +23,7 @@ class TestSaleDiscountAdvanced(TransactionCase):
 
     def test_lower_min_base_threshold(self):
         discount_ids = [(6, 0, [self.discount_order_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -39,10 +42,9 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 950, "Total amount should be 950.00")
         discount_ids = [(6, 0, [self.discount_line_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -61,12 +63,11 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 950, "Total amount should be 950.00")
 
     def test_higher_min_base_threshold(self):
         discount_ids = [(6, 0, [self.discount_order_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -85,10 +86,9 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 750, "Total amount should be 750.00")
         discount_ids = [(6, 0, [self.discount_line_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -107,12 +107,11 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 900, "Total amount should be 900.00")
 
     def test_next_min_base_threshold(self):
         discount_ids = [(6, 0, [self.discount_order_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -131,10 +130,9 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 1125, "Total amount should be 1125.00")
         discount_ids = [(6, 0, [self.discount_order_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -153,12 +151,11 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 1500, "Total amount should be 1500.00")
 
     def test_discount_out_of_date_range(self):
         discount_ids = [(6, 0, [self.discount_order_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2018-02-01 08:30:00",
@@ -177,12 +174,12 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 3000, "Total amount should be 3000.00")
 
+    """ remove since product has become a required field
     def test_no_product(self):
         discount_ids = [(6, 0, [self.discount_order_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -192,14 +189,16 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 3000, "Total amount should be 3000.00")
+     """
 
     def test_excluded_products(self):
-        excluded_by_product = self.ref("product.product_product_consultant")
+        excluded_by_product = self.ref(
+            "sale_discount_advanced.product_product_consultant"
+        )
         excluded_by_category = self.ref("product.product_product_11")
         discount_ids = [(6, 0, [self.discount_line_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -228,12 +227,13 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
-        self.assertEquals(so.amount_total, 6000, "Total amount should be 6000.00")
+        self.assertEquals(
+            so.amount_untaxed, 6000, "Total untaxed amount should be 6000.00"
+        )
 
     def test_exclusive_discount(self):
         discount_ids = [(6, 0, [self.discount_order_id, self.discount_line_id])]
-        so = self.so_obj.with_context({"discount_ids": discount_ids}).create(
+        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
             {
                 "partner_id": self.partner_id,
                 "date_order": "2019-02-01 08:30:00",
@@ -252,7 +252,6 @@ class TestSaleDiscountAdvanced(TransactionCase):
                 ],
             }
         )
-        so.button_dummy()
         self.assertEquals(so.amount_total, 900.00, "Total amount should be 900.00")
 
     def test_constraints_sale_discount(self):
