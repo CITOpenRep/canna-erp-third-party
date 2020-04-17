@@ -64,7 +64,11 @@ class PriceCatalog(models.Model):
     def get_price(self, product_id, date_order):
         """Get the price of the provided product depending on the order's
         date and the sequence of the found subcatalogs.
+        Return False if product not in catalog.
         """
+        price = False
+        if not self:
+            return False
         if not product_id:
             return 0.0
         price = 0.0
