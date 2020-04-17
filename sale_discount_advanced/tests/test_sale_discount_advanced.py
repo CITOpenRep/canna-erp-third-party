@@ -176,22 +176,6 @@ class TestSaleDiscountAdvanced(TransactionCase):
         )
         self.assertEquals(so.amount_total, 3000, "Total amount should be 3000.00")
 
-    """ remove since product has become a required field
-    def test_no_product(self):
-        discount_ids = [(6, 0, [self.discount_order_id])]
-        so = self.so_obj.with_context({"so_discount_ids": discount_ids}).create(
-            {
-                "partner_id": self.partner_id,
-                "date_order": "2019-02-01 08:30:00",
-                "discount_ids": discount_ids,
-                "order_line": [
-                    (0, 0, {"name": "Line 1", "product_uom_qty": 1, "price_unit": 3000})
-                ],
-            }
-        )
-        self.assertEquals(so.amount_total, 3000, "Total amount should be 3000.00")
-     """
-
     def test_excluded_products(self):
         excluded_by_product = self.ref(
             "sale_discount_advanced.product_product_consultant"
