@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="sale_discount_view_form" model="ir.ui.view">
+    <field name="name">SaleDiscountViewForm</field>
+    <field name="model">sale.discount</field>
+    <field name="arch" type="xml">
+      <form string="Discounts">
+        <group col="4">
+          <field name="name"/>
+          <field name="active"/>
+          <newline/>
+          <field name="start_date"/>
+          <field name="end_date"/>
+          <field name="discount_base"/>
+          <field name="exclusive"/>
+          <field name="sequence"/>
+        </group>
+        <notebook>
+          <page string="Rules" name="rules">
+            <field name="rule_ids" nolabel="1" colspan="4" context="{'default_discount_base': discount_base}">
+              <tree name="discount_rules" string="Discount Rules">
+                <field name="sequence" widget="handle"/>
+                <field name="discount_base" invisible="1"/>
+                <field name="matching_type"/>
+                <field name="product_view"/>
+                <field name="min_view"/>
+                <field name="max_view"/>
+                <field name="matching_extra"/>
+                <field name="discount_type"/>
+                <field name="discount_view"/>
+              </tree>
+              <form name="Discount Rule">
+                <group name="rule">
+                  <field name="discount_base" invisible="1"/>
+                  <separator string="Conditions" colspan="2"/>
+                  <group name="rule_match_left">
+                    <field name="matching_type"/>
+                    <field name="product_ids"
+                        widget="many2many_tags"/>
+                    <field name="product_category_ids"
+                        widget="many2many_tags"/>
+                    <field name="sequence"/>
+                  </group>
+                  <group name="rule_match_right">
+                    <field name="min_base" attrs="{'invisible': [('matching_type', '!=', 'amount')]}"/>
+                    <field name="max_base" attrs="{'invisible': [('matching_type', '!=', 'amount')]}"/>
+                    <field name="min_qty" attrs="{'invisible': [('matching_type', '=', 'amount')]}"/>
+                    <field name="max_qty" attrs="{'invisible': [('matching_type', '=', 'amount')]}"/>
+                    <field name="matching_extra"/>
+                  </group>
+                  <separator string="Result" colspan="2"/>
+                  <group name="rule_result_left">
+                    <field name="discount_type"/>
+                  </group>
+                  <group name="rule_result_right">
+                    <field name="discount_pct"
+                        attrs="{'invisible': [('discount_type', '!=', 'perc')]}"/>
+                    <field name="discount_amount_invisible" invisible="1"/>
+                    <field name="discount_amount"
+                        attrs="{'invisible': [('discount_amount_invisible', '=', True)]}"/>
+                    <field name="discount_amount_unit_invisible" invisible="1"/>
+                    <field name="discount_amount_unit"
+                        attrs="{'invisible': [('discount_amount_unit_invisible', '=', True)]}"/>
+                  </group>
+                </group>
+              </form>
+            </field>
+            <separator name="config_help" string="Configuration Instructions" colspan="4"/>
+            <span name="discount_rule_help">
+              <p>
+                You can use discount objects to pre-calculate the discount percentage per sale order line.
+                <br/>
+                The discount will be set automatically by configuring them on the customer record.
+                <br/>
+                Multiple discount objects can be combined e.g. to give extra discount for certain products.
+              </p>
+              <p>
+                <b>Discount active: </b>uncheck this flag in order to deactive the discount.
+                <br/><br/>
+                <b>Start/End dates: </b>set these dates to limit the discount rules to selected date range.
+                <br/><br/>
+                <b>Discount Base: </b>
+                <br/>
+                <ul>
+                  <li>
+                    Calculation based upon the full order.
+                    Extra filtering is possible via exclusion/inclusion of certain products or product categories whereby exclusion has priority over inclusion.
+                  </li>
+                  <li>
+                    Calculation limited to the matching order lines.
+                  </li>
+                </ul>
+                <b>Matching criteria: </b>product and amount or quantity.
+                The resulting discount can be specified as a percentage or an amount (or unit amount in case of lorder line product/quantity match).
+              </p>
+              <p>
+                The order of the discount rules is important. The first matching rule will be used for the discount calculation.
+              </p>
+            </span>
+          </page>
+          <page name="excluded_products_and_categories"
+              string="Excluded Products &amp; Categories"
+              attrs="{'invisible': [('discount_base', '=', 'sale_line')]}">
+            <label for="excluded_product_ids"/>
+            <field name="excluded_product_ids">
+              <tree>
+                <field name="name"/>
+                <field name="categ_id"/>
+              </tree>
+            </field>
+            <label for="excluded_product_category_ids"/>
+            <field name="excluded_product_category_ids">
+              <tree>
+                <field name="name"/>
+                <field name="complete_name"/>
+              </tree>
+            </field>
+          </page>
+          <page name="included_products_and_categories"
+              string="Included Products &amp; Categories"
+              attrs="{'invisible': [('discount_base', '=', 'sale_line')]}">
+            <label for="included_product_ids"/>
+            <field name="included_product_ids">
+              <tree>
+                <field name="name"/>
+                <field name="categ_id"/>
+              </tree>
+            </field>
+            <label for="included_product_category_ids"/>
+            <field name="included_product_category_ids">
+              <tree>
+                <field name="name"/>
+                <field name="complete_name"/>
+              </tree>
+            </field>
+          </page>
+        </notebook>
+        <div class="oe_chatter">
+          <field name="message_ids" widget="mail_thread"/>
+          <field name="message_follower_ids" widget="mail_followers"/>
+        </div>
+      </form>
+    </field>
+  </record>
+
+  <record id="sale_discount_view_tree" model="ir.ui.view">
+    <field name="name">SaleDiscountViewTree</field>
+    <field name="model">sale.discount</field>
+    <field name="arch" type="xml">
+      <tree string="Sale Discounts">
+        <field name="sequence" widget="handle"/>
+        <field name="name"/>
+        <field name="start_date"/>
+        <field name="end_date"/>
+        <field name="exclusive"/>
+        <field name="active"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="sale_discount_action" model="ir.actions.act_window">
+    <field name="name">Sale Discounts</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">sale.discount</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="sale_discount_menu"
+      name="Discounts"
+      parent="sale.menu_sale_config"
+      action="sale_discount_action"/>
+
+</odoo>

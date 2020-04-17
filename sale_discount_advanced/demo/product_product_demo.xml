@@ -1,0 +1,11 @@
+<odoo>
+    <record id="product_product_consultant" model="product.product">
+        <field name="list_price">75.0</field>
+        <field name="standard_price">30.0</field>
+        <field name="uom_id" ref="uom.product_uom_hour"/>
+        <field name="uom_po_id" ref="uom.product_uom_hour"/>
+        <field name="name">Service</field>
+        <field name="categ_id" ref="product.product_category_all"/>
+        <field name="type">service</field>
+    </record>
+</odoo>
