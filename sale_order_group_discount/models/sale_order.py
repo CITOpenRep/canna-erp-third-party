@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 # Copyright 2019 Noviat.
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from openerp import api, models
+from odoo import api, models
 
 
 class SaleOrder(models.Model):
-    _inherit = 'sale.order'
+    _inherit = "sale.order"
 
-    @api.multi
     def action_cancel(self):
         res = super(SaleOrder, self).action_cancel()
         for so in self:
