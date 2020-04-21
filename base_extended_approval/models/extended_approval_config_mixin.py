@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
-from openerp import api, models
+# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from odoo import api, models
 
 
 def get_applicable_models(browselist):
-    return list(set([m for rec in browselist for m in
-                     rec.get_applicable_models()]))
+    return list(set([m for rec in browselist for m in rec.get_applicable_models()]))
 
 
 def update_model_flows(env, models):
@@ -13,15 +14,13 @@ def update_model_flows(env, models):
 
 
 def update_flows(browselist):
-    update_model_flows(
-        browselist.env,
-        get_applicable_models(browselist))
+    update_model_flows(browselist.env, get_applicable_models(browselist))
 
 
 class ExtendedApprovalConfigMixin(models.AbstractModel):
-    _name = 'extended.approval.config.mixin'
+    _name = "extended.approval.config.mixin"
+    _description = "Extended Approval Config Mixin"
 
-    @api.multi
     def write(self, values):
         r = super(ExtendedApprovalConfigMixin, self).write(values)
         update_flows(self)
@@ -33,7 +32,6 @@ class ExtendedApprovalConfigMixin(models.AbstractModel):
         update_flows(r)
         return r
 
-    @api.multi
     def unlink(self):
         models = get_applicable_models(self)
         r = super(ExtendedApprovalConfigMixin, self).unlink()
