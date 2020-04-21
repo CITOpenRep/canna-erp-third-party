@@ -1,48 +1,46 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-  <data>
+<odoo>
 
     <record id="crm_visit_reason_view_tree" model="ir.ui.view">
-      <field name="name">CrmVisitReasonViewTree</field>
-      <field name="model">crm.visit.reason</field>
-      <field name="arch" type="xml">
-        <tree string="Reasons">
-          <field name="name" select="1"/>
-          <field name="company_id" groups="base.group_multi_company" readonly="1"/>
-        </tree>
-      </field>
+        <field name="name">CrmVisitReasonViewTree</field>
+        <field name="model">crm.visit.reason</field>
+        <field name="arch" type="xml">
+            <tree string="Reasons">
+              <field name="name" select="1"/>
+              <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+            </tree>
+        </field>
     </record>
 
     <record id="crm_visit_reason_view_form" model="ir.ui.view">
-      <field name="name">CrmVisitReasonViewForm</field>
-      <field name="model">crm.visit.reason</field>
-      <field name="arch" type="xml">
-        <form string="Reason">
-          <group>
-            <group name="c1">
-              <field name="name"/>
-            </group>
-            <group name="c2">
-              <field name="active"/>
-              <field name="company_id" groups="base.group_multi_company" readonly="1"/>
-            </group>
-          </group>
-        </form>
-      </field>
+        <field name="name">CrmVisitReasonViewForm</field>
+        <field name="model">crm.visit.reason</field>
+        <field name="arch" type="xml">
+            <form string="Reason">
+                <sheet>
+                    <group>
+                        <group name="c1">
+                            <field name="name"/>
+                        </group>
+                        <group name="c2">
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
     </record>
 
     <record id="crm_visit_reason_action" model="ir.actions.act_window">
-      <field name="name">Reasons</field>
-      <field name="res_model">crm.visit.reason</field>
-      <field name="view_type">form</field>
-      <field name="view_mode">tree,form</field>
-      <field name="view_id" ref="crm_visit_reason_view_tree"/>
+        <field name="name">Reasons</field>
+        <field name="res_model">crm.visit.reason</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="crm_visit_reason_view_tree"/>
     </record>
 
     <menuitem id="crm_visit_reason_menu"
-              action="crm_visit_reason_action"
-              parent="menu_crm_visit_config"
-              sequence="5"/>
+        action="crm_visit_reason_action"
+        parent="menu_crm_visit_config"
+        sequence="5"/>
     
-  </data>
-</openerp>
+</odoo>

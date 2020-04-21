@@ -1,16 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data noupdate="1">
+<odoo noupdate="1">
 
-        <record id="seq_type_crm_visit" model="ir.sequence.type">
-            <field name="name">Visits</field>
-            <field name="code">crm.visit</field>
-        </record>
+    <record id="seq_crm_visit" model="ir.sequence">
+        <field name="name">Visits</field>
+        <field name="code">crm.visit</field>
+    </record>
 
-        <record id="seq_crm_visit" model="ir.sequence">
-            <field name="name">Visits</field>
-            <field name="code">crm.visit</field>
-        </record>
-
-    </data>
-</openerp>
+</odoo>

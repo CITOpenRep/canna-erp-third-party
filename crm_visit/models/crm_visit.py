@@ -1,101 +1,60 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    Odoo, Open Source Management Solution
-#
-#    Copyright (c) 2015 Onestein BV (www.onestein.eu).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright (c) 2015 Onestein BV (www.onestein.eu).
+# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from openerp import api, fields, models, _
-from openerp.exceptions import Warning as UserError
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class CrmVisit(models.Model):
-    _name = 'crm.visit'
-    _inherit = ['mail.thread']
-    _description = 'Visits'
-    _order = 'date desc'
-    _track = {
-        'state': {
-            'crm_visit.mail_message_subtype_crm_visit_state':
-                lambda self, cr, uid, obj, ctx=None: obj.state in
-                ['draft', 'planned', 'visited', 'cancel', 'done']}}
-    name = fields.Char(
-        string='Number',
-        readonly=True)
+    _name = "crm.visit"
+    _inherit = ["mail.thread", "portal.mixin", "mail.activity.mixin"]
+    _description = "Visits"
+    _order = "date desc"
+
+    name = fields.Char(string="Number", readonly=True)
     state = fields.Selection(
         selection=[
-            ('draft', 'Draft'),
-            ('planned', 'Appointment'),
-            ('visited', 'Needs Report'),
-            ('cancel', 'Cancelled'),
-            ('done', 'Done')],
-        default='draft',
-        track_visibility='onchange',
-        readonly=True)
+            ("draft", "Draft"),
+            ("planned", "Appointment"),
+            ("visited", "Needs Report"),
+            ("cancel", "Cancelled"),
+            ("done", "Done"),
+        ],
+        default="draft",
+        track_visibility="onchange",
+        readonly=True,
+    )
+    # '_company_default_get' on res.company is deprecated and shouldn't be used
     company_id = fields.Many2one(
-        comodel_name='res.company',
-        string='Company',
+        comodel_name="res.company",
+        string="Company",
         required=True,
-        default=lambda self:
-            self.env['res.company'].browse(self.env['res.company']._company_default_get('crm.visit')))
+        default=lambda self: self.env.company,
+    )
     user_id = fields.Many2one(
-        comodel_name='res.users',
-        string='Employee',
+        comodel_name="res.users",
+        string="Employee",
         required=True,
         default=lambda self: self.env.user,
-        states={'draft': [('readonly', False)]})
-    date = fields.Datetime(
-        string='Visit Datetime',
-        required=True,
-        readonly=True,
-        states={
-            'draft': [('readonly', False)],
-            'visited': [('readonly', False)]})
+    )
+    date = fields.Datetime(string="Visit Datetime", required=True, readonly=True)
     duration = fields.Integer(
-        string='Duration',
+        string="Duration",
         readonly=True,
-        states={
-            'draft': [('readonly', False)],
-            'visited': [('readonly', False)]},
-        help="Estimated duration of the visit in minutes")
+        help="Estimated duration of the " "visit in minutes",
+    )
     visit_reason = fields.Many2one(
-        comodel_name='crm.visit.reason',
-        string='Reason',
-        required=True,
-        readonly=True, states={'draft': [('readonly', False)]})
-    visit_reason_details = fields.Text(
-        string='Purpose',
-        readonly=True, states={'draft': [('readonly', False)]})
+        comodel_name="crm.visit.reason", string="Reason", required=True, readonly=True
+    )
+    visit_reason_details = fields.Text(string="Purpose", readonly=True)
     visit_feeling = fields.Many2one(
-        comodel_name='crm.visit.feeling',
-        string='Feeling',
-        readonly=True, states={'visited': [('readonly', False)]})
-    report = fields.Html(
-        string='Report',
-        readonly=True,
-        required=False,
-        states={'visited': [('readonly', False), ('required', True)]})
+        comodel_name="crm.visit.feeling", string="Feeling", readonly=True
+    )
+    report = fields.Html(string="Report", readonly=True, required=False)
     partner_id = fields.Many2one(
-        comodel_name='res.partner',
-        string='Partner',
-        required=True,
-        readonly=True,
-        states={'draft': [('readonly', False)]})
+        comodel_name="res.partner", string="Partner", required=True, readonly=True
+    )
 
     @api.model
     def create(self, vals):
@@ -105,35 +64,26 @@ class CrmVisit(models.Model):
         Readonly fields don't get send to the server, so we retrieve
         those fields from previous visits.
         """
-        vals['name'] = self.env['ir.sequence'].get('crm.visit')
+        vals["name"] = self.env["ir.sequence"].next_by_code("crm.visit")
         return super(CrmVisit, self).create(vals)
 
-    @api.multi
     def unlink(self):
         for visit in self:
-            if visit.state != 'draft':
-                raise UserError(
-                    _("Invalid Action !"),
-                    _("Only visits in state 'draft' can be deleted. ")
-                )
+            if visit.state != "draft":
+                raise UserError(_("Only visits in state 'draft'" " can be deleted. "))
         return super(CrmVisit, self).unlink()
 
-    @api.one
     def action_confirm(self):
-        self.state = 'planned'
+        self.state = "planned"
 
-    @api.one
     def action_edit(self):
-        self.state = 'draft'
+        self.state = "draft"
 
-    @api.one
     def action_process(self):
-        self.state = 'visited'
+        self.state = "visited"
 
-    @api.one
     def action_done(self):
-        self.state = 'done'
+        self.state = "done"
 
-    @api.one
     def action_correct(self):
-        self.state = 'visited'
+        self.state = "visited"
