@@ -1,70 +1,92 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#
-#    Copyright (c) 2016 Onestein BV (www.onestein.eu).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Copyright (c) 2015 Onestein BV (www.onestein.eu).
+# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api, _
-
-import logging
-
-_logger = logging.getLogger(__name__)
+from odoo import api, models, _
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    def onchange_partner_id(self, cr, uid, ids, partner_id, context=None):
-        partner_action_obj = self.pool['crm.partner.action']
-        partner_obj = self.pool['res.partner']
-        res = super(SaleOrder, self).onchange_partner_id(
-            cr, uid, ids, partner_id, context=context)
-        if not partner_id:
-            return res
+    @api.onchange("partner_id")
+    def onchange_partner_id(self):
+        """
+        Update the following fields when the partner is changed:
+        - Pricelist
+        - Payment terms
+        - Invoice address
+        - Delivery address
+        """
+        if not self.partner_id:
+            self.update(
+                {
+                    "partner_invoice_id": False,
+                    "partner_shipping_id": False,
+                    "payment_term_id": False,
+                    "fiscal_position_id": False,
+                }
+            )
+            return
 
-        res['value'][
-            'user_id'] = uid
-        if 'pricelist_id' in res['value'] and res['value']['pricelist_id']:
-            if isinstance(res['value']['pricelist_id'], long):
-                res['value']['pricelist_id'] = int(res['value']['pricelist_id'])
+        addr = self.partner_id.address_get(["delivery", "invoice"])
+        partner_user = (
+            self.partner_id.user_id or self.partner_id.commercial_partner_id.user_id
+        )
+        values = {
+            "pricelist_id": self.partner_id.property_product_pricelist
+            and self.partner_id.property_product_pricelist.id
+            or False,
+            "payment_term_id": self.partner_id.property_payment_term_id
+            and self.partner_id.property_payment_term_id.id
+            or False,
+            "partner_invoice_id": addr["invoice"],
+            "partner_shipping_id": addr["delivery"],
+        }
+        user_id = partner_user.id or self.env.uid
+        if self.user_id.id != user_id:
+            values["user_id"] = user_id
 
-        part = partner_obj.browse(cr, uid, partner_id, context=context)
-        cpart = part.commercial_partner_id
+        if (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("account.use_invoice_terms")
+            and self.env.company.invoice_terms
+        ):
+            values["note"] = self.with_context(
+                lang=self.partner_id.lang
+            ).env.company.invoice_terms
+
+        # Use team of salesman if any otherwise leave as-is
+        values["team_id"] = (
+            partner_user.team_id.id
+            if partner_user and partner_user.team_id
+            else self.team_id
+        )
+        self.update(values)
+        partner_action_obj = self.env["crm.partner.action"]
+        values["user_id"] = self._uid
+        if "pricelist_id" in values and values["pricelist_id"]:
+            if isinstance(values["pricelist_id"], int):
+                values["pricelist_id"] = int(values["pricelist_id"])
+
+        cpart = self.partner_id.commercial_partner_id
         partner_ids = [cpart.id] + [x.id for x in cpart.child_ids]
-        dom = [('partner_id', 'in', partner_ids),
-               ('state', '=', 'open')]
-        action_ids = partner_action_obj.search(cr, uid, dom, context=context)
-        actions = partner_action_obj.browse(
-            cr, uid, action_ids, context=context)
-        message_body = ''
-        for action in actions:
-            if not action.user_id.id or uid == action.user_id.id:
+        dom = [("partner_id", "in", partner_ids), ("state", "=", "open")]
+        action_ids = partner_action_obj.search(dom)
+        message_body = ""
+        for action in partner_action_obj.search([("partner_id", "in", action_ids)]):
+            if not action.user_id.id or self._uid == action.user_id.id:
                 message_body += action.description
                 if action.comments:
-                    message_body += '\n\n' + action.comments
-                message_body += '\n\n'
+                    message_body += "\n\n" + action.comments
+                message_body += "\n\n"
         if message_body:
-            res['warning'] = {
-                'title': _('Open Actions'),
-                'message': _(
+            values["warning"] = {
+                "title": _("Open Actions"),
+                "message": _(
                     "There are still open actions for this partner. "
                     "Please check if there are any relevant actions"
-                    ) + '\n\n' + message_body
+                )
+                + "\n\n"
+                + message_body,
             }
-        return res

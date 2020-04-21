@@ -1,16 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<openerp>
-    <data noupdate="1">
+<odoo noupdate="1">
 
-        <record id="crm_partner_action_sequence_type" model="ir.sequence.type">
-            <field name="name">Partner Actions</field>
-            <field name="code">crm.partner.action</field>
-        </record>
+    <record id="crm_partner_action_sequence" model="ir.sequence">
+        <field name="name">Partner Actions</field>
+        <field name="code">crm.partner.action</field>
+    </record>
 
-        <record id="crm_partner_action_sequence" model="ir.sequence">
-            <field name="name">Partner Actions</field>
-            <field name="code">crm.partner.action</field>
-        </record>
-
-    </data>
-</openerp>
+</odoo>
