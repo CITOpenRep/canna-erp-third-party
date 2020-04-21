@@ -1,15 +1,31 @@
-# -*- coding: utf-8 -*-
-from openerp import api, models
+# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from odoo import api, fields, models
 
 
 class AccountInvoice(models.Model):
-    _name = 'account.invoice'
-    _inherit = ['account.invoice', 'extended.approval.workflow.mixin']
+    _name = "account.move"
+    _inherit = ["account.move", "extended.approval.workflow.mixin"]
 
-    workflow_signal = 'invoice_open'
-    workflow_state = 'extended_approval'
+    state = fields.Selection(
+        selection_add=[("extended_approval", "Approval")],
+        string="Status",
+        required=True,
+        readonly=True,
+        copy=False,
+        tracking=True,
+        default="draft",
+    )
 
-    @api.multi
     def action_cancel(self):
         self.cancel_approval()
         return super(AccountInvoice, self).action_cancel()
+
+    def write(self, values):
+        result = self.approve_step()
+        if not result:
+            return super(AccountInvoice, self).write(values)
+        if self.current_step:
+            values["state"] = "extended_approval"
+        return super(AccountInvoice, self).write(values)
