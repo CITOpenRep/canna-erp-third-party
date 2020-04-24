@@ -1,0 +1,6 @@
+<odoo>
+    <record id="sale_discount_advanced.sale_discount_on_sale_order" model="sale.discount">
+        <field name="payment_term_ids"
+               eval="[(6, 0, [ref('account.account_payment_term_15days')])]"/>
+    </record>
+</odoo>
