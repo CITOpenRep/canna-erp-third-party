@@ -8,9 +8,6 @@
             <xpath expr="//field[@name='payment_term_id']" position="attributes">
                 <attribute name="attrs">{'readonly': [('state', 'not in', ('draft', 'sent'))]}</attribute>
             </xpath>
-            <field name="order_line" position="attributes">
-                <attribute name="context">{'payment_term_id': payment_term}</attribute>
-            </field>
         </field>
     </record>
 
