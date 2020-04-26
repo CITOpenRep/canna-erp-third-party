@@ -1,4 +1,4 @@
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
@@ -7,7 +7,7 @@
     "license": "AGPL-3",
     "author": "Onestein, " "Serpent Consulting Services Pvt. Ltd.",
     "category": "base",
-    "depends": ["base", "base_extended_approval",],
+    "depends": ["base", "base_extended_approval"],
     "data": [
         "data/email_template_data.xml",
         "data/base_action_rule_data.xml",
