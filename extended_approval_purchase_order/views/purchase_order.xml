@@ -32,10 +32,8 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='button_approve']"
                 position="replace">
-                <button name="button_approve"
-                    string="Approve"
-                    type="object"
-                    class="oe_highlight"
+                <button name="button_approve" string="Approve"
+                    type="object" class="oe_highlight"
                     groups="purchase.group_purchase_manager"
                     attrs="{'invisible': ['|', ('state', 'not in', ['confirmed' ,'extended_approval']), ('approval_allowed', '!=', True)]}" />
                 <button name="abort_approval" type="object"
