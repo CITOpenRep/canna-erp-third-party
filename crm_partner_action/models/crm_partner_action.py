@@ -1,8 +1,8 @@
 # Copyright (c) 2015 Onestein BV (www.onestein.eu).
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 
 
 class CrmPartnerAction(models.Model):
@@ -65,7 +65,7 @@ class CrmPartnerAction(models.Model):
         states={"open": [("readonly", False)]},
     )
     main_partner_id = fields.Many2one(
-        compute="_get_main_partner_id",
+        compute="_compute_get_main_partner_id",
         comodel_name="res.partner",
         string="Main Partner",
     )
@@ -75,7 +75,7 @@ class CrmPartnerAction(models.Model):
     )
 
     @api.depends("partner_id")
-    def _get_main_partner_id(self):
+    def _compute_get_main_partner_id(self):
         if self.partner_id.parent_id:
             self.main_partner_id = self.partner_id.parent_id
         else:

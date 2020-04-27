@@ -1,14 +1,14 @@
 ---Fields in module 'crm_partner_action'---
 crm_partner_action / crm.partner.action       / action_group_id (many2one)    : NEW relation: crm.partner.action.group
-crm_partner_action / crm.partner.action       / color (integer)               : NEW 
-crm_partner_action / crm.partner.action       / comments (text)               : NEW 
+crm_partner_action / crm.partner.action       / color (integer)               : NEW
+crm_partner_action / crm.partner.action       / comments (text)               : NEW
 crm_partner_action / crm.partner.action       / company_id (many2one)         : NEW relation: res.company, required: required, req_default: function
 crm_partner_action / crm.partner.action       / description (text)            : NEW required: required
-crm_partner_action / crm.partner.action       / followup_date (date)          : NEW 
+crm_partner_action / crm.partner.action       / followup_date (date)          : NEW
 crm_partner_action / crm.partner.action       / followup_user_id (many2one)   : NEW relation: res.users
 crm_partner_action / crm.partner.action       / message_ids (one2many)        : NEW relation: mail.message
-crm_partner_action / crm.partner.action       / message_last_post (datetime)  : NEW 
-crm_partner_action / crm.partner.action       / name (char)                   : NEW 
+crm_partner_action / crm.partner.action       / message_last_post (datetime)  : NEW
+crm_partner_action / crm.partner.action       / name (char)                   : NEW
 crm_partner_action / crm.partner.action       / partner_id (many2one)         : NEW relation: res.partner, required: required
 crm_partner_action / crm.partner.action       / state (selection)             : NEW selection_keys: ['done', 'open']
 crm_partner_action / crm.partner.action       / user_id (many2one)            : NEW relation: res.users, required: required, req_default: function

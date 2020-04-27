@@ -1,5 +1,5 @@
 # Copyright (c) 2015 Onestein BV (www.onestein.eu).
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
@@ -13,11 +13,11 @@ class ResPartner(models.Model):
     )
 
     partner_action_count = fields.Integer(
-        string="Number of actions", compute="_get_partner_action_count"
+        string="Number of actions", compute="_compute_get_partner_action_count"
     )
 
     @api.depends("actions")
-    def _get_partner_action_count(self):
+    def _compute_get_partner_action_count(self):
         action_count = len(self.actions) or 0
         child_count = 0
         for child in self.child_ids:

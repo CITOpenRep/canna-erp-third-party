@@ -1,5 +1,5 @@
 # Copyright (c) 2015 Onestein BV (www.onestein.eu).
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
@@ -10,7 +10,7 @@
     "category": "CRM",
     "summary": "Register Action to do for partners",
     "author": "Onestein BV, André Schenkels, " "Serpent Consulting Services Pvt. Ltd.",
-    "depends": ["base", "mail", "crm_visit", "sale",],
+    "depends": ["base", "mail", "crm_visit", "sale"],
     "data": [
         "security/crm_partner_action_security.xml",
         "security/ir.model.access.csv",
