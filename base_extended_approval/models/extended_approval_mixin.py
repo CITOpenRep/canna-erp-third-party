@@ -1,9 +1,9 @@
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models, _
-from odoo.tools.safe_eval import safe_eval
+from odoo import _, api, fields, models
 from odoo.exceptions import Warning
+from odoo.tools.safe_eval import safe_eval
 
 
 class ExtendedApprovalMixin(models.AbstractModel):
@@ -60,7 +60,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
     def _compute_history_ids(self):
         for rec in self:
             rec.approval_history_ids = self.env["extended.approval.history"].search(
-                [("source", "=", "{0},{1}".format(rec._name, rec.id))]
+                [("source", "=", "{},{}".format(rec._name, rec.id))]
             )
 
     @api.model
@@ -74,7 +74,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         for rec in self:
             completed = (
                 self.env["extended.approval.history"]
-                .search([("source", "=", "{0},{1}".format(rec._name, rec.id))])
+                .search([("source", "=", "{},{}".format(rec._name, rec.id))])
                 .mapped("step_id")
             )
             if not completed:
@@ -116,7 +116,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         # computed field approval_history_ids is not refreshed, so search
         completed = (
             self.env["extended.approval.history"]
-            .search([("source", "=", "{0},{1}".format(self._name, self.id))])
+            .search([("source", "=", "{},{}".format(self._name, self.id))])
             .mapped("step_id")
         )
         for step in flow.steps:
@@ -144,7 +144,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
                 self.env["extended.approval.history"].create(
                     {
                         "approver_id": self.env.user.id,
-                        "source": "{0},{1}".format(self._name, self.id),
+                        "source": "{},{}".format(self._name, self.id),
                         "step_id": step.id,
                     }
                 )
@@ -166,9 +166,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
 
     def cancel_approval(self):
         self.approval_history_ids.sudo().write({"active": False})
-        self.write(
-            {"current_step": False,}
-        )
+        self.write({"current_step": False})
         return {}
 
     def abort_approval(self):

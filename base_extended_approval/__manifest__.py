@@ -1,4 +1,4 @@
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
@@ -12,6 +12,6 @@
         "account",  # necessary for menu placement
         "base_automation",  # necessary for base action rule.
     ],
-    "data": ["views/base_extended_approval.xml", "security/ir.model.access.csv",],
+    "data": ["views/base_extended_approval.xml", "security/ir.model.access.csv"],
     "installable": True,
 }

@@ -1,11 +1,11 @@
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, models
 
 
 def get_applicable_models(browselist):
-    return list(set([m for rec in browselist for m in rec.get_applicable_models()]))
+    return list({m for rec in browselist for m in rec.get_applicable_models()})
 
 
 def update_model_flows(env, models):

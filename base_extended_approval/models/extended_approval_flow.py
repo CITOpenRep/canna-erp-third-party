@@ -1,7 +1,8 @@
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+
 from .extended_approval_mixin import ExtendedApprovalMixin
 
 
@@ -38,12 +39,10 @@ class ExtendedApprovalFlow(models.Model):
         return [
             (x, x)
             for x in list(
-                set(
-                    [
-                        c._name
-                        for c in _get_subclasses(ExtendedApprovalMixin)
-                        if issubclass(c, models.Model) and hasattr(c, "_name")
-                    ]
-                )
+                {
+                    c._name
+                    for c in _get_subclasses(ExtendedApprovalMixin)
+                    if issubclass(c, models.Model) and hasattr(c, "_name")
+                }
             )
         ]

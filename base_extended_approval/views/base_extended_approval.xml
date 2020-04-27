@@ -79,7 +79,7 @@
                         <field name="steps">
                             <tree string="steps">
                                 <field name="sequence" widget="handle"/>
-                                <field name="group_ids"/>
+                                <field name="group_ids" widget="many2many_tags"/>
                                 <field name="condition"/>
                             </tree>
                             <form string="Step">
