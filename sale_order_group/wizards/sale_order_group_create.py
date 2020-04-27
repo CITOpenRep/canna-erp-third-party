@@ -1,8 +1,8 @@
 # Copyright 2019 Noviat.
-# Copyright (C) 2020-TODAY Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 
 
 class SaleOrderGroupCreate(models.TransientModel):
@@ -54,9 +54,7 @@ class SaleOrderGroupCreate(models.TransientModel):
                 + "\n\n"
             )
             note += ", ".join([str(x) for x in orders.mapped("name")])
-        res.update(
-            {"note": note, "state": state,}
-        )
+        res.update({"note": note, "state": state})
         return res
 
     def group_orders(self):
