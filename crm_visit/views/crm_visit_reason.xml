@@ -42,5 +42,5 @@
         action="crm_visit_reason_action"
         parent="menu_crm_visit_config"
         sequence="5"/>
-    
+
 </odoo>
