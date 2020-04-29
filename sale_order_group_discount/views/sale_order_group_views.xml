@@ -19,7 +19,7 @@
             <xpath
                 expr="//field[@name='sale_order_ids']//field[@name='amount_total']"
                 position="before">
-                <field name="discount_ids" />
+                <field name="discount_ids" widget="many2many_tags" />
                 <field name="discount_base_amount" sum="Total amount before discount" />
                 <field name="discount_amount" sum="Total discount amount" />
             </xpath>
