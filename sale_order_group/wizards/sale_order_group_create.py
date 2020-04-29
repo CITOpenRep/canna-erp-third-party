@@ -1,4 +1,4 @@
-# Copyright 2019 Noviat.
+# Copyright 2019-2020 Noviat.
 # Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
@@ -14,7 +14,7 @@ class SaleOrderGroupCreate(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
-        res = super(SaleOrderGroupCreate, self).default_get(fields_list)
+        res = super().default_get(fields_list)
         error = ""
         state = False
         orders = self.env["sale.order"].browse(self.env.context.get("active_ids"))

@@ -1,4 +1,4 @@
-# Copyright 2019 Noviat.
+# Copyright 2019-2020 Noviat.
 # Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
@@ -10,7 +10,7 @@ class SaleOrderGroupCreate(models.TransientModel):
 
     @api.model
     def default_get(self, fields_list):
-        res = super(SaleOrderGroupCreate, self).default_get(fields_list)
+        res = super().default_get(fields_list)
         orders = self.env["sale.order"].browse(self.env.context.get("active_ids"))
         discounts = orders[0].discount_ids
         currency = orders[0].currency_id
@@ -39,7 +39,7 @@ class SaleOrderGroupCreate(models.TransientModel):
         Add discounts to vals only if all grouped orders have the
         same discounts.
         """
-        vals = super(SaleOrderGroupCreate, self)._prepare_sale_order_group_vals()
+        vals = super()._prepare_sale_order_group_vals()
         orders = self.env["sale.order"].browse(self.env.context.get("active_ids"))
         discounts = orders[0].discount_ids
         for order in orders[1:]:

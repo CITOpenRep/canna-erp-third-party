@@ -23,6 +23,7 @@ class SaleOrderGroup(models.Model):
     )
     disable_discount_calc = fields.Boolean(
         compute="_compute_discounts",
+        store=True,
         help="Do not allow discount calculation on the combined order value "
         "when the underlying orders have different discount settings.",
     )
