@@ -7,6 +7,7 @@ from odoo import _, api, fields, models
 
 class SaleOrderGroup(models.Model):
     _name = "sale.order.group"
+    _description = "Sale Order Group"
 
     name = fields.Char(
         string="Order Group Reference",
