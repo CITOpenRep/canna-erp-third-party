@@ -1,4 +1,4 @@
-# Copyright 2019 Noviat.
+# Copyright 2020 Noviat.
 # Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
@@ -19,7 +19,7 @@ class SaleOrder(models.Model):
         related="sale_order_group_id.state", string="Sale Order Group State"
     )
 
-    def action_button_confirm(self):
+    def action_confirm(self):
         self.ensure_one()
         if not self.env.context.get("confirm_from_group") and self.sale_order_group_id:
             raise UserError(
@@ -30,7 +30,7 @@ class SaleOrder(models.Model):
                 )
             )
         else:
-            return super(SaleOrder, self).action_confirm()
+            return super().action_confirm()
 
     def action_cancel(self):
         if not self.env.context.get("cancel_from_group"):
@@ -44,7 +44,7 @@ class SaleOrder(models.Model):
                         )
                         % so.name
                     )
-        return super(SaleOrder, self).action_cancel()
+        return super().action_cancel()
 
     def remove_from_sale_order_group(self):
         for so in self:
