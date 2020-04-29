@@ -26,27 +26,10 @@
         <field name="res_model">sale.order.group.create</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="sale_order_group_create_view_form" />
-        <!-- <field name="multi" eval="True" /> -->
+        <field name="binding_model_id" ref="sale.model_sale_order" />
+        <field name="binding_type">action</field>
+        <field name="binding_view_types">list</field>
         <field name="target">new</field>
     </record>
-
-    <act_window
-        name="Group Sale Orders"
-        res_model="sale.order.group.create"
-        binding_model="sale.order"
-        binding_views="list"
-        view_mode="form"
-        target="new"
-        view_id="sale_order_group_create_view_form"
-        id="sale_order_ir_value"/>
-
-   <!--  <record id="sale_order_ir_value" model="ir.values">
-        <field name="key2">client_action_multi</field>
-        <field name="model">sale.order</field>
-        <field name="name">Group Sale Orders</field>
-        <field
-            eval="'ir.actions.act_window,%d'%sale_order_group_create_action"
-            name="value" />
-    </record> -->
 
 </odoo>
