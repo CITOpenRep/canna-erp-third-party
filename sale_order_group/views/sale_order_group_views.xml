@@ -29,7 +29,7 @@
                         </group>
                     </group>
                     <group name="g12">
-                        <group col="1">
+                        <group col="1" colspan="2">
                             <header>
                                 <button type="object" name="add_orders"
                                     string="Add Orders"
@@ -51,7 +51,7 @@
                                         invisible="1" />
                                     <button
                                         name="remove_from_sale_order_group"
-                                        icon="gtk-cancel" help="Remove from Group"
+                                        icon="fa-remove" help="Remove from Group"
                                         type="object"
                                         attrs="{'invisible': [('sale_order_group_state', '!=', 'draft')]}" />
                                 </tree>
