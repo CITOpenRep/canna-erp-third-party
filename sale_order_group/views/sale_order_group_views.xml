@@ -1,0 +1,66 @@
+<odoo>
+
+    <record id="sale_order_group_view_form" model="ir.ui.view">
+        <field name="name">sale.order.group.form</field>
+        <field name="model">sale.order.group</field>
+        <field name="arch" type="xml">
+            <form string="Sales Order Group" create="false" delete="false">
+                <header>
+                    <button name="button_confirm" states="draft"
+                        class="oe_highlight" string="Confirm Orders"
+                        type="object" />
+                    <button name="button_cancel" states="confirm,draft"
+                        string="Cancel Orders" type="object" />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <h1>
+                        <field name="name" class="oe_inline"
+                            readonly="1" />
+                    </h1>
+                    <group name="g1">
+                        <group name="g1l">
+                            <field name="partner_id" />
+                            <field name="company_id" groups="base.group_multi_company"
+                                options="{'no_open': True}" />
+                        </group>
+                        <group name="g1r">
+                            <!-- placeholder for inherited views -->
+                        </group>
+                    </group>
+                    <group name="g12">
+                        <group col="1" colspan="2">
+                            <header>
+                                <button type="object" name="add_orders"
+                                    string="Add Orders"
+                                    attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                            </header>
+                            <field name="sale_order_ids" nolabel="1"
+                                mode="tree" options="{'reload_on_button': true}"
+                                domain="[('state', 'in', ['draft', 'sent']), ('partner_id.commercial_partner_id', '=', partner_id)]">
+                                <tree string="Orders" edit="false"
+                                    create="false" delete="false">
+                                    <field name="name" string="Order Number" />
+                                    <field name="date_order" />
+                                    <field name="partner_id" />
+                                    <field name="user_id" />
+                                    <field name="amount_total"
+                                        sum="Total Tax Included" />
+                                    <field name="state" />
+                                    <field name="sale_order_group_state"
+                                        invisible="1" />
+                                    <button
+                                        name="remove_from_sale_order_group"
+                                        icon="fa-remove" help="Remove from Group"
+                                        type="object"
+                                        attrs="{'invisible': [('sale_order_group_state', '!=', 'draft')]}" />
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>
