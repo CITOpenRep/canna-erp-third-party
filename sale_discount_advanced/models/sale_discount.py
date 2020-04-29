@@ -110,11 +110,11 @@ class SaleDiscount(models.Model):
 
     @api.onchange("discount_base")
     def _onchange_discount_base(self):
+        self.exclusive = False
         self.rule_ids.write(
             {
                 "matching_type": "amount",
-                "product_id": False,
-                "exclusive": False,
+                "product_ids": False,
                 "product_category_ids": [(5,)],
                 "discount_type": "perc",
                 "discount_pct": 0.0,
