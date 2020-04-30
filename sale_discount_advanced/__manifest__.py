@@ -1,7 +1,7 @@
 # Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
 # Copyright (C) 2016-2019 Noviat nv/sa (www.noviat.com).
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
-# Copyright (C) 2020 Serpent Consulting Svc (<http://www.serpentcs.com>).
+# Copyright (C) 2020 SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {

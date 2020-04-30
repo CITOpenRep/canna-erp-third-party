@@ -179,6 +179,8 @@ class SaleDiscount(models.Model):
             return False
 
     def _calculate_discount(self, lines):  # noqa: C901
+        match = False
+        disc_pct = 0.0
         for rule in self.rule_ids:
             disc_amt = 0.0
             disc_pct = 0.0
