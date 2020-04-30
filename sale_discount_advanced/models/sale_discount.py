@@ -183,6 +183,7 @@ class SaleDiscount(models.Model):
         disc_pct = 0.0
         for rule in self.rule_ids:
             disc_amt = 0.0
+            disc_pct = 0.0
             qty = 0.0
             base = 0.0
             for sol in lines:
@@ -198,6 +199,7 @@ class SaleDiscount(models.Model):
                 qty += sol.product_uom_qty
                 base += sol.product_uom_qty * sol.price_unit
 
+            match = False
             if rule.matching_type == "amount":
                 match_min = match_max = False
                 base = self._round_amt(base)
