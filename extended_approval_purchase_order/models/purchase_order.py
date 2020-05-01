@@ -20,9 +20,9 @@ class PurchaseOrder(models.Model):
         tracking=True,
     )
 
-    def action_cancel(self):
+    def button_cancel(self):
         self.cancel_approval()
-        return super(PurchaseOrder, self).action_cancel()
+        return super(PurchaseOrder, self).button_cancel()
 
     def write(self, values):
         result = self.approve_step()
