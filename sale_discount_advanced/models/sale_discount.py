@@ -200,13 +200,9 @@ class SaleDiscount(models.Model):
             match = False
             if rule.matching_type == "amount":
                 match_min = match_max = False
-                base = self._round_amt_qty(base, field_name="min_base")
-                rule_min_base = self._round_amt_qty(
-                    rule.min_base, field_name="min_base"
-                )
-                rule_max_base = self._round_amt_qty(
-                    rule.max_base, field_name="min_base"
-                )
+                base = self._round_amt_qty(base, "min_base")
+                rule_min_base = self._round_amt_qty(rule.min_base, "min_base")
+                rule_max_base = self._round_amt_qty(rule.max_base, "min_base")
                 if rule_min_base > 0 and rule_min_base > base:
                     continue
                 else:
@@ -219,9 +215,9 @@ class SaleDiscount(models.Model):
             elif rule.matching_type == "quantity":
                 match_min = match_max = False
                 qty = sum([x.product_uom_qty for x in lines])
-                qty = self._round_amt_qty(qty, field_name="min_qty")
-                rule_min_qty = self._round_amt_qty(rule.min_qty, field_name="min_qty")
-                rule_max_qty = self._round_amt_qty(rule.max_qty, field_name="min_qty")
+                qty = self._round_amt_qty(qty, "min_qty")
+                rule_min_qty = self._round_amt_qty(rule.min_qty, "min_qty")
+                rule_max_qty = self._round_amt_qty(rule.max_qty, "min_qty")
                 if rule_min_qty > 0 and rule_min_qty > qty:
                     continue
                 else:
