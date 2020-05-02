@@ -18,19 +18,21 @@ class CrmPartnerAction(models.Model):
         string="State",
         default="open",
         readonly=True,
-        track_visibility="onchange",
+        tracking=True,
     )
     # '_company_default_get' on res.company is deprecated and shouldn't be used
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
         required=True,
+        states={'done': [('readonly', True)]},
         default=lambda self: self.env.company,
     )
     user_id = fields.Many2one(
         comodel_name="res.users",
         string="User",
         required=False,
+        states={'done': [('readonly', True)]},
         default=lambda self: self.env.user,
         help="Pick a user who will receive a "
         "notification when choosing the partner "
