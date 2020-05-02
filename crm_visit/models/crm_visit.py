@@ -22,7 +22,7 @@ class CrmVisit(models.Model):
             ("done", "Done"),
         ],
         default="draft",
-        track_visibility="onchange",
+        tracking=True,
         readonly=True,
     )
     # '_company_default_get' on res.company is deprecated and shouldn't be used
