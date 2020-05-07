@@ -49,7 +49,7 @@ class SaleOrderGroup(models.Model):
     def button_confirm(self):
         ctx = dict(self.env.context, confirm_from_group=True)
         for so in self.sale_order_ids.with_context(ctx):
-            so.action_button_confirm()
+            so.action_confirm()
         self.state = "confirm"
         return True
 
