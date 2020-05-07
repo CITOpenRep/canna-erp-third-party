@@ -20,14 +20,14 @@ class SaleDiscount(models.Model):
         comodel_name="res.company",
         string="Company",
         required=True,
-        default=lambda self: self.env.user.company_id,
+        default=lambda self: self.env.company,
     )
-    name = fields.Char(string="Discount", track_visibility="onchange", required=True)
-    start_date = fields.Date(string="Start date", track_visibility="onchange")
-    end_date = fields.Date(string="End date", track_visibility="onchange")
+    name = fields.Char(string="Discount", tracking=True, required=True)
+    start_date = fields.Date(string="Start date", tracking=True)
+    end_date = fields.Date(string="End date", tracking=True)
     active = fields.Boolean(
         string="Discount active",
-        track_visibility="onchange",
+        tracking=True,
         default=lambda self: self._default_active(),
     )
     discount_base = fields.Selection(
@@ -35,7 +35,7 @@ class SaleDiscount(models.Model):
         string="Discount Base",
         required=True,
         default="sale_order_group",
-        track_visibility="onchange",
+        tracking=True,
         help="Base the discount on ",
     )
     exclusive = fields.Selection(
@@ -59,26 +59,26 @@ class SaleDiscount(models.Model):
         comodel_name="sale.discount.rule",
         inverse_name="sale_discount_id",
         string="Discount Rules",
-        track_visibility="onchange",
+        tracking=True,
     )
     excluded_product_category_ids = fields.Many2many(
         comodel_name="product.category",
         string="Excluded Product Categories",
-        track_visibility="onchange",
+        tracking=True,
         help="Products in these categories will by default be excluded "
         "from this discount.",
     )
     excluded_product_ids = fields.Many2many(
         comodel_name="product.product",
         string="Excluded Products",
-        track_visibility="onchange",
+        tracking=True,
         help="These products will by default be excluded " "from this discount.",
     )
     included_product_category_ids = fields.Many2many(
         comodel_name="product.category",
         relation="product_category_sale_discount_incl_rel",
         string="Included Product Categories",
-        track_visibility="onchange",
+        tracking=True,
         help="Fill in this field to limit the discount calculation "
         "to Products in these categories.",
     )
@@ -86,7 +86,7 @@ class SaleDiscount(models.Model):
         comodel_name="product.product",
         relation="product_sale_discount_incl_rel",
         string="Included Products",
-        track_visibility="onchange",
+        tracking=True,
         help="Fill in this field to limit the discount calculation "
         "to these products.",
     )
@@ -145,10 +145,8 @@ class SaleDiscount(models.Model):
         return super()._track_subtype(init_values)
 
     def unlink(self):
-        if any(
-            self.env["sale.order.line"].search(
-                [("sale_discount_ids", "in", self.ids)], limit=1
-            )
+        if self.env["sale.order.line"].search_count(
+            [("sale_discount_ids", "in", self.ids)]
         ):
             raise UserError(
                 _("You cannot delete a discount which is used in a Sale Order!")
@@ -202,9 +200,9 @@ class SaleDiscount(models.Model):
             match = False
             if rule.matching_type == "amount":
                 match_min = match_max = False
-                base = self._round_amt(base)
-                rule_min_base = self._round_amt(rule.min_base)
-                rule_max_base = self._round_amt(rule.max_base)
+                base = self._round_amt_qty(base, "min_base")
+                rule_min_base = self._round_amt_qty(rule.min_base, "min_base")
+                rule_max_base = self._round_amt_qty(rule.max_base, "min_base")
                 if rule_min_base > 0 and rule_min_base > base:
                     continue
                 else:
@@ -217,9 +215,9 @@ class SaleDiscount(models.Model):
             elif rule.matching_type == "quantity":
                 match_min = match_max = False
                 qty = sum([x.product_uom_qty for x in lines])
-                qty = self._round_qty(qty)
-                rule_min_qty = self._round_qty(rule.min_qty)
-                rule_max_qty = self._round_qty(rule.max_qty)
+                qty = self._round_amt_qty(qty, "min_qty")
+                rule_min_qty = self._round_amt_qty(rule.min_qty, "min_qty")
+                rule_max_qty = self._round_amt_qty(rule.max_qty, "min_qty")
                 if rule_min_qty > 0 and rule_min_qty > qty:
                     continue
                 else:
@@ -271,15 +269,9 @@ class SaleDiscount(models.Model):
 
         return match, disc_pct
 
-    def _round_amt(self, val):
+    def _round_amt_qty(self, val, field_name):
         digits = (
-            self.env["sale.discount.rule"]._fields["min_base"].get_digits(self.env)[1]
-        )
-        return round(val, digits)
-
-    def _round_qty(self, val):
-        digits = (
-            self.env["sale.discount.rule"]._fields["min_qty"].get_digits(self.env)[1]
+            self.env["sale.discount.rule"]._fields[field_name].get_digits(self.env)[1]
         )
         return round(val, digits)
 
