@@ -35,6 +35,8 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
             this.current_date_range = null;
             this.current_reconcile = null;
             this.current_amount = null;
+            this.current_taxes = null;
+            this.current_tags = null;
             this.search_bar_domain = [];
             this.amlse_domain = [];
         },
@@ -114,6 +116,14 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
                 self.current_amount = this.value === "" ? null : this.value;
                 self.do_search();
             });
+            this.$el.find(".oe_account_select_taxes").change(function () {
+                self.current_taxes = this.value === "" ? null : this.value;
+                self.do_search();
+            });
+            this.$el.find(".oe_account_select_tags").change(function () {
+                self.current_tags = this.value === "" ? null : this.value;
+                self.do_search();
+            });
         },
 
         get_render_dict: function() {
@@ -188,6 +198,10 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
                 ]);
             if (this.current_amount)
                 domain.push(["amount_search", "=", this.current_amount]);
+            if (this.current_taxes)
+                domain.push(["tax_ids", "ilike", this.current_taxes]);
+            if (this.current_tags)
+                domain.push(["tag_ids", "ilike", this.current_tags]);
             // _.each(domain, function(x) {console.log('amlse, aml_search_domain, domain_part = ', x)});
             return domain;
         },
