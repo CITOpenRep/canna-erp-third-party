@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="account_move_line_menu_search_extension"
+        action="account_move_line_action_search_extension"
+        parent="account.menu_finance_entries_accounting_miscellaneous"
+        sequence="1"
+        groups="account.group_account_user"
+    />
+</odoo>
