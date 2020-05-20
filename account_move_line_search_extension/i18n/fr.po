@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo 12.0\n"
+"Project-Id-Version: Odoo 13.0\n"
 "Report-Msgid-Bugs-To: support@noviat.com\n"
 "POT-Creation-Date: 2019-12-07 10:51:08.136000\n"
 "PO-Revision-Date: 2019-12-07 10:51:08.136000\n"
@@ -14,39 +14,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Language: French\n
-""Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. module: account_move_line_search_extension
 #. openerp-web
 #: code:addons/account_move_line_search_extension/static/src/xml/account_move_line_search_extension.xml:7
 #, python-format
 msgid "Account :"
-msgstr ""
+msgstr "Compte :"
 
 #. module: account_move_line_search_extension
 #. openerp-web
 #: code:addons/account_move_line_search_extension/static/src/xml/account_move_line_search_extension.xml:12
 #, python-format
 msgid "Analytic Account :"
-msgstr ""
+msgstr "Compte analitique :"
 
 #. module: account_move_line_search_extension
 #. openerp-web
 #: code:addons/account_move_line_search_extension/static/src/xml/account_move_line_search_extension.xml:21
 #, python-format
 msgid "Journal :"
-msgstr ""
+msgstr "Journal :"
 
 #. module: account_move_line_search_extension
 #: model:ir.model,name:account_move_line_search_extension.model_account_move_line
 msgid "Journal Items"
-msgstr ""
+msgstr "Pièces comptables"
 
 #. module: account_move_line_search_extension
 #: model:ir.actions.act_window,name:account_move_line_search_extension.action_account_move_line_search_extension
 #: model:ir.ui.menu,name:account_move_line_search_extension.menu_account_move_line_search_extension
 msgid "Journal Items Search All"
-msgstr ""
+msgstr "Rechercher toute pièce comptable"
 
 #. module: account_move_line_search_extension
 #: model:ir.model,name:account_move_line_search_extension.model_res_partner
@@ -58,4 +58,4 @@ msgstr "Partenaire"
 #: code:addons/account_move_line_search_extension/static/src/xml/account_move_line_search_extension.xml:17
 #, python-format
 msgid "Partner :"
-msgstr ""
+msgstr "Partenaire :"
