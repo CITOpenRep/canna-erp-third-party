@@ -145,7 +145,7 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
             if (params.amlse_domain) {
                 params.domain = params.domain.concat(params.amlse_domain);
             } else {
-                this.search_bar_domain = this.sidebar.env.domain;
+                this.search_bar_domain = params.domain;
                 params.domain = params.domain.concat(this.amlse_domain);
             }
             return this._super.apply(this, arguments).then(function() {
