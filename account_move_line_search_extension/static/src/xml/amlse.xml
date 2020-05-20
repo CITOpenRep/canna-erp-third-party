@@ -14,6 +14,8 @@
                         <th name="date_range">Date Range :</th>
                         <th name="reconcile">Reconcile :</th>
                         <th name="amount">Amount :</th>
+                        <th name="taxes">Taxes :</th>
+                        <th name="tags">Tags :</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,6 +45,12 @@
                         </td>
                         <td name="amount">
                             <input type="text" class="oe_account_select_amount" />
+                        </td>
+                        <td name="taxes">
+                            <input type="text" class="oe_account_select_taxes" />
+                        </td>
+                        <td name="tags">
+                            <input type="text" class="oe_account_select_tags" />
                         </td>
                         <td name="empty" />
                     </tr>
