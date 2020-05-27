@@ -254,6 +254,7 @@ class SaleDiscount(models.Model):
                         # The extra matching condition is only applied if all
                         # other conditions match. If the extra matching
                         # condition returns False, then do not apply this rule.
+                        match = False
                         break
                 if rule.discount_type == "perc":
                     disc_amt = base * rule.discount_pct / 100.0
