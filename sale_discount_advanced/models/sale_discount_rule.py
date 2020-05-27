@@ -186,45 +186,53 @@ class SaleDiscountRule(models.Model):
         By default only discounts are supported, but you can
         adapt this method to allow also price increases.
         """
-        # Check if amount is positive
-        if self.discount_type == "amnt" and (
-            self.discount_amount < 0 or self.discount_amount_unit < 0
-        ):
-            raise ValidationError(_("Discount Amount needs to be a positive number"))
-        # Check if percentage is between 0 and 100
-        elif self.discount_type == "perc" and (
-            self.discount_pct < 0 or self.discount_pct > 100
-        ):
-            raise ValidationError(_("Percentage discount must be between 0 and 100."))
+        for rule in self:
+            # Check if amount is positive
+            if rule.discount_type == "amnt" and (
+                rule.discount_amount < 0 or rule.discount_amount_unit < 0
+            ):
+                raise ValidationError(
+                    _("Discount Amount needs to be a positive number")
+                )
+            # Check if percentage is between 0 and 100
+            elif rule.discount_type == "perc" and (
+                rule.discount_pct < 0 or rule.discount_pct > 100
+            ):
+                raise ValidationError(
+                    _("Percentage discount must be between 0 and 100.")
+                )
 
     @api.constrains("product_ids", "product_category_ids")
     def _check_product_filters(self):
-        if self.product_ids and self.product_category_ids:
-            raise ValidationError(
-                _("Products and Product Categories are mutually exclusive")
-            )
+        for rule in self:
+            if rule.product_ids and rule.product_category_ids:
+                raise ValidationError(
+                    _("Products and Product Categories are mutually exclusive")
+                )
 
     @api.constrains("min_base", "max_base")
     def _check_min_max_base(self):
-        if self.min_base and self.max_base:
-            if self.max_base < self.min_base:
-                raise ValidationError(
-                    _(
-                        "The 'Maximum Base Amount' may not be lower "
-                        "than the 'Minimum Base Amount'."
+        for rule in self:
+            if rule.min_base and rule.max_base:
+                if rule.max_base < rule.min_base:
+                    raise ValidationError(
+                        _(
+                            "The 'Maximum Base Amount' may not be lower "
+                            "than the 'Minimum Base Amount'."
+                        )
                     )
-                )
 
     @api.constrains("min_qty", "max_qty")
     def _check_min_max_qty(self):
-        if self.min_qty and self.max_qty:
-            if self.max_qty < self.min_qty:
-                raise ValidationError(
-                    _(
-                        "The 'Maximum Quantity' may not be lower "
-                        "than the 'Minimum Quantity'."
+        for rule in self:
+            if rule.min_qty and rule.max_qty:
+                if rule.max_qty < rule.min_qty:
+                    raise ValidationError(
+                        _(
+                            "The 'Maximum Quantity' may not be lower "
+                            "than the 'Minimum Quantity'."
+                        )
                     )
-                )
 
     @api.onchange("matching_type")
     def _onchange_matching_type(self):
