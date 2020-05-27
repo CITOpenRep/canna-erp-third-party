@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="aml_import_view_form" model="ir.ui.view">
+        <field name="name">aml.import.form</field>
+        <field name="model">aml.import</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="Import File">
+                <group col="4">
+                    <separator string="Select your file :" colspan="4" />
+                    <field name="aml_data" filename="aml_fname" />
+                    <field name="aml_fname" readonly="1" force_save="1" />
+                    <field
+                        name="warning"
+                        widget="html"
+                        nolabel="1"
+                        colspan="4"
+                        attrs="{'invisible': [('warning', '=', False)]}"
+                        class="alert alert-info"
+                        role="alert"
+                    />
+                    <newline />
+                    <field name="file_type" invisible="1" />
+                    <field name="dialect" invisible="1" />
+                    <field
+                        name="sheet"
+                        attrs="{'invisible': [('file_type', 'not in', ['xls', 'xlsx'])]}"
+                    />
+                    <newline />
+                    <field
+                        name="csv_separator"
+                        attrs="{'required': [('file_type', '=', 'csv')], 'invisible': [('file_type', '!=', 'csv')]}"
+                    />
+                    <field
+                        name="decimal_separator"
+                        attrs="{'required': [('file_type', '=', 'csv')], 'invisible': [('file_type', '!=', 'csv')]}"
+                    />
+                    <field
+                        name="codepage"
+                        attrs="{'required': [('file_type', '=', 'csv')], 'invisible': [('file_type', '!=', 'csv')]}"
+                    />
+                </group>
+                <footer>
+                    <button
+                        name="aml_import"
+                        string="_Import"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('warning', '!=', False)]}"
+                    />
+                    <span attrs="{'invisible': [('warning', '!=', False)]}">or</span>
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="aml_import_view_form_result" model="ir.ui.view">
+        <field name="name">aml.import.form.result</field>
+        <field name="model">aml.import</field>
+        <field name="priority">2</field>
+        <field name="arch" type="xml">
+            <form string="Import File">
+                <separator colspan="4" string="Results :" />
+                <field name="note" colspan="4" nolabel="1" width="850" height="400" />
+                <footer>
+                    <button string="Close" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
