@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <menuitem id="wiz_export_stock_level_menu"
+            name="Stock Level Excel export"
+            parent="stock.menu_warehouse_report"
+            action="wiz_export_stock_level_action"
+            sequence="110"/>
+
+</odoo>
