@@ -8,16 +8,16 @@ Stock Level Excel export
 
 This module adds an Excel export of the Stock Levels at a specified date.
 
-The output of this module is compatible with the format of the 'stock_level_import' module. 
-The combination of these two modules (available from apps.odoo.com) gives a simple yet powerful 
-tool for inventory updates. 
+The output of this module is compatible with the format of the 'stock_level_import' module.
+The combination of these two modules (available from apps.odoo.com) gives a simple yet powerful
+tool for inventory updates.
 
 Usage
 =====
 
 - Via Inventory menu
 
-Select Inventory Control/Stock Level Excel export.
+Select Inventory Reporting/Stock Level Excel export.
 
 - Via Product records
 

@@ -67,7 +67,6 @@
     <field name="name">Stock Level Excel export</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">wiz.export.stock.level</field>
-    <field name="view_type">form</field>
     <field name="view_mode">form</field>
     <field name="view_id" ref="wiz_export_stock_level_view_form"/>
     <field name="target">new</field>
@@ -77,7 +76,6 @@
     <field name="name">Stock Level Excel export</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">wiz.export.stock.level</field>
-    <field name="view_type">form</field>
     <field name="view_mode">form</field>
     <field name="view_id" ref="wiz_export_stock_level_view_form"/>
     <field name="target">new</field>
@@ -89,7 +87,6 @@
     <field name="name">Stock Level Excel export</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">wiz.export.stock.level</field>
-    <field name="view_type">form</field>
     <field name="view_mode">form</field>
     <field name="view_id" ref="wiz_export_stock_level_view_form"/>
     <field name="target">new</field>
