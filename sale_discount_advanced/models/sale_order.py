@@ -151,23 +151,23 @@ class SaleOrder(models.Model):
                     match, pct = discount._calculate_discount(so_lines)
                     for line in so_lines:
                         if line not in line_updates:
-                            line_updates[line] = [(discount, pct)]
+                            line_updates[line] = [(discount, pct, match)]
                         else:
-                            line_updates[line] += [(discount, pct)]
+                            line_updates[line] += [(discount, pct, match)]
             else:  # 'sale_line' or 'sale_order_group'
                 match, pct = discount._calculate_discount(lines=lines)
                 for line in lines:
                     if line not in line_updates:
-                        line_updates[line] = [(discount, pct)]
+                        line_updates[line] = [(discount, pct, match)]
                     else:
-                        line_updates[line] += [(discount, pct)]
+                        line_updates[line] += [(discount, pct, match)]
 
         line_update_vals = {}
         for line, line_discounts in line_updates.items():
             discount_ids = [x[0].id for x in line_discounts]
             line_update_vals[line] = {"sale_discount_ids": [(6, 0, discount_ids)]}
             pct_sum = 0.0
-            exclusives = [x for x in line_discounts if x[0].exclusive and x[1]]
+            exclusives = [x for x in line_discounts if x[0].exclusive and x[2]]
             if exclusives:
                 exclusives.sort(key=lambda x: x[0].sequence)
                 exclusive = exclusives[0]
@@ -202,7 +202,8 @@ class SaleOrder(models.Model):
             else:
                 pct_sum = sum([x[1] for x in line_discounts])
                 pct_sum = min(pct_sum, 100.0)
-                applied_discount_ids = [x[0].id for x in line_discounts if x[1]]
+                applied_discount_ids = [
+                    x[0].id for x in line_discounts if x[2]]
                 line_update_vals[line] = {
                     "discount": pct_sum,
                     "applied_sale_discount_ids": [(6, 0, applied_discount_ids)],
