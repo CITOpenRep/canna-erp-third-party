@@ -23,5 +23,6 @@
         display: block;
         min-width: 50px;
         background-color: white !important;
+        border: 1px solid darken($o-control-panel-background-color, 20%);
     }
 }
