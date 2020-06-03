@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="atg_VAT_OUT_21" model="account.tax.group">
+    <field name="name">21%</field>
+  </record>
+
+  <record id="atg_VAT_OUT_12" model="account.tax.group">
+    <field name="name">12%</field>
+  </record>
+
+  <record id="atg_VAT_OUT_06" model="account.tax.group">
+    <field name="name">6%</field>
+  </record>
+
+  <record id="atg_VAT_OUT_00" model="account.tax.group">
+    <field name="name">0%</field>
+  </record>
+
+</odoo>

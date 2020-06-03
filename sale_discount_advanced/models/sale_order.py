@@ -202,8 +202,7 @@ class SaleOrder(models.Model):
             else:
                 pct_sum = sum([x[1] for x in line_discounts])
                 pct_sum = min(pct_sum, 100.0)
-                applied_discount_ids = [
-                    x[0].id for x in line_discounts if x[2]]
+                applied_discount_ids = [x[0].id for x in line_discounts if x[2]]
                 line_update_vals[line] = {
                     "discount": pct_sum,
                     "applied_sale_discount_ids": [(6, 0, applied_discount_ids)],
