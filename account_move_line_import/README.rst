@@ -89,5 +89,5 @@ computed. The compute is also performed when supplying 'Amount Currency' without
 Input file example
 ------------------
 
-Cf. directory 'sample_import_file' of this module.
+Cf. directory 'static/sample_import_file' of this module.
 
