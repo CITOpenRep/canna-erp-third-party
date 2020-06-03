@@ -320,7 +320,7 @@ class L10nBeVatCommon(models.AbstractModel):
 
     def _validate_xmlschema(self, xml_string, xsd):
         module = __name__.split("addons.")[1].split(".")[0]
-        path = get_module_resource(module, "schemas", xsd)
+        path = get_module_resource(module, "static/schemas", xsd)
         try:
             schema = etree.XMLSchema(etree.parse(open(path, "rb")))
             t = etree.parse(BytesIO(xml_string))
