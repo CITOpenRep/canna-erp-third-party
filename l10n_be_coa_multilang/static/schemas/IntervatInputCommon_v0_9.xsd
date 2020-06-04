@@ -2,11 +2,11 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:iso="http://www.minfin.fgov.be/IsoTypes" xmlns:cm="urn:ec.europa.eu:taxud:fiscalis:common:v1" targetNamespace="http://www.minfin.fgov.be/InputCommon" elementFormDefault="qualified" version="1.0" xml:lang="en">
 	<xs:import namespace="http://www.minfin.fgov.be/IsoTypes" schemaLocation="IntervatIsoTypes_v0_9.xsd"/>
 	<xs:import namespace="urn:ec.europa.eu:taxud:fiscalis:common:v1" schemaLocation="commontypes_v1.xsd"/>
-	
+
 	<xs:annotation>
 		<xs:documentation xml:lang="en"><![CDATA[
 
-			=== HISTORY=== 
+			=== HISTORY===
 				1.1 => import commonTypes_v1.xsd and add the phoneNumber to the Representative_Type
 			    1.2 => Import definition ProRataPercentage_Type, SpecialProRataPercentage_Type and SpecialProRataGridNumberCode]]>
 		</xs:documentation>
@@ -341,7 +341,7 @@
 	<!-- definition of complex types specific to NewTVA Prorata -->
 	<xs:complexType name="VATDeduction_Type">
 		<xs:sequence>
-			<xs:element name="AdjustedPeriod" type ="Year_Type">		
+			<xs:element name="AdjustedPeriod" type ="Year_Type">
 				<xs:annotation>
 					<xs:documentation xml:lang="fr">Période à laquelle se rapporte le prorata (année complète, format YYYY)</xs:documentation>
 					<xs:documentation xml:lang="nl">Periode waarop het verhoudingsgetal slaat (volledig jaar, formaat YYYY)</xs:documentation>
