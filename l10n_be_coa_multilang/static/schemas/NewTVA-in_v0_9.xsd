@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.minfin.fgov.be/VATConsignment" xmlns:common="http://www.minfin.fgov.be/InputCommon" targetNamespace="http://www.minfin.fgov.be/VATConsignment" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" xml:lang="en">
 	<xs:import namespace="http://www.minfin.fgov.be/InputCommon" schemaLocation="IntervatInputCommon_v0_9.xsd"/>
-	
+
 	<!-- Root Element -->
 	<xs:element name="VATConsignment">
 		<xs:annotation>

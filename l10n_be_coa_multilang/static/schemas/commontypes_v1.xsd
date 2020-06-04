@@ -3,10 +3,10 @@
 	<xs:annotation>
 		<xs:documentation xml:lang="en"><![CDATA[
 			List of Goods Description types and sub-types
-			=== HISTORY=== 
+			=== HISTORY===
 			Version 1.6 - add Turkish to the list of languages
 			Version 1.5 - reduce size of VATNumberOrTIN_Type to 20 characters from 50 characters (20/03/2009)
-			Version 1.4 - first release of the schema to the Member States for VAT Refund 
+			Version 1.4 - first release of the schema to the Member States for VAT Refund
 			]]></xs:documentation>
 	</xs:annotation>
 	<xs:include schemaLocation="isotypes_v1.xsd"/>
