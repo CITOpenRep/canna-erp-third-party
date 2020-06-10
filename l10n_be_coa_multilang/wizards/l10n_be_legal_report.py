@@ -315,15 +315,15 @@ class L10nBeLegalReportXlsx(models.AbstractModel):
 
         ws.freeze_panes(row_pos, 0)
 
-        for l in be_report.line_ids:
-            if not l.code:
+        for line in be_report.line_ids:
+            if not line.code:
                 continue
             row_pos = self._write_line(
                 ws,
                 row_pos,
                 ws_params,
                 col_specs_section="lines",
-                render_space={"l": l},
+                render_space={"l": line},
                 default_format=self.format_tcell_left,
             )
 

@@ -42,10 +42,10 @@ class StatementBalanceReport(models.AbstractModel):
             (data["date_balance"], tuple(journal_ids)),
         )
         lines = self.env.cr.dictfetchall()
-        currency_ids = {l["j_curr_id"] for l in lines}
+        currency_ids = {r["j_curr_id"] for r in lines}
         currencies = self.env["res.currency"].browse(currency_ids)
         currency_dict = {c.id: c for c in currencies}
-        [l.update({"currency": currency_dict[l["j_curr_id"]]}) for l in lines]
+        [r.update({"currency": currency_dict[r["j_curr_id"]]}) for r in lines]
         totals = []
         for currency in currencies:
             lines_currency = [x for x in lines if x["currency"] == currency]

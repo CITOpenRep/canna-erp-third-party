@@ -336,7 +336,7 @@ class AccountMoveLineImport(models.TransientModel):
                 self._process_line_vals(line, move, aml_vals)
                 move_lines.append(aml_vals)
 
-        vals = [(0, 0, l) for l in move_lines]
+        vals = [(0, 0, r) for r in move_lines]
         vals = self._process_vals(move, vals)
 
         if self._err_log:

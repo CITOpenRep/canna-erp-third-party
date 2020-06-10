@@ -196,7 +196,7 @@ class L10nBeCoaMultilangConfig(models.TransientModel):
         lang_rs = self.env["res.lang"].search(
             ["|", ("code", "=like", "fr_%"), ("code", "=like", "nl_%")]
         )
-        langs = [l.code for l in lang_rs]
+        langs = [lang.code for lang in lang_rs]
 
         # copy account.account translations
         in_field = "name"
