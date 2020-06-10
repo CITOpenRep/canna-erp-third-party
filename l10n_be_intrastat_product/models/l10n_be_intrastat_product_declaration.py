@@ -344,7 +344,7 @@ class L10nBeIntrastatProductDeclaration(models.Model):
             root, pretty_print=True, encoding="UTF-8", xml_declaration=True
         )
         module = __name__.split("addons.")[1].split(".")[0]
-        self._check_xml_schema(xml_string, "{}static/data/{}.xsd".format(module, xsd))
+        self._check_xml_schema(xml_string, "{}/static/data/{}.xsd".format(module, xsd))
         return xml_string
 
     def _xls_computation_line_fields(self):
