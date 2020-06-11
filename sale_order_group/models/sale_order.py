@@ -14,7 +14,9 @@ class SaleOrder(models.Model):
         string="Sale Order Group",
         ondelete="set null",
         copy=False,
+        readonly=True,
     )
+
     sale_order_group_state = fields.Selection(
         related="sale_order_group_id.state", string="Sale Order Group State"
     )
