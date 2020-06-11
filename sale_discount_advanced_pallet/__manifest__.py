@@ -11,6 +11,6 @@
     "category": "Sales",
     "version": "13.0.1.0.0",
     "license": "AGPL-3",
-    "depends": ["sale_discount_advanced"],
+    "depends": ["sale_discount_advanced", "product_packaging_type_pallet"],
     "data": ["views/sale_discount_views.xml"],
 }
