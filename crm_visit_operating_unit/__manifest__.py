@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
 #
 #    Copyright (c) 2015 Onestein BV (www.onestein.eu).
+#    Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,13 +19,15 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 {
     "name": "Operating Unit in CRM Visit",
-    "version": "8.0.1.0.0",
+    "version": "13.0.1.0.0",
     "summary": "An operating unit (OU) is an organizational entity part of a "
-               "company",
+    "company",
     "author": "Onestein BV, André Schenkels"
-              "Odoo Community Association (OCA)",
+    "Odoo Community Association (OCA)"
+    "Serpent Consulting Services Pvt. Ltd.",
     "license": "AGPL-3",
     "website": "http://www.onestein.eu",
     "category": "CRM",

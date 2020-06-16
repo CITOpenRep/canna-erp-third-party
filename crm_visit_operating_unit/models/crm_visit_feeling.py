@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
 #
 #    Copyright (c) 2015 Onestein BV (www.onestein.eu).
+#    Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,12 +20,16 @@
 #
 ##############################################################################
 
-from openerp import fields, models, api
+from odoo import fields, models
+
 
 class CrmVisitFeeling(models.Model):
-    _inherit = 'crm.visit.feeling'
+    _inherit = "crm.visit.feeling"
 
-    operating_unit_id = fields.Many2one('operating.unit', 'Operating Unit',
-                                        default=lambda self:
-                                        self.env['res.users'].
-                                        operating_unit_default_get(self._uid))
+    operating_unit_id = fields.Many2one(
+        "operating.unit",
+        "Operating Unit",
+        default=lambda self: self.env["res.users"].operating_unit_default_get(
+            self._uid
+        ),
+    )
