@@ -1,5 +1,4 @@
-# Copyright (C) 2019 Noviat nv/sa (www.noviat.com).
-# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) 2019-2020 Noviat nv/sa (www.noviat.com).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import logging
@@ -14,21 +13,21 @@ class SaleDiscountRule(models.Model):
 
     @api.model
     def _selection_matching_type(self):
-        res = super(SaleDiscountRule, self)._selection_matching_type()
+        res = super()._selection_matching_type()
         return res + [("pallet", "Pallet")]
 
     @api.model
     def _selection_matching_extra(self):
-        res = super(SaleDiscountRule, self)._selection_matching_extra()
+        res = super()._selection_matching_extra()
         return res + [("extra", "Extra")]
 
     def _matching_type_methods(self):
-        methods = super(SaleDiscountRule, self)._matching_type_methods()
+        methods = super()._matching_type_methods()
         methods["pallet"] = "_pallet_matching"
         return methods
 
     def _matching_extra_methods(self):
-        methods = super(SaleDiscountRule, self)._matching_extra_methods()
+        methods = super()._matching_extra_methods()
         methods["extra"] = "_extra_matching"
         return methods
 
