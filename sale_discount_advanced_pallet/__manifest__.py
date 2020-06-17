@@ -1,11 +1,10 @@
 # Copyright 2019 Onestein (https://www.onestein.nl/).
-# Copyright 2019 Noviat (www.noviat.com).
-# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright 2020 Noviat (www.noviat.com).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
     "name": "Sale Discount Advanced Pallet",
-    "author": "Onestein, Noviat, " "Serpent Consulting Services Pvt. Ltd.",
+    "author": "Onestein, Noviat",
     "summary": """Extends Discounts with the pallet matching type""",
     "website": "https://www.onestein.nl",
     "category": "Sales",
