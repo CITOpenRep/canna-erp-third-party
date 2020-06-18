@@ -13,6 +13,7 @@
     "installable": True,
     "depends": ["product"],
     "data": [
+        "data/price_catalog.xml",
         "security/price_catalog_security.xml",
         "security/ir.model.access.csv",
         "views/price_subcatalog_views.xml",

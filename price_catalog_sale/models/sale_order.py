@@ -16,7 +16,15 @@ class SaleOrder(models.Model):
         comodel_name="price.catalog",
         domain=[("catalog_type", "=", "sale")],
         required=True,
+        default=lambda r: r._default_price_catalog_id(),
     )
+
+    def _default_price_catalog_id(self):
+        return (
+            self.env.ref("price_catalog.price_catalog_default", False)
+            and self.env.ref("price_catalog.price_catalog_default")
+            or self.env["price.catalog"]
+        )
 
     @api.onchange("partner_id")
     def onchange_partner_id(self):

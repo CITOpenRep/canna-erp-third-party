@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="price_catalog_default" model="price.catalog">
+        <field name="name">Default Sales Catalog</field>
+        <field name="catalog_type">sale</field>
+    </record>
+</odoo>
