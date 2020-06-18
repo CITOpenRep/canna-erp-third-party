@@ -1,0 +1,8 @@
+<odoo noupdate="1">
+
+    <record id="seq_crm_visit" model="ir.sequence">
+        <field name="name">Visits</field>
+        <field name="code">crm.visit</field>
+    </record>
+
+</odoo>

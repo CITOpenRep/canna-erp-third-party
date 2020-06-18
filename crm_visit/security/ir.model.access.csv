@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_crm_visit_group_user,crm_visit group_user,model_crm_visit,group_crm_visit_user,1,1,1,1
+access_crm_visit_group_manager,crm_visit group_manager,model_crm_visit,group_crm_visit_manager,1,1,1,1
+access_crm_visit_feeling_group_user,crm_visit_feeling group_user,model_crm_visit_feeling,group_crm_visit_user,1,0,0,0
+access_crm_visit_feeling_group_manager,crm_visit_feeling group_manager,model_crm_visit_feeling,group_crm_visit_manager,1,1,1,1
+access_crm_visit_reason_group_user,crm_visit_reason group_user,model_crm_visit_reason,group_crm_visit_user,1,0,0,0
+access_crm_visit_reason_group_manager,crm_visit_reason group_manager,model_crm_visit_reason,group_crm_visit_manager,1,1,1,1

@@ -1,0 +1,41 @@
+<odoo>
+
+    <record id="crm_visit_feeling_view_tree" model="ir.ui.view">
+        <field name="name">CrmVisitFeelingViewTree</field>
+        <field name="model">crm.visit.feeling</field>
+        <field name="arch" type="xml">
+            <tree string="Feelings">
+              <field name="name"/>
+              <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="crm_visit_feeling_view_form" model="ir.ui.view">
+        <field name="name">CrmVisitFeelingForm</field>
+        <field name="model">crm.visit.feeling</field>
+        <field name="arch" type="xml">
+            <form string="Feeling">
+                <sheet>
+                    <group>
+                        <group name="c1">
+                            <field name="name"/>
+                        </group>
+                        <group name="c2">
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="crm_visit_feeling_action" model="ir.actions.act_window">
+        <field name="name">Feelings</field>
+        <field name="res_model">crm.visit.feeling</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="crm_visit_feeling_view_tree"/>
+    </record>
+
+</odoo>

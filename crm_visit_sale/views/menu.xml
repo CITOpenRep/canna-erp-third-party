@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <menuitem id="menu_crm_visit"
+        name="Visits"
+        sequence="4"
+        parent="sale.sale_menu_root"/>
+
+    <menuitem id="crm_visit_menu"
+        action="crm_visit.crm_visit_action"
+        parent="menu_crm_visit"
+        sequence="1"/>
+
+    <menuitem id="menu_crm_visit_config"
+        name="Visits"
+        parent="sale.menu_sale_config"
+        sequence="3"
+        groups="sales_team.group_sale_manager"/>
+
+    <menuitem id="crm_visit_reason_menu"
+        action="crm_visit.crm_visit_reason_action"
+        parent="menu_crm_visit_config"
+        sequence="1"/>
+
+    <menuitem id="crm_visit_feeling_menu"
+        action="crm_visit.crm_visit_feeling_action"
+        parent="menu_crm_visit_config"
+        sequence="2"/>
+
+</odoo>
