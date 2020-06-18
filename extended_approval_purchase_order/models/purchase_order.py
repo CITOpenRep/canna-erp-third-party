@@ -1,33 +1,23 @@
-# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
-from odoo import fields, models
+from openerp import api, models
 
 
 class PurchaseOrder(models.Model):
-    _name = "purchase.order"
-    _inherit = ["purchase.order", "extended.approval.workflow.mixin"]
+    """
+    ('draft', 'RFQ'),
+        ('sent', 'RFQ Sent'),
+        ('to approve', 'To Approve'),
+        ('purchase', 'Purchase Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled')
+    """
+    _name = 'purchase.order'
+    _inherit = ['purchase.order', 'extended.approval.workflow.mixin']
 
-    workflow_start_state = "draft"
+    workflow_signal = 'purchase'
+    workflow_start_state = 'draft'
+    workflow_idx_state = 'purchase'
 
-    state = fields.Selection(
-        selection_add=[("extended_approval", "Approval")],
-        string="Status",
-        readonly=True,
-        index=True,
-        copy=False,
-        default="draft",
-        tracking=True,
-    )
-
-    def button_cancel(self):
+    def action_cancel(self):
         self.cancel_approval()
-        return super(PurchaseOrder, self).button_cancel()
-
-    def write(self, values):
-        result = self.approve_step()
-        if not result:
-            return super(PurchaseOrder, self).write(values)
-        if values.get("state", False) == "purchase":
-            values["state"] = "extended_approval"
-        return super(PurchaseOrder, self).write(values)
+        return super(PurchaseOrder, self).action_cancel()
