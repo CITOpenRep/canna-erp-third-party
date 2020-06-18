@@ -114,9 +114,4 @@
         <field name="view_id" ref="crm_visit_view_tree"/>
     </record>
 
-    <menuitem id="crm_visit_menu"
-        action="crm_visit_action"
-        parent="menu_crm_visit"
-        sequence="1"/>
-
 </odoo>

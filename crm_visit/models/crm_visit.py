@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 
 class CrmVisit(models.Model):
     _name = "crm.visit"
-    _inherit = ["mail.thread", "portal.mixin", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Visits"
     _order = "date desc"
 
@@ -25,7 +25,6 @@ class CrmVisit(models.Model):
         tracking=True,
         readonly=True,
     )
-    # '_company_default_get' on res.company is deprecated and shouldn't be used
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -65,13 +64,13 @@ class CrmVisit(models.Model):
         those fields from previous visits.
         """
         vals["name"] = self.env["ir.sequence"].next_by_code("crm.visit")
-        return super(CrmVisit, self).create(vals)
+        return super().create(vals)
 
     def unlink(self):
         for visit in self:
             if visit.state != "draft":
                 raise UserError(_("Only visits in state 'draft'" " can be deleted. "))
-        return super(CrmVisit, self).unlink()
+        return super().unlink()
 
     def action_confirm(self):
         self.state = "planned"

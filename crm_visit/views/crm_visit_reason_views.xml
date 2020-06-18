@@ -38,9 +38,4 @@
         <field name="view_id" ref="crm_visit_reason_view_tree"/>
     </record>
 
-    <menuitem id="crm_visit_reason_menu"
-        action="crm_visit_reason_action"
-        parent="menu_crm_visit_config"
-        sequence="5"/>
-
 </odoo>
