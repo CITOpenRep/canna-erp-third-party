@@ -92,7 +92,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         return r
 
     def _get_applicable_approval_flow(self):
-        #         self.ensure_one()
+        self.ensure_one()
 
         flows = self.env["extended.approval.flow"].search(
             [("model", "=", self._name)], order="sequence"
@@ -107,7 +107,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         return False
 
     def _get_next_approval_step(self):
-        #         self.ensure_one()
+        self.ensure_one()
 
         flow = self._get_applicable_approval_flow()
         if not flow:
@@ -133,14 +133,13 @@ class ExtendedApprovalMixin(models.AbstractModel):
         self.ensure_one()
 
         step = self._get_next_approval_step()
-
         if not step:
             return False
 
         prev_step = False
         while step and step != prev_step:
             prev_step = step
-            if any([g in self.env.user.groups_id for g in step.group_ids]) and self.id:
+            if any([g in self.env.user.groups_id for g in step.group_ids]):
                 self.env["extended.approval.history"].create(
                     {
                         "approver_id": self.env.user.id,
@@ -148,10 +147,11 @@ class ExtendedApprovalMixin(models.AbstractModel):
                         "step_id": step.id,
                     }
                 )
+
                 # move to next step
                 step = self._get_next_approval_step()
 
-        #         self.current_step = step and step.id
+        self.current_step = step
         if step:
             return {
                 "warning": {

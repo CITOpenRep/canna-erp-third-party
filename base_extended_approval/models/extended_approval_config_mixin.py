@@ -19,7 +19,6 @@ def update_flows(browselist):
 
 class ExtendedApprovalConfigMixin(models.AbstractModel):
     _name = "extended.approval.config.mixin"
-    _description = "Extended Approval Config Mixin"
 
     def write(self, values):
         r = super(ExtendedApprovalConfigMixin, self).write(values)

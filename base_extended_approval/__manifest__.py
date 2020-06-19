@@ -5,13 +5,9 @@
     "name": "Base Extended Approval",
     "version": "13.0.1.0.0",
     "license": "AGPL-3",
-    "author": "Onestein," " Serpent Consulting Services Pvt. Ltd.",
+    "author": "Onestein, Serpent Consulting Services Pvt. Ltd.",
     "category": "base",
-    "depends": [
-        "base",
-        "account",  # necessary for menu placement
-        "base_automation",  # necessary for base action rule.
-    ],
+    "depends": ["base", "account"],  # necessary for menu placement
     "data": ["views/base_extended_approval.xml", "security/ir.model.access.csv"],
     "installable": True,
 }

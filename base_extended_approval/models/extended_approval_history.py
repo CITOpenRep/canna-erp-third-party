@@ -34,11 +34,4 @@ class ExtendedApprovalHistory(models.Model):
         readonly=True, default=fields.Datetime.now, string="Approval date"
     )
 
-    source = fields.Reference(
-        selection=[
-            ("account.move", "Invoice"),
-            ("purchase.order", "Purchase Order"),
-            ("res.partner", "Partner"),
-        ],
-        string="Source",
-    )
+    source = fields.Reference(selection=[], string="Source")
