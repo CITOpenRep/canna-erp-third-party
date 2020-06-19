@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+
+   <record id="view_request_for_quotation_filter" model="ir.ui.view">
+        <field name="name">request.quotation.filter.select</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <search string="Search Purchase Order">
+                <field name="name" string="Reference"/>
+                <field name="partner_id" operator="child_of"/>
+                <field name="product_id"/>
+                <field name="create_uid"/>
+                <filter name="draft" string="Quotations" domain="[('state','=','draft')]"/>
+                <filter name="approved" string="Approved" domain="[('state','in',('approved','done'))]"/>
+                <filter name="to_approve" string="Awaiting my approval" domain="[('approval_allowed','=',True)]"/>
+                <filter name="exception" string="Exception" domain="[('state','in',('except_invoice','except_picking'))]"/>
+                <separator/>
+                <filter name="not_invoiced" string="Not Invoiced" domain="[('invoice_ids','=', False)]" help="Purchase orders that include lines not invoiced."/>
+                 <group expand="0" string="Group By">
+                    <filter string="Supplier" name="supplier" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter string="Order Date" name="orderdate" icon="terp-go-month" domain="[]" context="{'group_by':'date_order'}"/>
+                    <filter string="Expected Date" name="expdate" icon="terp-go-month" domain="[]" context="{'group_by':'minimum_planned_date'}"/>
+                </group>
+           </search>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_filter" model="ir.ui.view">
+      <field name="name">request.quotation.select</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+      <field name="arch" type="xml">
+        <xpath expr="//filter[@name='approved']" position="after">
+          <filter name="to_approve" string="Awaiting my approval" domain="[('approval_allowed','=',True)]"/>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="purchase_order_form_extended_approval" model="ir.ui.view">
+      <field name="name">purchase.order.form</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.purchase_order_form"/>
+      <field name="priority">40</field>
+      <field name="arch" type="xml">
+        <xpath expr="//button[@name='button_approve']" position="replace">
+          <button name="button_approve" type="object" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'not in', ['extended_approval']), ('approval_allowed', '!=', True)]}"/>
+          <button name="abort_approval" type="object" string="Reject" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+        </xpath>
+
+        <button name="button_cancel" position="attributes">
+            <attribute name="states">draft,to approve,sent,purchase,extended_approval</attribute>
+        </button>
+
+        <field name="state" position="attributes">
+            <attribute name="statusbar_visible">draft,sent,purchase,extended_approval</attribute>
+        </field>
+
+        <xpath expr="//notebook" position="inside">
+          <page string="Approvals" name="approval">
+            <group name="g1" colspan="4" col="4" attrs="{'invisible': [('next_approver', '=', False)]}">
+              <label for="next_approver"/>
+              <div>
+                <field name="next_approver" widget="many2many_tags" options='{"no_open":True}'/>
+                <button string="=> Users"
+                        help="Show Approval Group Users"
+                        name="show_approval_group_users" type="object"
+                        class="oe_link"/>
+              </div>
+              <field name="approval_allowed"/>
+            </group>
+            <group name="g2" colspan="4">
+              <field colspan="4" name="approval_history_ids" readonly="1">
+                <tree string="Approval History">
+                  <field name="date"/>
+                  <field name="requested_group_ids"/>
+                  <field name="approver_id"/>
+                </tree>
+              </field>
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+
+  </data>
+</odoo>
