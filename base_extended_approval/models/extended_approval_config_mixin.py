@@ -1,4 +1,5 @@
-# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) Onestein 2019-2020
+# Copyright (C) Noviat 2020
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, models
@@ -21,18 +22,18 @@ class ExtendedApprovalConfigMixin(models.AbstractModel):
     _name = "extended.approval.config.mixin"
 
     def write(self, values):
-        r = super(ExtendedApprovalConfigMixin, self).write(values)
+        r = super().write(values)
         update_flows(self)
         return r
 
     @api.model
     def create(self, values):
-        r = super(ExtendedApprovalConfigMixin, self).create(values)
+        r = super().create(values)
         update_flows(r)
         return r
 
     def unlink(self):
         models = get_applicable_models(self)
-        r = super(ExtendedApprovalConfigMixin, self).unlink()
+        r = super().unlink()
         update_model_flows(self.env, models)
         return r

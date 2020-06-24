@@ -1,13 +1,16 @@
-# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) Onestein 2019-2020
+# Copyright (C) Noviat 2020
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
-# The Odoo workflow mechanism is replaced by an interception of the write method
-# in the object where the workflow_state_field change
 
 from odoo import api, models
 
 
 class ExtendedApprovalWorkflowMixin(models.AbstractModel):
+    """
+    The Odoo workflow mechanism is replaced by an interception of the write method
+    in the object where the workflow_state_field change
+    """
+
     _name = "extended.approval.workflow.mixin"
     _inherit = "extended.approval.mixin"
 

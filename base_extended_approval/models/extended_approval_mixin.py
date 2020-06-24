@@ -1,8 +1,9 @@
-# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright (C) Onestein 2019-2020
+# Copyright (C) Noviat 2020
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import Warning
+from odoo.exceptions import UserError
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -55,7 +56,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
                 )
             ]
         else:
-            raise Warning(_("Unsupported operand for search!"))
+            raise UserError(_("Unsupported operand for search !"))
 
     def _compute_history_ids(self):
         for rec in self:
@@ -84,7 +85,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
                     rec.with_context(approval_flow_update=True).current_step = step
 
     def write(self, values):
-        r = super(ExtendedApprovalMixin, self).write(values)
+        r = super().write(values)
 
         if "approval_flow_update" not in self._context:
             self._recompute_next_approvers()
