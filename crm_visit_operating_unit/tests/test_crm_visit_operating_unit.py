@@ -1,5 +1,5 @@
 # Copyright (c) 2015 Onestein BV (www.onestein.eu).
-# Copyright (C) 2020-TODAY SerpentCS Pvt. Ltd. (<http://www.serpentcs.com>).
+# Copyright 2020 Noviat
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo.tests import common
@@ -8,13 +8,12 @@ from odoo.tests import common
 class TestCrmVisitOperatingUnit(common.TransactionCase):
     def setUp(self):
         super().setUp()
-        self.res_groups = self.env["res.groups"]
         self.res_users_model = self.env["res.users"]
+        self.grp_crm_manager = self.env.ref("crm_visit.group_crm_visit_manager")
+        self.grp_crm_user = self.env.ref("crm_visit.group_crm_visit_user")
         self.crm_visit_feeling_model = self.env["crm.visit.feeling"]
         self.crm_visit_reason_model = self.env["crm.visit.reason"]
         self.crm_visit_model = self.env["crm.visit"]
-        self.res_company_model = self.env["res.company"]
-        self.operating_unit_model = self.env["operating.unit"]
 
         # Company
         self.company = self.env.ref("base.main_company")
@@ -22,37 +21,45 @@ class TestCrmVisitOperatingUnit(common.TransactionCase):
         # Main Operating Unit
         self.ou_main = self.env.ref("operating_unit.main_operating_unit")
 
-        # Unit1 Operating Unit
-        self.ou_unit1 = self.env.ref("operating_unit.operating_unit_1")
+        # B2B Operating Unit
+        self.ou_b2b = self.env.ref("operating_unit.b2b_operating_unit")
 
-        # Unit2 Operating Unit
-        self.ou_unit2 = self.env.ref("operating_unit.operating_unit_2")
+        # B2C Operating Unit
+        self.ou_b2c = self.env.ref("operating_unit.b2c_operating_unit")
 
-        # Create user1
-        self.user1 = self._create_user(
-            "user_1", [self.grp_sale_user], self.company, [self.ou1, self.ou_unit1]
-        )
-        # Create user2
-        self.user2 = self._create_user(
-            "user_2", [self.grp_sale_user], self.company, [self.ou_unit2]
-        )
-
-        # Create Feeling1
-        self.feeling1 = self._create_crm_visit_feeling(
-            "Feeling1", self.company, self.ou_unit1
-        )
-        # Create Feeling2
-        self.feeling2 = self._create_crm_visit_feeling(
-            "Feeling2", self.company, self.ou_unit2
+        # Create user CRM Visit Mananger
+        self.user_crm_visit_manager = self._create_user(
+            "user_crm_visit_manager",
+            [self.grp_crm_manager],
+            self.company,
+            [self.ou_main, self.ou_b2b, self.ou_b2c],
         )
 
-        # Create Reason1
-        self.reason1 = self._create_crm_visit_reason(
-            "Reason1", self.company, self.ou_unit1
+        # Create user B2B
+        self.user_b2b = self._create_user(
+            "user_b2b", [self.grp_crm_user], self.company, [self.ou_main, self.ou_b2b]
         )
-        # Create Reason2
-        self.reason2 = self._create_crm_visit_reason(
-            "Reason2", self.company, self.ou_unit2
+        # Create user B2C
+        self.user_b2c = self._create_user(
+            "user_b2c", [self.grp_crm_user], self.company, [self.ou_main, self.ou_b2c]
+        )
+
+        # Create Feeling B2B
+        self.feeling_b2b = self._create_crm_visit_feeling(
+            self.user_crm_visit_manager, "Feeling B2B", self.company, self.ou_b2b
+        )
+        # Create Feeling B2C
+        self.feeling_b2c = self._create_crm_visit_feeling(
+            self.user_crm_visit_manager, "Feeling B2C", self.company, self.ou_b2c
+        )
+
+        # Create Reason B2B
+        self.reason_b2b = self._create_crm_visit_reason(
+            self.user_crm_visit_manager, "Reason B2B", self.company, self.ou_b2b
+        )
+        # Create Reason B2C
+        self.reason_b2c = self._create_crm_visit_reason(
+            self.user_crm_visit_manager, "Reason B2C", self.company, self.ou_b2c
         )
 
     def _create_user(self, login, groups, company, operating_units, context=None):
@@ -63,7 +70,7 @@ class TestCrmVisitOperatingUnit(common.TransactionCase):
 
         return self.res_users_model.create(
             {
-                "name": "Test Crm Visit User",
+                "name": login,
                 "login": login,
                 "password": "demo",
                 "email": "example@yourcompany.com",
@@ -74,9 +81,9 @@ class TestCrmVisitOperatingUnit(common.TransactionCase):
             }
         )
 
-    def _create_crm_visit_feeling(self, uid, feeling, company, operating_unit):
+    def _create_crm_visit_feeling(self, user, feeling, company, operating_unit):
         """Create a CRM Visit Feeling"""
-        return self.crm_visit_feeling_model.sudo(uid).create(
+        return self.crm_visit_feeling_model.with_user(user.id).create(
             {
                 "name": feeling,
                 "company_id": company.id,
@@ -84,44 +91,34 @@ class TestCrmVisitOperatingUnit(common.TransactionCase):
             }
         )
 
-    def _create_crm_visit_reason(self, uid, feeling, company, operating_unit):
+    def _create_crm_visit_reason(self, user, feeling, company, operating_unit):
         """Create a CRM Visit Reason"""
-        return self.crm_visit_reason_model.sudo(uid).create(
+        return self.crm_visit_reason_model.with_user(user.id).create(
             {
                 "name": feeling,
-                "company_id": company.id,
-                "operating_unit_id": operating_unit.id,
-            }
-        )
-
-    def _create_crm_visit(self, uid, feeling, reason, company, operating_unit):
-        """Create a CRM Visit"""
-        return self.crm_visit_model.sudo(uid).create(
-            {
-                "name": feeling,
-                "feeling_id": feeling.id,
-                "reason_id": reason.id,
                 "company_id": company.id,
                 "operating_unit_id": operating_unit.id,
             }
         )
 
     def test_security(self):
-        """Test Crm Visit Feeling Operating Unit Security Rules"""
-        # User 2 is only assigned to Operating Unit 2, and cannot
-        # Access CRM Visit Feeling from Main Operating Unit or Unit 1.
-        feelings = self.crm_visit_feeling_model.sudo(self.user2.id).search(
-            [("id", "=", self.feeling1.id), ("operating_unit_id", "=", self.ou1.id)]
+        """Test CRM Visit Feeling Operating Unit Security Rules"""
+        # User B2C cannot access CRM Visit Feeling from Unit B2B.
+        feeling = self.crm_visit_feeling_model.with_user(self.user_b2c.id).search(
+            [("id", "=", self.feeling_b2b.id)]
         )
-        self.assertEqual(
-            feelings.ids,
-            [],
-            "User 2 should not have access to " "OU %s" % self.ou1.name,
+        self.assertFalse(
+            feeling,
+            "User %s should not have access to feeling of OU %s"
+            % (self.user_b2c.name, self.ou_b2b.name),
         )
 
-        reasons = self.crm_visit_reason_model.sudo(self.user2.id).search(
-            [("id", "=", self.reason1.id), ("operating_unit_id", "=", self.ou1.id)]
+        # User B2C cannot access CRM Visit Reason from Unit B2B.
+        reason = self.crm_visit_reason_model.with_user(self.user_b2c.id).search(
+            [("id", "=", self.reason_b2b.id)]
         )
-        self.assertEqual(
-            reasons.ids, [], "User 2 should not have access to " "OU %s" % self.ou1.name
+        self.assertFalse(
+            reason,
+            "User %s should not have access to reason of OU %s"
+            % (self.user_b2c.name, self.ou_b2b.name),
         )
