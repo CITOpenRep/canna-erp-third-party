@@ -6,3 +6,5 @@
 Product Stock View
 ==================
 
+This module adds stock level info to the product list views in the Sale, Purchase and Inventory app.
+
