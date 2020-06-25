@@ -11,7 +11,7 @@
     "category": "Product",
     "summary": "Product Stock View",
     "author": "Onestein BV,Noviat, Serpent Consulting Services Pvt. Ltd.",
-    "depends": ["purchase", "stock"],
+    "depends": ["purchase", "sale", "stock"],
     "data": ["views/product_template_views.xml"],
     "installable": True,
 }
