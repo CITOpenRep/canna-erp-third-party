@@ -1,0 +1,29 @@
+<odoo>
+
+    <record id="purchase.product_normal_action_puchased" model="ir.actions.act_window">
+        <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+    <record id="product.product_template_action" model="ir.actions.act_window">
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="view_id" ref="product.product_template_tree_view" />
+    </record>
+
+    <record id="view_stock_product_template_tree" model="ir.ui.view">
+        <field name="name">product.template.stock.qty.tree.inherit
+        </field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.view_stock_product_template_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='qty_available']" position="after">
+                <field name="incoming_qty" />
+                <field name="outgoing_qty" />
+            </xpath>
+            <xpath expr="//field[@name='virtual_available']"
+                position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
