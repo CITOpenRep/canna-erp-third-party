@@ -21,7 +21,6 @@ class PurchaseOrder(models.Model):
 
     workflow_signal = "purchase"
     workflow_start_state = "draft"
-    workflow_idx_state = "purchase"
 
     def action_cancel(self):
         self.cancel_approval()
