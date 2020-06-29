@@ -13,7 +13,7 @@
                         attrs="{'invisible': ['|', ('state', 'not in', ['confirmed'])]}" />
                     <button type="object" name="set_state_to_confirmed"
                         string="Confirm partner"
-                        attrs="{'invisible': ['|', ('state', 'not in', ['draft' ,'extended_approval']), ('approval_allowed', '!=', True)]}" />
+                        attrs="{'invisible': [('state', 'not in', ['draft']), '|', ('approval_allowed', '!=', True), ('state', 'not in', ['extended_approval'])]}" />
                     <field name="state" widget="statusbar" />
                 </header>
             </xpath>
