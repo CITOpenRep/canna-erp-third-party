@@ -12,5 +12,5 @@ class AccountInvoice(models.Model):
     workflow_state = "extended_approval"
 
     def action_cancel(self):
-        self.cancel_approval()
+        self.ea_cancel_approval()
         return super(AccountInvoice, self).action_cancel()

@@ -35,7 +35,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
         string="Approval allowed",
         compute="_compute_approval_allowed",
         search="_search_approval_allowed",
-        help="This option is set if you are " "allowed to approve.",
+        help="This option is set if you are allowed to approve.",
     )
 
     def _compute_approval_allowed(self):
@@ -68,7 +68,7 @@ class ExtendedApprovalMixin(models.AbstractModel):
     def recompute_all_next_approvers(self):
         if hasattr(self, "workflow_start_state"):
             self.search(
-                [("state", "in", [self.workflow_start_state])]
+                [(self.workflow_state_field, "in", [self.workflow_start_state])]
             )._recompute_next_approvers()
 
     def _recompute_next_approvers(self):
@@ -165,13 +165,13 @@ class ExtendedApprovalMixin(models.AbstractModel):
 
         return False
 
-    def cancel_approval(self):
+    def ea_cancel_approval(self):
         self.approval_history_ids.sudo().write({"active": False})
         self.write({"current_step": False})
         return {}
 
-    def abort_approval(self):
-        self.cancel_approval()
+    def ea_abort_approval(self):
+        self.ea_cancel_approval()
         return {}
 
     def show_approval_group_users(self):

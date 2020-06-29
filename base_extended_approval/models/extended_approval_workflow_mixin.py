@@ -8,21 +8,28 @@ from odoo import api, models
 class ExtendedApprovalWorkflowMixin(models.AbstractModel):
     """
     The Odoo workflow mechanism is replaced by an interception of the write method
-    in the object where the workflow_state_field change
+    in the object when the workflow_state_field change.
     """
 
     _name = "extended.approval.workflow.mixin"
     _inherit = "extended.approval.mixin"
 
-    workflow_signal = "undefined"
+    # signal to start the approval flow
+    workflow_signal = "draft"
+    # field used to track the approval flow. Must be a selection field
     workflow_state_field = "state"
+    # value of the workflow_state_field for the approval
     workflow_state = "extended_approval"
+    # fallback state when the approval is rejected
     workflow_start_state = "draft"
-    workflow_idx_state = "draft"
 
     @api.model
     def _setup_complete(self):
-        """Add extra workflow state to the workflow_state_field """
+        """
+        Insert extra  approval state in the workflow_state_field selection just before
+        the workflow_signal or at the end if there is no workflow_signal is the
+        selection
+        """
         super()._setup_complete()
         field = self.fields_get().get(self.workflow_state_field)
         if field:
@@ -31,7 +38,7 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
                 if self.workflow_state not in state_names:
                     if self.workflow_start_state in state_names:
                         field["selection"].insert(
-                            max(state_names.index(self.workflow_idx_state) - 1, 0),
+                            state_names.index(self.workflow_signal),
                             (self.workflow_state, "Approval"),
                         )
                     else:
@@ -41,17 +48,24 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
                 # TODO: decorated callable
                 pass
 
-    def abort_approval(self):
-        super().abort_approval()
+    def ea_abort_approval(self):
+        super().ea_abort_approval()
         self.write({self.workflow_state_field: self.workflow_start_state})
         return {}
 
     def write(self, vals):
-        super().write(vals)
-        for rec in self:
-            if rec.workflow_state_field in vals:
-                wstate = vals.get(rec.workflow_state_field)
-                if wstate == rec.workflow_signal:
+        """
+        The super is made after the approval process in order to have a
+        clean mailthread trying to limit the conversion of multi write to multiple
+        one-writes at most.
+        """
+        if self and self[0].workflow_state_field in vals:
+            wstate = vals.get(self[0].workflow_state_field)
+            if wstate == self[0].workflow_signal:
+                for rec in self:
                     rec.approve_step()
                     if rec.current_step:
-                        setattr(rec, rec.workflow_state_field, rec.workflow_state)
+                        vals[rec.workflow_state_field] = rec.workflow_state
+                    super(ExtendedApprovalWorkflowMixin, rec).write(vals)
+                return True
+        return super().write(vals)
