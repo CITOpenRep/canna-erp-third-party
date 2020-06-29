@@ -44,7 +44,7 @@
             <!-- pylint:disable=dangerous-view-replace-wo-priority -->
             <xpath expr="//button[@name='button_approve']" position="replace">
                 <button name="button_approve" type="object" string="Approve" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'not in', ['extended_approval']), ('approval_allowed', '!=', True)]}"/>
-                <button name="abort_approval" type="object" string="Reject" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
+                <button name="ea_abort_approval" type="object" string="Reject" attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}"/>
             </xpath>
 
             <button name="button_cancel" position="attributes">

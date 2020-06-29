@@ -10,7 +10,7 @@
                 <button name="action_post" string="Approve"
                     class="oe_highlight" type="object"
                     attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}" />
-                <button name="abort_approval" type="object"
+                <button name="ea_abort_approval" type="object"
                     string="Reject"
                     attrs="{'invisible': ['|', ('state', '!=', 'extended_approval'), ('approval_allowed', '!=', True)]}" />
             </xpath>

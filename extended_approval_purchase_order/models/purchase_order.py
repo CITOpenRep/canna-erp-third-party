@@ -23,5 +23,5 @@ class PurchaseOrder(models.Model):
     workflow_start_state = "draft"
 
     def action_cancel(self):
-        self.cancel_approval()
+        self.ea_cancel_approval()
         return super().action_cancel()
