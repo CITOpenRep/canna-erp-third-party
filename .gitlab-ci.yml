@@ -1,0 +1,95 @@
+# source: https://github.com/OCA/maintainer-quality-tools/blob/master/sample_files/.gitlab-ci-2.yml
+# Only run for (updates to) merge requests.
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+image: python:3.6
+stages:
+  - test
+  - external
+
+services:
+  - postgres:10
+
+variables:
+  POSTGRES_DB: project_ci_test
+  POSTGRES_USER: odoo
+  POSTGRES_PASSWORD: "odoo"
+  # Where are the following used?
+  # TEST_DBNAME: '${CI_PROJECT_PATH_SLUG}-pipeline-${CI_PIPELINE_ID}'
+  # DEPLOY_DBNAME: '${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}'
+  # RUNNER_HOME: '/home/gitlab-runner'
+  # INSTANCE_PATH: '${RUNNER_HOME}/instances/${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}'
+  TRAVIS_BUILD_DIR: "$CI_PROJECT_DIR"
+  VERSION: "13.0"
+  ODOO_BRANCH: "13.0"
+  # TODO use canna-odoo/OCB instead
+  ODOO_REPO: "OCA/OCB"
+  GIT_DEPTH: "3" # Lower clone depth for better performance
+
+.before_script_template:
+  before_script:
+      - curl -sL https://deb.nodesource.com/setup_10.x | bash -
+      - apt-get install -y  sudo postgresql-client expect-dev python-lxml nodejs python-dev python-pip build-essential libsasl2-dev python-dev libldap2-dev libssl-dev
+      - pip install coverage
+
+lint:
+  extends: .before_script_template
+  stage: test
+  tags:
+    - postgres
+    - docker
+  variables:
+    LINT_CHECK: "1"
+    TESTS: "0"
+  script:
+    # We need to export the PG* here, otherwise the postgresql container
+    # will pick them up
+    - export PGHOST="postgres"
+    - export PGUSER="odoo"
+    - export PGPASSWORD="odoo"
+    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - travis_install_nightly
+    - travis_run_tests
+    - travis_after_tests_success || true
+
+test:
+  extends: .before_script_template
+  stage: test
+  tags:
+    - postgres
+    - docker
+  variables:
+    LINT_CHECK: "0"
+    TESTS: "1"
+  script:
+    # We need to export the PG* here, otherwise the postgresql container
+    # will pick them up
+    - export PGHOST="postgres"
+    - export PGUSER="odoo"
+    - export PGPASSWORD="odoo"
+    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - travis_install_nightly
+    - travis_run_tests
+    - travis_after_tests_success || true
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+
+runbot:
+  stage: external
+  script:
+  # See https://gitlab.canna.lan/help/user/project/integrations/webhooks
+  # and https://github.com/OCA/runbot-addons/blob/11.0/runbot_gitlab/controllers/gitlab_ci_controller.py
+    - "curl --header \"Content-Type: application/json\" 
+        --request POST 
+        --data '{
+            \"object_kind\":\"merge_request\",
+            \"project\":{
+              \"git_ssh_url\":\"git@gitlab.canna.lan:canna-odoo/third-party.git\",
+              \"git_http_url\":\"git@gitlab.canna.lan:canna-odoo/third-party.git\"
+            }
+        }'
+        --url http://10.10.17.135:8069/runbot/hook_gitlab/org"
