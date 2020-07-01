@@ -52,6 +52,8 @@ lint:
     - export PGPASSWORD="odoo"
     - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    # Change oca_dependencies.txt formatting to fetch from private GitLab by changing to https and injecting the job token.
+    - sed -i -e '/^#/! s/\(git.*:\)\(.*\.git\)/https:\/\/gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.canna.lan\/\2/g' oca_dependencies.txt
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true
@@ -73,6 +75,8 @@ test:
     - export PGPASSWORD="odoo"
     - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    # Change oca_dependencies.txt formatting to fetch from private GitLab by changing to https and injecting the job token.
+    - sed -i -e '/^#/! s/\(git.*:\)\(.*\.git\)/https:\/\/gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.canna.lan\/\2/g' oca_dependencies.txt
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true
