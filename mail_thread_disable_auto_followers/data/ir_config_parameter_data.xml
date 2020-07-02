@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+  <!-- Add 'mail_thread_disable_auto_followers' configuration parameter -->
+  <record id="mail_thread_disable_auto_followers" model="ir.config_parameter">
+    <field name="key">mail_thread_disable_auto_followers</field>
+    <field name="value">[]</field>
+  </record>
+
+</odoo>
