@@ -6,7 +6,7 @@
     'author': 'Noviat',
     'category': 'Mail',
     'website': 'https://www.noviat.com',
-    'version': '13.0.0.0.6',
+    'version': '13.0.1.0.0',
     'license': 'AGPL-3',
     'depends': [
         'mail',
