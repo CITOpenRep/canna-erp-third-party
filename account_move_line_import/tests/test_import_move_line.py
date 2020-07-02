@@ -36,7 +36,18 @@ class TestAccountMoveLineImport(TransactionCase):
         aml_data = open(aml_file_path, "rb").read()
         aml_data = base64.encodestring(aml_data)
         aml_import = self.aml_import_model.create(
-            {"aml_data": aml_data, "csv_separator": ";", "decimal_separator": ","}
+            {
+                "aml_data": aml_data,
+                "csv_separator": ";",
+                "decimal_separator": ",",
+                "file_type": "csv",
+                "codepage": "utf-8",
+                "dialect": '{"delimiter": ";",'
+                '"doublequote": true,'
+                '"escapechar": null,'
+                '"lineterminator": "\\n",'
+                '"skipinitialspace": false}',
+            }
         )
         aml_import.with_context({"active_id": am.id}).aml_import()
-        self.assertEqual(am.amount, 5000.00)
+        self.assertEqual(am.amount_total, 5000.00)
