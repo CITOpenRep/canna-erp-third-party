@@ -89,8 +89,8 @@ runbot:
   script:
   # See https://gitlab.canna.lan/help/user/project/integrations/webhooks
   # and https://github.com/OCA/runbot-addons/blob/11.0/runbot_gitlab/controllers/gitlab_ci_controller.py
-    - "curl --header \"Content-Type: application/json\" 
-        --request POST 
+    - "curl --header \"Content-Type: application/json\"
+        --request POST
         --data '{
             \"object_kind\":\"merge_request\",
             \"project\":{
