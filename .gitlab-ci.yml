@@ -52,7 +52,6 @@ lint:
     - export PGPASSWORD="odoo"
     - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
-    # Change oca_dependencies.txt formatting to fetch from private GitLab by changing to https and injecting the job token.
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true
@@ -96,6 +95,7 @@ runbot:
             \"project\":{
               \"git_ssh_url\":\"git@gitlab.canna.lan:canna-odoo/third-party.git\",
               \"git_http_url\":\"git@gitlab.canna.lan:canna-odoo/third-party.git\"
-            }
+            },
+            \"commit_sha\":\"'${CI_COMMIT_SHA}'\"
         }'
         --url http://10.10.17.135:8069/runbot/hook_gitlab/org"
