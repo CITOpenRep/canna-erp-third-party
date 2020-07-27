@@ -76,21 +76,23 @@
                 <filter name="filter_done" string="Done"
                     domain="[('state', '=', 'done')]" />
                 <separator />
-                <filter domain="[('followup_user_id', '=', uid)]"
+                <filter name="my_actions" domain="[('followup_user_id', '=', uid)]"
                     help="My Actions" />
                 <filter
+                    name="my_open_actions"
                     domain="[('followup_user_id', '=', uid), ('state', '=', 'open')]"
                     help="My Open Actions" />
-                <filter domain="[('followup_user_id', '=', False)]"
+                <filter name="without_owner" domain="[('followup_user_id', '=', False)]"
                     help="Actions Without Owner" />
                 <group string="Group By...">
                     <filter string="State"
+                        name="state"
                         context="{'group_by':'state'}" />
-                    <filter string="Register" icon="terp-go-month"
+                    <filter string="Register" name="register" icon="terp-go-month"
                         context="{'group_by':'user_id'}" />
-                    <filter string="Owner" icon="terp-go-month"
+                    <filter string="Owner" name="owner" icon="terp-go-month"
                         context="{'group_by':'followup_user_id'}" />
-                    <filter string="Partner" icon="terp-gtk-jump-to-rtl"
+                    <filter string="Partner" name="partner" icon="terp-gtk-jump-to-rtl"
                         context="{'group_by':'partner_id'}" />
                 </group>
             </search>
@@ -116,27 +118,16 @@
                     <t t-name="kanban-box">
                         <div
                             t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_project oe_kanban_global_click">
-                            <div class="oe_dropdown_toggle oe_dropdown_kanban"
+                            <div class="o_dropdown_kanban oe_dropdown_kanban"
                                 groups="base.group_user">
-                                <span class="oe_e">í</span>
-                                <ul class="oe_dropdown_menu">
-                                    <t
-                                        t-if="widget.view.is_action_enabled('edit')">
-                                        <li>
-                                            <a type="edit">Edit</a>
-                                        </li>
-                                    </t>
-                                    <t
-                                        t-if="widget.view.is_action_enabled('delete')">
-                                        <li>
-                                            <a type="delete">Delete</a>
-                                        </li>
-                                    </t>
-                                    <li>
-                                        <ul class="oe_kanban_colorpicker"
-                                            data-field="color" />
-                                    </li>
-                                </ul>
+                                <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                    <span class="fa fa-ellipsis-v"/>
+                                </a>
+                                <div class="dropdown-menu" role="menu">
+                                    <t t-if="widget.editable"><a role="menuitem" type="edit" class="dropdown-item">Edit</a></t>
+                                    <t t-if="widget.deletable"><a role="menuitem" type="delete" class="dropdown-item">Delete</a></t>
+                                    <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                </div>
                             </div>
                             <div class="oe_kanban_content">
                                 <h4 class="text-center">
