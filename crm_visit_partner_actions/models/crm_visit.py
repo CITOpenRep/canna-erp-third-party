@@ -8,6 +8,6 @@ from odoo import fields, models
 class CrmVisit(models.Model):
     _inherit = "crm.visit"
 
-    partner_actions = fields.One2many(related="partner_id.actions",
-                                      string="Actions",
-                                      readonly=False)
+    partner_actions = fields.One2many(
+        related="partner_id.actions", string="Actions", readonly=False
+    )
