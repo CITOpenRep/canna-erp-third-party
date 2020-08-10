@@ -16,7 +16,6 @@ class ResPartner(models.Model):
         string="Number of actions", compute="_compute_get_partner_action_count"
     )
 
-    @api.depends("actions")
     def _compute_get_partner_action_count(self):
         action_count = len(self.actions) or 0
         child_count = 0

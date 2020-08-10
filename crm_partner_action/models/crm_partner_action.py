@@ -92,12 +92,7 @@ class CrmPartnerAction(models.Model):
     @api.model
     def create(self, vals):
         """
-        This creates a new visitor.report object, and adds any
-        information that is placed in read only fields.
-        Readonly fields don"t get send to the server, so we retreive
-        those fields from previous visits.
-        :param vals:
-        :return:
+        Adding Sequence of Crm Actions object.
         """
         vals["name"] = self.env["ir.sequence"].next_by_code("crm.partner.action")
         return super(CrmPartnerAction, self).create(vals)
