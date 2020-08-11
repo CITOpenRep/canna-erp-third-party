@@ -25,14 +25,14 @@ class CrmPartnerAction(models.Model):
         comodel_name="res.company",
         string="Company",
         required=True,
-        states={'done': [('readonly', True)]},
+        states={"done": [("readonly", True)]},
         default=lambda self: self.env.company,
     )
     user_id = fields.Many2one(
         comodel_name="res.users",
         string="User",
         required=False,
-        states={'done': [('readonly', True)]},
+        states={"done": [("readonly", True)]},
         default=lambda self: self.env.user,
         help="Pick a user who will receive a "
         "notification when choosing the partner "

@@ -18,17 +18,10 @@ class SaleOrder(models.Model):
         - Delivery address
         """
         if not self.partner_id:
-            self.update(
-                {
-                    "partner_invoice_id": False,
-                    "partner_shipping_id": False,
-                    "payment_term_id": False,
-                    "fiscal_position_id": False,
-                }
-            )
-            return
+            self.partner_invoice_id = (
+                self.partner_shipping_id
+            ) = self.payment_term_id = self.fiscal_position_id = False
 
-        addr = self.partner_id.address_get(["delivery", "invoice"])
         partner_user = (
             self.partner_id.user_id or self.partner_id.commercial_partner_id.user_id
         )
@@ -39,8 +32,6 @@ class SaleOrder(models.Model):
             "payment_term_id": self.partner_id.property_payment_term_id
             and self.partner_id.property_payment_term_id.id
             or False,
-            "partner_invoice_id": addr["invoice"],
-            "partner_shipping_id": addr["delivery"],
         }
         user_id = partner_user.id or self.env.uid
         if self.user_id.id != user_id:
@@ -74,7 +65,7 @@ class SaleOrder(models.Model):
         dom = [("partner_id", "in", partner_ids), ("state", "=", "open")]
         action_ids = partner_action_obj.search(dom)
         message_body = ""
-        for action in partner_action_obj.search([("partner_id", "in", action_ids)]):
+        for action in partner_action_obj.search([("partner_id", "in", action_ids.ids)]):
             if not action.user_id.id or self._uid == action.user_id.id:
                 message_body += action.description
                 if action.comments:
