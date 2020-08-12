@@ -1,0 +1,41 @@
+---Fields in module 'crm_partner_action'---
+crm_partner_action / crm.partner.action       / action_group_id (many2one)    : NEW relation: crm.partner.action.group
+crm_partner_action / crm.partner.action       / color (integer)               : NEW
+crm_partner_action / crm.partner.action       / comments (text)               : NEW
+crm_partner_action / crm.partner.action       / company_id (many2one)         : NEW relation: res.company, required: required, req_default: function
+crm_partner_action / crm.partner.action       / description (text)            : NEW required: required
+crm_partner_action / crm.partner.action       / followup_date (date)          : NEW
+crm_partner_action / crm.partner.action       / followup_user_id (many2one)   : NEW relation: res.users
+crm_partner_action / crm.partner.action       / message_ids (one2many)        : NEW relation: mail.message
+crm_partner_action / crm.partner.action       / message_last_post (datetime)  : NEW
+crm_partner_action / crm.partner.action       / name (char)                   : NEW
+crm_partner_action / crm.partner.action       / partner_id (many2one)         : NEW relation: res.partner, required: required
+crm_partner_action / crm.partner.action       / state (selection)             : NEW selection_keys: ['done', 'open']
+crm_partner_action / crm.partner.action       / user_id (many2one)            : NEW relation: res.users, required: required, req_default: function
+crm_partner_action / crm.partner.action.group / company_id (many2one)         : NEW relation: res.company, required: required, req_default: function
+crm_partner_action / crm.partner.action.group / model_id (many2one)           : NEW relation: ir.model
+crm_partner_action / crm.partner.action.group / name (char)                   : NEW required: required
+crm_partner_action / res.partner              / partner_actions (one2many)    : NEW relation: crm.partner.action
+---XML records in module 'crm_partner_action'---
+NEW ir.actions.act_window: crm_partner_action.crm_partner_action_action
+NEW ir.actions.act_window: crm_partner_action.crm_partner_action_group_action
+NEW ir.actions.act_window: crm_partner_action.res_partner_action_open_partner_action
+NEW ir.model.access: crm_partner_action.access_crm_partner_action_group_group_manager
+NEW ir.model.access: crm_partner_action.access_crm_partner_action_group_group_user
+NEW ir.sequence: crm_partner_action.crm_partner_action_sequence
+NEW ir.sequence.type: crm_partner_action.crm_partner_action_sequence_type
+NEW ir.ui.menu: crm_partner_action.crm_partner_action_group_menu
+NEW ir.ui.menu: crm_partner_action.crm_partner_action_menu
+NEW ir.ui.menu: crm_partner_action.crm_partner_action_menu_base
+NEW ir.ui.menu: crm_partner_action.crm_partner_action_menu_config
+NEW ir.ui.view: crm_partner_action.crm_partner_action_group_view_form
+NEW ir.ui.view: crm_partner_action.crm_partner_action_group_view_tree
+NEW ir.ui.view: crm_partner_action.crm_partner_action_view_form
+NEW ir.ui.view: crm_partner_action.crm_partner_action_view_kanban
+NEW ir.ui.view: crm_partner_action.crm_partner_action_view_search
+NEW ir.ui.view: crm_partner_action.crm_partner_action_view_tree
+NEW ir.ui.view: crm_partner_action.crm_partner_actions_view_calendar
+NEW ir.ui.view: crm_partner_action.view_partner_form
+NEW mail.message.subtype: crm_partner_action.mail_message_subtype_crm_partner_action_state
+NEW res.groups: crm_partner_action.crm_partner_action_group_manager
+NEW res.groups: crm_partner_action.crm_partner_action_group_user

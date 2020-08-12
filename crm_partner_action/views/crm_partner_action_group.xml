@@ -1,0 +1,45 @@
+<odoo>
+
+    <record id="crm_partner_action_group_view_tree" model="ir.ui.view">
+        <field name="name">CrmPartnerActionGroupViewTree</field>
+        <field name="model">crm.partner.action.group</field>
+        <field name="arch" type="xml">
+            <tree string="Action Groups">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="crm_partner_action_group_view_form" model="ir.ui.view">
+        <field name="name">CrmPartnerActionGroupViewForm</field>
+        <field name="model">crm.partner.action.group</field>
+        <field name="arch" type="xml">
+            <form string="Action Group">
+                <group>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group>
+                        <field name="model_id"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="crm_partner_action_group_action" model="ir.actions.act_window">
+        <field name="name">Action Groups</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">crm.partner.action.group</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="crm_partner_action_group_view_tree"/>
+    </record>
+
+    <!--<menuitem-->
+            <!--id="crm_partner_action_group_menu"-->
+            <!--action="crm_partner_action_group_action"-->
+            <!--parent="crm_partner_action_menu_config"/>-->
+
+</odoo>

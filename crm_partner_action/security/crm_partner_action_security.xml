@@ -1,0 +1,11 @@
+<odoo>
+
+    <record id="crm_partner_action_group_user" model="res.groups">
+        <field name="name">CRM Partner Action / User</field>
+    </record>
+
+    <record id ="crm_partner_action_group_manager" model="res.groups">
+        <field name="name">CRM Partner Action / Manager</field>
+    </record>
+
+</odoo>
