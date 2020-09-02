@@ -14,7 +14,7 @@ class ResPartner(models.Model):
     state = fields.Selection(
         selection=[("draft", "Draft"), ("confirmed", "Confirmed")],
         default="draft",
-        string="State",
+        string="Approval State",
     )
 
     def set_state_to_confirmed(self):
