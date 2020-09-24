@@ -27,12 +27,13 @@ class AccountMoveLine(models.Model):
                             f1 = "abs(balance)"
                             f2 = "abs(amount_currency)"
                             val = abs(val)
+                        # pylint: disable=E8103
                         query = (
                             "SELECT id FROM account_move_line "
                             "WHERE round({0} - {2}, {3}) = 0.0 "
                             "OR round({1} - {2}, {3}) = 0.0"
                         ).format(f1, f2, val, digits)
-                        self.env.cr.execute(query)  # pylint: disable=E8103
+                        self.env.cr.execute(query)
                         res = self.env.cr.fetchall()
                         ids = res and [x[0] for x in res] or [0]
                         arg[0] = "id"
