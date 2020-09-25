@@ -11,7 +11,8 @@ stages:
   - external
 
 services:
-  - postgres:10
+  - name: postgis/postgis:10-3.0-alpine
+    alias: postgres
 
 variables:
   POSTGRES_DB: project_ci_test
@@ -57,7 +58,7 @@ variables:
 #     - travis_install_nightly
 #     - travis_run_tests
 #     - travis_after_tests_success || true
- 
+
 test:
   extends: .before_script_template
   stage: test

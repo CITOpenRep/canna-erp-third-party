@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" type="text/scss" href="/geoengine_mapbox/static/lib/css/mapbox-gl.css" />
+            <script type="text/javascript" src="/geoengine_mapbox/static/lib/js/mapbox-gl.js" />
+            <script type="text/javascript" src="/geoengine_mapbox/static/src/js/geoengine_widgets.js" />
+        </xpath>
+    </template>
+
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="geo_partner_view_form_inherited">
+        <field name="name">geo_partner_form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="geoengine_partner.geo_partner_view_form"/>
+        <field name="arch" type="xml">
+            <field name="geo_point" position="before">
+                <button string="Get GeoLocation" name="get_mapbox_location" type="object" class="oe_highlight" style="margin: 1em 0em;" />
+                <group>
+                    <field name="partner_latitude" readonly="1" />
+                    <field name="partner_longitude" readonly="1" />
+                    <field name="date_localization" readonly="1" />
+                </group>
+            </field>
+        </field>
+    </record>
+</odoo>
