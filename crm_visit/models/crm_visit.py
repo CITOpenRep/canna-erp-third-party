@@ -36,23 +36,48 @@ class CrmVisit(models.Model):
         string="Employee",
         required=True,
         default=lambda self: self.env.user,
+        states={"draft": [("readonly", False)]},
     )
-    date = fields.Datetime(string="Visit Datetime", required=True, readonly=True)
+    date = fields.Datetime(
+        string="Visit Datetime",
+        required=True,
+        readonly=True,
+        states={"draft": [("readonly", False)], "visited": [("readonly", False)]},
+    )
     duration = fields.Integer(
         string="Duration",
         readonly=True,
         help="Estimated duration of the " "visit in minutes",
+        states={"draft": [("readonly", False)], "visited": [("readonly", False)]},
     )
     visit_reason = fields.Many2one(
-        comodel_name="crm.visit.reason", string="Reason", required=True, readonly=True
+        comodel_name="crm.visit.reason",
+        string="Reason",
+        required=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
-    visit_reason_details = fields.Text(string="Purpose", readonly=True)
+    visit_reason_details = fields.Text(
+        string="Purpose", readonly=True, states={"draft": [("readonly", False)]}
+    )
     visit_feeling = fields.Many2one(
-        comodel_name="crm.visit.feeling", string="Feeling", readonly=True
+        comodel_name="crm.visit.feeling",
+        string="Feeling",
+        readonly=True,
+        states={"visited": [("readonly", False)]},
     )
-    report = fields.Html(string="Report", readonly=True, required=False)
+    report = fields.Html(
+        string="Report",
+        readonly=True,
+        required=False,
+        states={"visited": [("readonly", False), ("required", True)]},
+    )
     partner_id = fields.Many2one(
-        comodel_name="res.partner", string="Partner", required=True, readonly=True
+        comodel_name="res.partner",
+        string="Partner",
+        required=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
 
     @api.model
