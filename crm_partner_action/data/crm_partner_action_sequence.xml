@@ -1,0 +1,8 @@
+<odoo noupdate="1">
+
+    <record id="crm_partner_action_sequence" model="ir.sequence">
+        <field name="name">Partner Actions</field>
+        <field name="code">crm.partner.action</field>
+    </record>
+
+</odoo>

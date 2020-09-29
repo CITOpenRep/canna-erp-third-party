@@ -1,0 +1,11 @@
+<odoo>
+    <menuitem
+        id="crm_partner_action_menu_base"
+        sequence="5"
+        name="Actions"
+        parent="sale.sale_menu_root"/>
+
+    <!--<menuitem id="crm_partner_action_menu_config" name="Actions"-->
+              <!--parent="base.menu_base_config" sequence="90" groups="base.group_sale_manager"/>-->
+
+</odoo>

@@ -23,7 +23,7 @@ class WebModifierRule(models.Model):
     ]
 
     role_id = fields.Many2one(string="Role", comodel_name="res.role", required=True)
-    model_id = fields.Many2one(comodel_name="ir.model", required=True, string="Model")
+    model_id = fields.Many2one(comodel_name="ir.model", string="Model")
     model = fields.Char(related="model_id.model", store=True, string="model_name")
     sequence = fields.Integer(default=16, required=True)
     priority = fields.Integer(
@@ -40,7 +40,7 @@ class WebModifierRule(models.Model):
     view_xml_id = fields.Char(
         string="View External Identifier", related="view_id.xml_id", store=True
     )
-    view_type = fields.Selection(selection="_selection_view_type", required=True)
+    view_type = fields.Selection(selection="_selection_view_type")
     element_ui = fields.Char(
         string="Element",
         help="Specify the view element. E.g."
@@ -115,37 +115,47 @@ class WebModifierRule(models.Model):
             but with replacement of XML Id by DB Id for actions buttons.
         """
         element = element_ui = self.element_ui
-        if element_ui:
-            if element_ui[:5] == "xpath":
-                to_update = False
-                parts = element_ui.split("button[@name=")
+        if not element:
+            return element
+        if element_ui[:5] == "xpath":
+            to_update = False
+            if "button" in element_ui:
+                parts = element_ui.split("button[")
                 for i, part in enumerate(parts[1:], start=1):
-                    name, remaining = part.split("]")
+                    attribs, remaining = part.split("]", 1)
+                    # we support xml_id resolution only for the "=" operator
+                    pos = attribs.find("@name=")
+                    if pos < 0:
+                        break
+                    name_start = pos + 7
+                    quote_char = attribs[pos + 6]
+                    pos = attribs[name_start:].find(quote_char)
+                    if pos < 0:
+                        break
+                    name_stop = name_start + pos
+                    name = attribs[name_start:name_stop]
                     name2 = self._resolve_rule_element_button_name(name, line_errors)
                     if name2 != name:
                         to_update = True
-                        parts[i] = "]".join([name2, remaining])
+                        name_attrib = "@name=" + quote_char + name2 + quote_char
+                        attribs = (
+                            attribs[:name_start] + name_attrib + attribs[name_stop:]
+                        )
+                        parts[i] = "]".join([attribs, remaining])
                 if to_update:
-                    element = "button[@name=".join(parts)
-            elif element_ui[:7] == "button ":
-                parts = element_ui.split("name=")
-                if len(parts) > 1:
-                    part1 = parts[1].split(" ", 1)
-                    name = part1[0]
-                    if len(part1) == 2:
-                        remaining = part1[1]
-                    else:
-                        remaining = False
-                    name2 = self._resolve_rule_element_button_name(name, line_errors)
-                    if name2 != name:
-                        element = "name=".join([parts[0], name2])
-                        if remaining:
-                            element += " " + remaining
+                    element = "button[".join(parts)
+        elif element_ui[:7] == "button ":
+            parts = element_ui.split("name=")
+            if len(parts) != 2:
+                return element
+            quote_char = parts[1][0]
+            name = parts[1][1:-1]
+            name2 = self._resolve_rule_element_button_name(name, line_errors)
+            if name2 != name:
+                element = "button name=" + quote_char + name2 + quote_char
         return element
 
     def _resolve_rule_element_button_name(self, name, line_errors):
-        quote_char = name[0]
-        name = safe_eval(name)
         if name[:2] == "%(" and name[-2:] == ")d":
             xml_id = name[2:-2]
             act_id = self.env["ir.model.data"].xmlid_to_res_model_res_id(
@@ -161,7 +171,7 @@ class WebModifierRule(models.Model):
                     % self.element_ui
                 )
             else:
-                name = quote_char + str(act_id[1]) + quote_char
+                name = str(act_id[1])
         else:
             self._check_element_ui_button_name(name, line_errors)
         return name
@@ -179,27 +189,64 @@ class WebModifierRule(models.Model):
             err += _('e.g. name="%(sale.act_res_partner_2_sale_order)d"')
             line_errors.append(err)
 
+    @api.constrains("view_id", "view_type")
+    def _check_view(self):
+        for rule in self:
+            if rule.view_id:
+                if rule.view_type != rule.view_id.type:
+                    raise UserError(
+                        _(
+                            "Error in rule with ID %s: "
+                            "view_type is not consistent with view."
+                        )
+                        % rule.id
+                    )
+            else:
+                if rule.remove:
+                    raise UserError(
+                        _(
+                            "Error in rule with ID %s: "
+                            "'Remove' requires to define a view."
+                        )
+                        % rule.id
+                    )
+
     @api.constrains("modifier_invisible", "modifier_readonly", "modifier_required")
     def _check_modifier(self):
         """TODO: add checks on modifier syntax"""
         pass
 
-    def _get_rules(self, model, view_id, remove=False):
+    @api.onchange("view_id")
+    def _onchange_view_id(self):
+        self.view_type = self.view_id.type
+        if not self.view_id:
+            self.remove = False
+
+    @api.onchange("view_type")
+    def _onchange_view_type(self):
+        if self.view_type == "qweb":
+            self.model_id = False
+
+    def _get_rules(self, model, view_id, view_type=False, remove=False):
         signature_fields = self.env["web.modifier.rule"]._rule_signature_fields()
-        order = ",".join(signature_fields) + ",priority"
-        view = self.env["ir.ui.view"].browse(view_id)
         dom = [
             ("model", "=", model),
             ("role_id", "in", self.env.user.role_ids.ids),
             ("remove", "=", remove),
-            "|",
-            ("view_id", "=", view_id),
-            ("view_id", "=", False),
-            "|",
-            ("view_type", "=", view.type),
-            ("view_type", "=", False),
         ]
-        all_rules = self.env["web.modifier.rule"].search(dom, order=order)
+        if view_id:
+            dom += ["|", ("view_id", "=", view_id), ("view_id", "=", False)]
+        if view_type:
+            dom += ["|", ("view_type", "=", view_type), ("view_type", "=", False)]
+        all_rules = self.env["web.modifier.rule"].search(dom)
+        all_rules = all_rules.sorted(
+            key=lambda r: (
+                r.element or "",
+                r.view_id.id or 0,
+                r.view_type or "0",
+                r.priority,
+            )
+        )
         if all_rules:
             for i, rule in enumerate(all_rules):
                 if i == 0:
