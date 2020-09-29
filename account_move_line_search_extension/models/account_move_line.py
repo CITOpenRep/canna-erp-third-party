@@ -27,8 +27,7 @@ class AccountMoveLine(models.Model):
                             f1 = "abs(balance)"
                             f2 = "abs(amount_currency)"
                             val = abs(val)
-                        # pylint: disable=E8103
-                        query = (
+                        query = (  # pylint: disable=E8103
                             "SELECT id FROM account_move_line "
                             "WHERE round({0} - {2}, {3}) = 0.0 "
                             "OR round({1} - {2}, {3}) = 0.0"

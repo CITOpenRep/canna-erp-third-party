@@ -100,7 +100,8 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
                 self.do_search();
             });
             this.$el.find(".oe_account_select_journal").change(function() {
-                self.current_journal = this.value === "" ? null : parseInt(this.value, 10);
+                self.current_journal =
+                    this.value === "" ? null : parseInt(this.value, 10);
                 self.do_search();
             });
             this.$el.find(".oe_account_select_date_range").change(function() {
@@ -116,11 +117,11 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
                 self.current_amount = this.value === "" ? null : this.value;
                 self.do_search();
             });
-            this.$el.find(".oe_account_select_taxes").change(function () {
+            this.$el.find(".oe_account_select_taxes").change(function() {
                 self.current_taxes = this.value === "" ? null : this.value;
                 self.do_search();
             });
-            this.$el.find(".oe_account_select_tags").change(function () {
+            this.$el.find(".oe_account_select_tags").change(function() {
                 self.current_tags = this.value === "" ? null : this.value;
                 self.do_search();
             });
@@ -152,6 +153,9 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
 
         reload: function(params) {
             var self = this;
+            if (!params.domain) {
+                params.domain = self.sidebar.env.domain;
+            }
             if (params.amlse_domain) {
                 params.domain = params.domain.concat(params.amlse_domain);
             } else {
@@ -200,8 +204,7 @@ odoo.define("account_move_line_search_extension.amlse", function(require) {
                 domain.push(["amount_search", "=", this.current_amount]);
             if (this.current_taxes)
                 domain.push(["tax_ids", "ilike", this.current_taxes]);
-            if (this.current_tags)
-                domain.push(["tag_ids", "ilike", this.current_tags]);
+            if (this.current_tags) domain.push(["tag_ids", "ilike", this.current_tags]);
             // _.each(domain, function(x) {console.log('amlse, aml_search_domain, domain_part = ', x)});
             return domain;
         },
