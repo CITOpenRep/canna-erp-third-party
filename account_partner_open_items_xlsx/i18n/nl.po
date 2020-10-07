@@ -1,0 +1,238 @@
+# Dutch translation of Odoo Server.
+# This file contains the translation of the following modules:
+#    * account_partner_open_items_xlsx
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo 13.0\n"
+"Report-Msgid-Bugs-To: support@noviat.com\n"
+"POT-Creation-Date: 2020-10-06 12:14:04.562000\n"
+"PO-Revision-Date: 2020-10-06 12:14:04.562000\n"
+"Last-Translator: Luc De Meyer (Noviat nv/sa)\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: Dutch\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.actions.act_window,name:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Open Items per Partner"
+msgstr "Openstaande posten per partner"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__date_at
+msgid "Date at"
+msgstr "Datum op"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__target_move
+msgid "Target Moves"
+msgstr "Welke boekingen"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields.selection,name:account_partner_open_items_xlsx.selection__wiz_partner_open_items__target_move__posted:0
+msgid "All Posted Entries"
+msgstr "Alleen definitieve boekingen"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields.selection,name:account_partner_open_items_xlsx.selection__wiz_partner_open_items__target_move__all:0
+msgid "All Entries"
+msgstr "Alle boekingen"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__result_selection
+msgid "Filter on"
+msgstr "Filter op"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields.selection,name:account_partner_open_items_xlsx.selection__wiz_partner_open_items__result_selection__customer:0
+msgid "Receivable Accounts"
+msgstr "Debiteuren"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields.selection,name:account_partner_open_items_xlsx.selection__wiz_partner_open_items__result_selection__supplier:0
+msgid "Payable Accounts"
+msgstr "Crediteuren"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields.selection,name:account_partner_open_items_xlsx.selection__wiz_partner_open_items__result_selection__customer_supplier:0
+msgid "Receivable and Payable Accounts"
+msgstr "Debiteuren en crediteuren"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__partner_select
+msgid "Partners"
+msgstr "Partners"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields.selection,name:account_partner_open_items_xlsx.selection__wiz_partner_open_items__partner_select__all:0
+msgid "All Partners"
+msgstr "Alle partners"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields.selection,name:account_partner_open_items_xlsx.selection__wiz_partner_open_items__partner_select__select:0
+msgid "Selected Partners"
+msgstr "Geselecteerde partners"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__add_currency
+msgid "Show Currency"
+msgstr "Met valuta"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__add_reconcile
+msgid "Show Reconcile"
+msgstr "Met aflettering"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__account_ids
+msgid "Accounts"
+msgstr "Rekeningen"
+
+#. module: account_partner_open_items_xlsx
+#: model:ir.model.fields,field_description:account_partner_open_items_xlsx.field_wiz_partner_open_items__company_id
+msgid "Company"
+msgstr "Bedrijf"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Open Items"
+msgstr "Openstaande posten"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "No partner allocated"
+msgstr "Zonder relatie"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "n/a"
+msgstr "n/a"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Partner"
+msgstr "Partner"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Partner Reference"
+msgstr "Referentie partner"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Original"
+msgstr "Oorspr."
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Reconciled"
+msgstr "Afgeletterd"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Balance"
+msgstr "Saldo"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Document"
+msgstr "Document"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Supplier Invoice No"
+msgstr "Inkoopfactuur Nr"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Source Document"
+msgstr "Brondocument"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Date"
+msgstr "Datum"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Due Date"
+msgstr "Vervaldatum"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Description"
+msgstr "Omschrijving"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Account"
+msgstr "Rekening"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Journal"
+msgstr "Dagboek"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Cur."
+msgstr "Vta."
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Cur.Original"
+msgstr "Oorspr.Vta."
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Cur.Reconciled"
+msgstr "Afgeletterd Vta."
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Reconcile Details"
+msgstr "Details aflettering"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Move Line Id"
+msgstr "Move Line Id"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Details"
+msgstr "Details"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Open Receivables"
+msgstr "Debiteuren"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Open Payables"
+msgstr "Crediteuren"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "Overview"
+msgstr "Overzicht"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "All Posted Entries"
+msgstr "Alleen definitieve boekingen"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "All Entries"
+msgstr "Alle boekingen"
+
+#. module: account_partner_open_items_xlsx
+#: model_terms:ir.actions.act_window,help:account_partner_open_items_xlsx.wiz_partner_open_items_action
+msgid "No Open Items found for your selection"
+msgstr "Geen openstaande posten"
+
