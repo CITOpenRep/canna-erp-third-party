@@ -3,21 +3,36 @@
 
 import logging
 
-from odoo import models
-from odoo.tools.translate import translate
+from odoo import _, models
 
 _logger = logging.getLogger(__name__)
-
-IR_TRANSLATION_NAME = "move.line.list.xls"
 
 
 class AccountMoveLineXlsx(models.AbstractModel):
     _name = "report.account_move_line_report_xls.account_move_line_xlsx"
     _inherit = "report.report_xlsx.abstract"
 
+    def generate_xlsx_report(self, workbook, data, objects):
+        self = self.with_context(dict(self.env.context, lang=self.env.user.lang))
+        super().generate_xlsx_report(workbook, data, objects)
+
     def _(self, src):
-        lang = self.env.context.get("lang", "en_US")
-        val = translate(self.env.cr, IR_TRANSLATION_NAME, "report", lang, src) or src
+        """
+        The standard "_" method does not allow to make context specific translations.
+        As soon as a 'code' term is already translated by another module,
+        the term in the po file of this module will not be loaded.
+        We use the "model_terms" as a bypass for this limitation in the Odoo framework
+        and fall back to the standard "_" method for missing translations.
+        """
+        dom = [
+            ("type", "=", "model_terms"),
+            ("name", "=", "ir.actions.report,help"),
+            ("module", "=", "account_move_line_report_xls"),
+            ("lang", "=", self.env.context.get("lang", "en_US")),
+            ("src", "=", src),
+        ]
+        val = self.env["ir.translation"].search(dom)
+        val = val and val[0].value or _(src)
         return val
 
     def _get_ws_params(self, workbook, data, amls):
