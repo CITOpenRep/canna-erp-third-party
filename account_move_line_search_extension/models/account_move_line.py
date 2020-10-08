@@ -66,6 +66,10 @@ class AccountMoveLine(models.Model):
         res = super().fields_view_get(
             view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
         )
+        if view_type == "amlse":
+            res["toolbar"] = super().fields_view_get(
+                view_id=view_id, view_type="tree", toolbar=True, submenu=submenu
+            )["toolbar"]
         if (
             self.env.context.get("account_move_line_search_extension")
             and view_type == "form"
