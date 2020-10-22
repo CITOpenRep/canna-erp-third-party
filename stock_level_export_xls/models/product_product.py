@@ -17,6 +17,27 @@ _logger = logging.getLogger(__name__)
 class ProductProduct(models.Model):
     _inherit = "product.product"
 
+    def _get_domain_locations_new(
+        self, location_ids, company_id=False, compute_child=True
+    ):
+        """
+        bypass of bug in standard Odoo, cf.
+        https://github.com/odoo/odoo/blob/ce1d5c86bd2fc7065f47d11b849da5445ddf02b7
+        /addons/stock/models/product.py#L297 :
+        domain = company_id and ['&', ('company_id', '=', company_id)] or []
+
+        incorrect domain returned when using force_company.
+        """
+        domains = super()._get_domain_locations_new(
+            location_ids, company_id=company_id, compute_child=compute_child
+        )
+        new_domains = []
+        for dom in domains:
+            if dom and dom[0] == "&" and len(dom) == 2:
+                dom.pop(0)
+            new_domains.append(dom)
+        return tuple(new_domains)
+
     def _get_cost_at_date(self, res, stock_level_date):
         """
         Lookup of cost in price history table.
