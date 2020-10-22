@@ -40,7 +40,12 @@ class StockLevelImport(models.TransientModel):
             # stock_level_export_xls module are processed first,
             # thereby removing the need for database lookups.
             for i, hf in enumerate(header_reversed):
-                if i == 0 and line[hf] and line[hf][0] == "#":
+                if (
+                    i == 0
+                    and line[hf]
+                    and isinstance(line[hf], str)
+                    and line[hf][0] == "#"
+                ):
                     # lines starting with # are considered as comment lines
                     break
                 if hf in self._skip_fields:
@@ -105,7 +110,7 @@ class StockLevelImport(models.TransientModel):
             err_msg = ""
             line = {}
             ln = sheet.row_values(ri)
-            if not ln or ln and ln[0] == "#":
+            if not ln or ln and isinstance(ln, str) and ln[0] == "#":
                 continue
             if not header:
                 if "location_id" in ln:
@@ -203,9 +208,11 @@ class StockLevelImport(models.TransientModel):
                         line[hf] = val
 
                 if err_msg:
+                    line["input_vals"] = ln
                     self._log_line_error(line, err_msg)
 
                 if line:
+                    line["input_vals"] = ln
                     lines.append(line)
 
         return lines
@@ -230,9 +237,10 @@ class StockLevelImport(models.TransientModel):
                 "required": True,
             },
             "product uom": {"method": self._handle_product_uom, "field_type": "char"},
-            "product_uom_id": {
+            "uom_id": {
                 "method": self._handle_product_uom_id,
                 "field_type": "integer",
+                "output_field": "product_uom_id",
                 "required": True,
             },
             "quantity": {"method": self._handle_quantity, "field_type": "float"},
@@ -341,9 +349,9 @@ class StockLevelImport(models.TransientModel):
         return header_fields
 
     def _log_line_error(self, line, msg):
-        data = self.csv_separator.join([line[hf] for hf in self._header_fields])
+        data = dict(zip(self._header_fields, line["input_vals"]))
         self._err_log += (
-            _("Error when processing line '%s'") % data + ":\n" + msg + "\n\n"
+            _("Error when processing line %s") % data + ":\n" + msg + "\n\n"
         )
 
     def _handle_orm_char(self, field, line, inventory, sil_vals, orm_field=False):
@@ -473,7 +481,8 @@ class StockLevelImport(models.TransientModel):
         all_fields = self._field_methods
         required_fields = [x for x in all_fields if all_fields[x].get("required")]
         for rf in required_fields:
-            if rf not in sil_vals:
+            output_field = all_fields[rf].get("output_field") or rf
+            if output_field not in sil_vals:
                 msg = (
                     _(
                         "The '%s' field is a required field "
