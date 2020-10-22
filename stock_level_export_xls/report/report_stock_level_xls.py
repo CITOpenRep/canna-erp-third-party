@@ -15,9 +15,11 @@ IR_TRANSLATION_NAME = "stock.level.xls"
 
 class StockLevelXls(models.AbstractModel):
     _name = "report.stock_level_xls"
+    _description = "Stock level excel export"
     _inherit = "report.report_xlsx.abstract"
 
     def _(self, src):
+        # TODO: adapt to type 'model_terms' since type 'report' no longer supported.
         lang = self.env.context.get("lang", "en_US")
         val = translate(self.env.cr, IR_TRANSLATION_NAME, "report", lang, src) or src
         return val
@@ -221,10 +223,10 @@ class StockLevelXls(models.AbstractModel):
             for location in all_locations:
                 ldom = pdom + [("location_id", "=", location.id)]
                 qty = self.env["stock.quant"].read_group(
-                    ldom, ["qty", "product_id"], ["product_id"]
+                    ldom, ["quantity", "product_id"], ["product_id"]
                 )
                 if qty:
-                    qty = qty[0]["qty"]
+                    qty = qty[0]["quantity"]
                     line_out = dict(
                         line_in, qty_available_at_date=qty, location=location
                     )
