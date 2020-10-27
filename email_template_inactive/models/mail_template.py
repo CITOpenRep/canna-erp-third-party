@@ -5,7 +5,7 @@
 from odoo import fields, models
 
 
-class EmailTemplate(models.Model):
-    _inherit = 'email.template'
+class MailTemplate(models.Model):
+    _inherit = 'mail.template'
 
     active = fields.Boolean(default=True)

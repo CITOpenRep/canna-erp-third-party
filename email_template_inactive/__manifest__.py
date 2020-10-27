@@ -13,7 +13,7 @@
         'mail',
     ],
     'data': [
-        'views/email_template.xml',
+        'views/mail_template.xml',
     ],
     'installable': True,
 }
