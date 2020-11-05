@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_account_group_form" model="ir.ui.view">
+    <field name="name">account.group.form</field>
+    <field name="model">account.group</field>
+    <field name="inherit_id" ref="account.view_account_group_form"/>
+    <field name="arch" type="xml">
+      <field name="parent_id" position="after">
+        <label for="group_analytic_dimension_policy"/>
+        <div class="oe_inline">
+          <field name="analytic_dimension_policy" class="oe_read_only"/>
+          <field name="group_analytic_dimension_policy" class="oe_edit_only"/>
+        </div>
+      </field>
+    </field>
+  </record>
+
+</odoo>

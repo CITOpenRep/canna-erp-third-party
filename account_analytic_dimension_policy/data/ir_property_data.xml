@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record forcecreate="True" id="default_analytic_dimension_policy" model="ir.property">
+      <field name="name">analytic_dimension_policy</field>
+      <field name="fields_id" search="[('model', '=', 'account.account.type'), ('name', '=', 'analytic_dimension_policy')]"/>
+      <field name="value">optional</field>
+      <field name="type">selection</field>
+    </record>
+
+  </data>
+</odoo>
