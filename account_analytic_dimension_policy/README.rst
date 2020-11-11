@@ -59,10 +59,3 @@ Sample code to do this:
 
 This module is inspired by https://github.com/OCA/account-analytic/blob/13.0/account_analytic_required.
 
-|
-
-Roadmap
--------
-
-- port static/src/js/analytic_dimension_policy.js to 13.0 to enforce dimension policy from bank reconciliation widget.
-

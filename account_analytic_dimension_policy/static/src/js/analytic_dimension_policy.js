@@ -3,88 +3,75 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 */
 
-/*
-openerp.account_analytic_dimension_policy = function(instance) {
-    var _t = instance.web._t;
-    var QWeb = instance.web.qweb;
+odoo.define("account_analytic_dimensions_policy.analytic_dimensions_policy", function(
+    require
+) {
+    "use strict";
 
-    instance.web.account.bankStatementReconciliation.include({
-        init: function(parent, context) {
-            this._super.apply(this, arguments);
-            this.model_account = new instance.web.Model("account.account");
-            this.map_analytic_dimension_policy = {};
-            var required_dict = {};
-            _.each(this.create_form_fields, function(field) {
-                if (field.required) {
-                    required_dict[field.id] = false;
-                }
-            });
-            //
-            //This.required_fields_set is used to check if all required fields
-            //are filled in before showing the 'Ok' button on a line
-            //
-            this.required_fields_set = required_dict;
-        },
+    var ReconciliationModel = require("account.ReconciliationModel");
+    var ReconciliationRenderer = require("account.ReconciliationRenderer");
 
-        start: function() {
-            var tmp = this._super.apply(this, arguments);
+    ReconciliationModel.StatementModel.include({
+        reload: function() {
             var self = this;
-            maps = [];
-            maps.push(
-                this.model_account
-                    .query(["id", "analytic_dimension_policy"])
-                    .filter([["type", "not in", ["view", "consolidation", "closed"]]])
-                    .all()
-                    .then(function(data) {
-                        _.each(data, function(o) {
-                            self.map_analytic_dimension_policy[o.id] =
-                                o.analytic_dimension_policy;
-                        });
-                    })
-            );
-            return $.when(tmp, maps);
+            var def_reload = this._super();
+
+            var def_accounts = this._rpc({
+                model: "account.account",
+                method: "search_read",
+                fields: ["id"],
+                domain: [
+                    ["analytic_dimension_policy", "in", ["always", "posted"]],
+                    ["deprecated", "=", false],
+                ],
+            }).then(function(accounts) {
+                self.analytic_dimension_policy_required_account_ids = _.pluck(
+                    accounts,
+                    "id"
+                );
+            });
+
+            var def_dims = self
+                ._rpc({
+                    model: "account.move.line",
+                    method: "get_analytic_dimensions",
+                })
+                .then(function(dims) {
+                    self.analytic_dimensions = dims;
+                });
+
+            return Promise.all([def_reload, def_accounts, def_dims]).then(function() {
+                return def_reload;
+            });
         },
     });
 
-    instance.web.account.bankStatementReconciliationLine.include({
-        init: function(parent, context) {
-            this._super.apply(this, arguments);
-            this.map_analytic_dimension_policy = this.getParent().map_analytic_dimension_policy;
-            this.required_fields_set = this.getParent().required_fields_set;
-        },
+    ReconciliationRenderer.LineRenderer.include({
+        _onFieldChanged: function(event) {
+            var self = this;
+            this._super(event);
+            var fieldName = event.target.name;
 
-        UpdateRequiredFields: function(elt) {
-            if (elt.get("value")) {
-                this.required_fields_set[elt.name] = true;
-            } else {
-                this.required_fields_set[elt.name] = false;
-            }
-            var balanceChangedFlag = this.CheckRequiredFields(elt);
-            if (balanceChangedFlag) {
-                this.balanceChanged();
-            } else if (this.st_line.has_no_partner) {
-                    this.$(".button_ok")
-                        .text("OK")
-                        .removeClass("oe_highlight")
-                        .attr("disabled", "disabled");
+            if (fieldName === "account_id") {
+                var account_id = event.data.changes.account_id.id;
+                if (
+                    this.model.analytic_dimension_policy_required_account_ids.includes(
+                        account_id
+                    )
+                ) {
+                    _.each(this.model.analytic_dimensions, function(dim) {
+                        if (self.fields[dim]) {
+                            self.fields[dim].$el.addClass("o_required_modifier");
+                        }
+                    });
                 } else {
-                    this.$(".button_ok")
-                        .text(_t("Keep open"))
-                        .prop("disabled", false);
+                    _.each(this.model.analytic_dimensions, function(dim) {
+                        if (self.fields[dim]) {
+                            self.fields[dim].$el.removeClass("o_required_modifier");
+                        }
+                    });
                 }
-        },
-
-        CheckRequiredFields: function() {
-            var flag = _.every(this.required_fields_set);
-            return flag;
-        },
-
-        formCreateInputChanged: function(elt, val) {
-            this._super.apply(this, arguments);
-            if (elt.name in this.required_fields_set) {
-                this.UpdateRequiredFields(elt);
             }
         },
     });
-};
-*/
+});

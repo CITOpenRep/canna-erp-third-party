@@ -20,7 +20,7 @@ class AccountMoveLine(models.Model):
 
     @api.onchange("analytic_dimension_policy")
     def _onchange_analytic_dimension_policy(self):
-        dims = self._get_analytic_dimensions()
+        dims = self.get_analytic_dimensions()
         if self.analytic_dimension_policy == "never":
             for dim in dims:
                 setattr(self, dim, False)
@@ -50,7 +50,8 @@ class AccountMoveLine(models.Model):
         amls._check_analytic_dimension_policy()
         return res
 
-    def _get_analytic_dimensions(self):
+    @api.model
+    def get_analytic_dimensions(self):
         dims = [
             fld
             for fld in self._fields
@@ -59,7 +60,7 @@ class AccountMoveLine(models.Model):
         return dims
 
     def _check_analytic_dimension_policy(self):
-        dims = self._get_analytic_dimensions()
+        dims = self.get_analytic_dimensions()
         if not dims:
             return
         for aml in self:
