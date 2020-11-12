@@ -57,5 +57,28 @@ Sample code to do this:
 
 |
 
+Dimensions that are not available in the standard bank reconciliation widget must also be added to the widget Qweb template.
+
+|
+
+.. code-block:: xml
+
+  <t t-extend="reconciliation.line.create">
+
+    <t t-jquery="tr[class='create_tax_id']" t-operation="append">
+      <tr class="create_department_id">
+        <td class="o_td_label">
+          <label class="o_form_label">Department</label>
+        </td>
+        <td class="o_td_field"></td>
+      </tr>
+    </t>
+
+  </t>
+
+|
+
 This module is inspired by https://github.com/OCA/account-analytic/blob/13.0/account_analytic_required.
+
+|
 

@@ -20,7 +20,7 @@ class AccountMoveLine(models.Model):
 
     @api.onchange("analytic_dimension_policy")
     def _onchange_analytic_dimension_policy(self):
-        dims = self.get_analytic_dimensions()
+        dims = self._get_analytic_dimensions()
         if self.analytic_dimension_policy == "never":
             for dim in dims:
                 setattr(self, dim, False)
@@ -51,7 +51,26 @@ class AccountMoveLine(models.Model):
         return res
 
     @api.model
-    def get_analytic_dimensions(self):
+    def get_analytic_dimension_fields(self):
+        """
+        Method called by reconciliation widget.
+        Returns field definitions for use by js makeRecord function.
+        """
+        dims = self._get_analytic_dimensions()
+        fields_info = []
+        for dim in dims:
+            fields_info.append(
+                {
+                    "name": dim,
+                    "type": self._fields[dim].type,
+                    "string": self._fields[dim].string,
+                    "relation": self._fields[dim].comodel_name,
+                    "domain": self._fields[dim].domain,
+                }
+            )
+        return fields_info
+
+    def _get_analytic_dimensions(self):
         dims = [
             fld
             for fld in self._fields
@@ -60,7 +79,7 @@ class AccountMoveLine(models.Model):
         return dims
 
     def _check_analytic_dimension_policy(self):
-        dims = self.get_analytic_dimensions()
+        dims = self._get_analytic_dimensions()
         if not dims:
             return
         for aml in self:
