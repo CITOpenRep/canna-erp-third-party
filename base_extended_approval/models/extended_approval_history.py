@@ -7,6 +7,7 @@ from odoo import fields, models
 
 class ExtendedApprovalHistory(models.Model):
     _name = "extended.approval.history"
+    _description = "Extended approval step history"
     _order = "date asc"
     _rec_name = "date"
 

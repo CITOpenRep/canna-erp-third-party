@@ -9,6 +9,7 @@ from odoo.tools.safe_eval import safe_eval
 
 class ExtendedApprovalMixin(models.AbstractModel):
     _name = "extended.approval.mixin"
+    _description = "Mixin class for extended approval"
 
     next_approver = fields.Many2many(
         comodel_name="res.groups",
