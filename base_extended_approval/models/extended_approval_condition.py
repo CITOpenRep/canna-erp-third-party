@@ -9,6 +9,7 @@ from odoo.tools import safe_eval
 class ExtendedApprovalCondition(models.Model):
     _name = "extended.approval.condition"
     _inherit = ["extended.approval.config.mixin"]
+    _description = "Extended approval condition"
 
     name = fields.Char(string="Name", required=True)
     condition_type = fields.Selection(

@@ -10,6 +10,7 @@ from .extended_approval_mixin import ExtendedApprovalMixin
 class ExtendedApprovalFlow(models.Model):
     _name = "extended.approval.flow"
     _inherit = ["extended.approval.config.mixin"]
+    _description = "Extended approval flow"
     _order = "sequence"
 
     name = fields.Char(string="Name")

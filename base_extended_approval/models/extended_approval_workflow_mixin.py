@@ -13,6 +13,7 @@ class ExtendedApprovalWorkflowMixin(models.AbstractModel):
 
     _name = "extended.approval.workflow.mixin"
     _inherit = "extended.approval.mixin"
+    _description = "Mixin class for extended approval workflow"
 
     # signal to start the approval flow
     workflow_signal = "draft"
