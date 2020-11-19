@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<odoo>
+
+  <menuitem id="analytic_dimension_menu"
+            action="analytic_dimension_action"
+            parent="account.menu_finance_configuration"
+            sequence="40" />
+
+</odoo>

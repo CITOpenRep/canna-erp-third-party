@@ -42,6 +42,19 @@ class AccountGroup(models.Model):
         compute="_compute_analytic_dimension_policy",
         store=True,
     )
+    group_analytic_dimension_ids = fields.Many2many(
+        comodel_name="analytic.dimension",
+        string="Analytic Dimensions",
+        help=(
+            "Select the dimensions on which the Analytic Dimension Policy "
+            "will be enforced."
+        ),
+    )
+    analytic_dimensions = fields.Char(
+        string="Effective default Analytic Dimensions",
+        compute="_compute_analytic_dimensions",
+        store=True,
+    )
 
     @api.model
     def _default_analytic_dimension_policy(self):
@@ -64,3 +77,19 @@ class AccountGroup(models.Model):
         elif self.parent_id:
             res = self.parent_id.get_analytic_dimension_policy_recursively()
         return res
+
+    @api.depends("group_analytic_dimension_ids", "parent_id.analytic_dimensions")
+    def _compute_analytic_dimensions(self):
+        for group in self:
+            group.analytic_dimensions = group.get_analytic_dimensions_recursively()
+
+    def get_analytic_dimensions_recursively(self):
+        self.ensure_one()
+        analytic_dimensions = False
+        if self.group_analytic_dimension_ids:
+            analytic_dimensions = ",".join(
+                [x.name for x in self.group_analytic_dimension_ids]
+            )
+        elif self.parent_id:
+            analytic_dimensions = self.parent_id.get_analytic_dimensions_recursively()
+        return analytic_dimensions

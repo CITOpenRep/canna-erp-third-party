@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+  <!-- pylint:disable=dangerous-view-replace-wo-priority -->
   <record id="view_account_group_form" model="ir.ui.view">
     <field name="name">account.group.form</field>
     <field name="model">account.group</field>
     <field name="inherit_id" ref="account.view_account_group_form"/>
     <field name="arch" type="xml">
-      <field name="parent_id" position="after">
-        <label for="group_analytic_dimension_policy"/>
-        <div class="oe_inline">
-          <field name="analytic_dimension_policy" class="oe_read_only"/>
-          <field name="group_analytic_dimension_policy" class="oe_edit_only"/>
-        </div>
-      </field>
+      <xpath expr="//field[@name='name']/parent::group" position="replace">
+        <group name="main">
+          <group name="left">
+            <field name="name"/>
+            <field name="code_prefix"/>
+            <field name="parent_id"/>
+          </group>
+          <group name="right" string="Analytic Dimensions">
+            <field name="analytic_dimension_policy" string="Policy"/>
+            <field name="group_analytic_dimension_policy" string="Group Policy"/>
+            <field name="analytic_dimensions" string="Dimensions"/>
+            <field name="group_analytic_dimension_ids" string="Group Dimensions" widget="many2many_checkboxes"/>
+          </group>
+        </group>
+      </xpath>
     </field>
   </record>
 

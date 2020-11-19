@@ -6,9 +6,12 @@
     <field name="model">account.account.type</field>
     <field name="inherit_id" ref="account.view_account_type_form"/>
     <field name="arch"  type="xml">
-      <field name="type" position="after">
-        <field name="analytic_dimension_policy"/>
-      </field>
+      <xpath expr="//field[@name='include_initial_balance']/parent::group" position="after">
+        <group name="analytic_dimensions" string="Analytic Dimensions">
+          <field name="analytic_dimension_policy" string="Policy"/>
+          <field name="analytic_dimension_ids" string="Dimensions" widget="many2many_checkboxes"/>
+        </group>
+      </xpath>
     </field>
   </record>
 
