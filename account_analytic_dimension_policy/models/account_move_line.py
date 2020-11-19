@@ -1,8 +1,12 @@
 # Copyright 2009-2020 Noviat
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class AccountMoveLine(models.Model):
@@ -13,9 +17,8 @@ class AccountMoveLine(models.Model):
         related="account_id.analytic_dimension_policy",
         readonly=True,
     )
-    analytic_dimension_show = fields.Selection(
-        selection=[("required", "required"), ("readonly", "readonly")],
-        compute="_compute_analytic_dimension_show",
+    analytic_dimensions = fields.Char(
+        related="account_id.analytic_dimensions", readonly=True,
     )
 
     @api.onchange("analytic_dimension_policy")
@@ -25,18 +28,44 @@ class AccountMoveLine(models.Model):
             for dim in dims:
                 setattr(self, dim, False)
 
+    @classmethod
+    def _build_model(cls, pool, cr):
+        """
+        Add *_ui_modifier fields (* = dimenion field name) to facilitate
+        UI policy enforcement.
+        """
+        # cr.execute since ORM methods not yet fully available
+        cr.execute("SELECT name FROM analytic_dimension")
+        dims = [x[0] for x in cr.fetchall()]
+        for dim in dims:
+            fld = "{}_ui_modifier".format(dim)
+            dim_fld = fields.Selection(
+                selection=[("required", "required"), ("readonly", "readonly")],
+                compute="_compute_analytic_dimension_ui_modifier",
+            )
+            setattr(cls, fld, dim_fld)
+        return super()._build_model(pool, cr)
+
     @api.depends("analytic_dimension_policy", "parent_state")
-    def _compute_analytic_dimension_show(self):
+    def _compute_analytic_dimension_ui_modifier(self):
         for aml in self:
             if aml.analytic_dimension_policy == "never":
-                aml.analytic_dimension_show = "readonly"
+                ui_modifier = "readonly"
             elif aml.analytic_dimension_policy == "always" and aml.parent_state not in (
                 "posted",
                 "cancel",
             ):
-                aml.analytic_dimension_show = "required"
+                ui_modifier = "required"
             else:
-                aml.analytic_dimension_show = False
+                ui_modifier = False
+            dims = aml._get_analytic_dimensions()
+            for dim in dims:
+                fld = "{}_ui_modifier".format(dim)
+                setattr(aml, fld, ui_modifier)
+            all_dims = self._get_all_analytic_dimensions(aml.company_id.id)
+            for dim in [x for x in all_dims if x not in dims]:
+                fld = "{}_ui_modifier".format(dim)
+                setattr(aml, fld, False)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -51,12 +80,12 @@ class AccountMoveLine(models.Model):
         return res
 
     @api.model
-    def get_analytic_dimension_fields(self):
+    def get_analytic_dimension_fields(self, company_id):
         """
         Method called by reconciliation widget.
         Returns field definitions for use by js makeRecord function.
         """
-        dims = self._get_analytic_dimensions()
+        dims = self._get_all_analytic_dimensions(company_id)
         fields_info = []
         for dim in dims:
             fields_info.append(
@@ -71,19 +100,25 @@ class AccountMoveLine(models.Model):
         return fields_info
 
     def _get_analytic_dimensions(self):
-        dims = [
-            fld
-            for fld in self._fields
-            if getattr(self._fields[fld], "analytic_dimension", False)
-        ]
+        self.ensure_one()
+        all_dims = self._get_all_analytic_dimensions(self.company_id.id)
+        aml_dims = self.analytic_dimensions
+        dims = aml_dims and [str(x) for x in aml_dims.split(",")] or all_dims
         return dims
 
+    def _get_all_analytic_dimensions(self, company_id):
+        dims = self.env["analytic.dimension"].search_read(
+            domain=["|", ("company_id", "=", company_id), ("company_id", "=", False)],
+            fields=["name"],
+        )
+        return [x["name"] for x in dims]
+
     def _check_analytic_dimension_policy(self):
-        dims = self._get_analytic_dimensions()
-        if not dims:
-            return
         for aml in self:
-            policy = aml.account_id.analytic_dimension_policy
+            dims = aml._get_analytic_dimensions()
+            if not dims:
+                continue
+            policy = aml.analytic_dimension_policy
             if not policy or policy == "optional":
                 continue
             am = aml.move_id

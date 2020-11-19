@@ -18,7 +18,7 @@ class AccountAccount(models.Model):
             ("posted", "Posted moves"),
             ("never", "Never"),
         ],
-        string="Analytic Dimensions Policy",
+        string="Account Analytic Dimensions Policy",
         help=(
             "Overrule the Analytic Dimensions Policy as defined on "
             "Account Group or Account Type.\n"
@@ -38,13 +38,31 @@ class AccountAccount(models.Model):
             ("posted", "Posted moves"),
             ("never", "Never"),
         ],
-        string="Default Analytic Dimensions Policy",
+        string="Analytic Dimensions Policy",
         compute="_compute_analytic_dimension_policy",
         store=True,
         require=True,
         help=(
-            "Default Analytic Dimensions Policy for this Account "
-            "defined on Account Group or Account Type."
+            "Analytic Dimensions Policy for this Account "
+            "defined on Account, Account Group or Account Type."
+        ),
+    )
+    account_analytic_dimension_ids = fields.Many2many(
+        comodel_name="analytic.dimension",
+        string="Account Analytic Dimensions",
+        help=(
+            "Overrule the Analytic Dimensions as defined on "
+            "Account Group or Account Type.\n"
+            "Select None to enforce all dimensions."
+        ),
+    )
+    analytic_dimensions = fields.Char(
+        string="Analytic Dimensions",
+        compute="_compute_analytic_dimensions",
+        store=True,
+        help=(
+            "Analytic Dimensions for this Account "
+            "defined on Account, Account Group or Account Type."
         ),
     )
 
@@ -60,3 +78,20 @@ class AccountAccount(models.Model):
                 or account.group_id.analytic_dimension_policy
                 or account.user_type_id.analytic_dimension_policy
             )
+
+    @api.depends(
+        "account_analytic_dimension_ids",
+        "group_id.analytic_dimensions",
+        "user_type_id.analytic_dimensions",
+    )
+    def _compute_analytic_dimensions(self):
+        for account in self:
+            if account.account_analytic_dimension_ids:
+                account.analytic_dimensions = ",".join(
+                    [x.name for x in account.account_analytic_dimension_ids]
+                )
+            else:
+                account.analytic_dimensions = (
+                    account.group_id.analytic_dimensions
+                    or account.user_type_id.analytic_dimensions
+                )

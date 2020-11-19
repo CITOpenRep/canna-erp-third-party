@@ -6,10 +6,14 @@
     <field name="model">account.account</field>
     <field name="inherit_id" ref="account.view_account_form"/>
     <field name="arch" type="xml">
-      <field name="user_type_id" position="after">
-        <field name="analytic_dimension_policy"/>
-        <field name="account_analytic_dimension_policy"/>
-      </field>
+      <xpath expr="//field[@name='code']/parent::group" position="after">
+        <group name="analytic_dimension" string="Analytic Dimensions">
+          <field name="analytic_dimension_policy" string="Policy"/>
+          <field name="account_analytic_dimension_policy" string="Account Policy"/>
+          <field name="analytic_dimensions" string="Dimensions"/>
+          <field name="account_analytic_dimension_ids" string="Account Dimensions" widget="many2many_checkboxes"/>
+        </group>
+      </xpath>
     </field>
   </record>
 
