@@ -5,6 +5,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import table_exists
 
 _logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class AccountMoveLine(models.Model):
         readonly=True,
     )
     analytic_dimensions = fields.Char(
-        related="account_id.analytic_dimensions", readonly=True,
+        related="account_id.analytic_dimensions", readonly=True
     )
 
     @api.onchange("analytic_dimension_policy")
@@ -35,15 +36,16 @@ class AccountMoveLine(models.Model):
         UI policy enforcement.
         """
         # cr.execute since ORM methods not yet fully available
-        cr.execute("SELECT name FROM analytic_dimension")
-        dims = [x[0] for x in cr.fetchall()]
-        for dim in dims:
-            fld = "{}_ui_modifier".format(dim)
-            dim_fld = fields.Selection(
-                selection=[("required", "required"), ("readonly", "readonly")],
-                compute="_compute_analytic_dimension_ui_modifier",
-            )
-            setattr(cls, fld, dim_fld)
+        if table_exists(cr, "analytic_dimension"):
+            cr.execute("SELECT name FROM analytic_dimension")
+            dims = [x[0] for x in cr.fetchall()]
+            for dim in dims:
+                fld = "{}_ui_modifier".format(dim)
+                dim_fld = fields.Selection(
+                    selection=[("required", "required"), ("readonly", "readonly")],
+                    compute="_compute_analytic_dimension_ui_modifier",
+                )
+                setattr(cls, fld, dim_fld)
         return super()._build_model(pool, cr)
 
     @api.depends("analytic_dimension_policy", "parent_state")
