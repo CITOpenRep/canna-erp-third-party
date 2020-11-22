@@ -16,8 +16,10 @@ class IrUiView(models.Model):
     @api.model
     def get_inheriting_views_arch(self, view_id, model):
         archs = super().get_inheriting_views_arch(view_id, model)
-        adp_view = self.env.ref("account_analytic_dimension_policy.view_move_form")
-        if view_id == adp_view.id:
+        adp_view = self.env.ref(
+            "account_analytic_dimension_policy.view_move_form", False
+        )
+        if adp_view and view_id == adp_view.id:
             dims = self.env["account.move.line"]._get_all_analytic_dimensions(
                 self.env.company.id
             )
