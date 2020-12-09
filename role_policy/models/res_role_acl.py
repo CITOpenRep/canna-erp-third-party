@@ -96,8 +96,10 @@ class ResRoleAcl(models.Model):
             if "active" in vals and vals["active"] != acl.active:
                 if not vals["active"]:
                     acl.role_id.group_id.implied_ids = [(3, acl_group.id)]
+                    acl.role_id.user_ids.update({"groups_id": [(3, acl_group.id)]})
                 else:
                     acl.role_id.group_id.implied_ids = [(4, acl_group.id)]
+                    acl.role_id.user_ids.update({"groups_id": [(4, acl_group.id)]})
 
     def _compute_crud(self, vals):
         if "perm_create" in vals:
