@@ -126,8 +126,8 @@ class SaleDiscountRule(models.Model):
         for rule in self:
             rule.product_view = (
                 rule.product_ids
-                and ", ".join(rule.product_ids.mapped("display_name"))
-                or ", ".join(rule.product_category_ids.mapped("display_name"))
+                and ", ".join(rule._origin.product_ids.mapped("display_name"))
+                or ", ".join(rule._origin.product_category_ids.mapped("display_name"))
                 or ""
             )
 
