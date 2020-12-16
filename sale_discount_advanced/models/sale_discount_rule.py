@@ -121,13 +121,15 @@ class SaleDiscountRule(models.Model):
                 rule.matching_type == "amount" and rule.max_base or rule.max_qty
             )
 
-    @api.depends("discount_base")
+    @api.depends("product_ids", "product_category_ids")
     def _compute_product_view(self):
         for rule in self:
+            # the name_get in addons/products/models/product.py
+            # fails on NewId, hence we need to fall back to _origin
             rule.product_view = (
                 rule.product_ids
-                and ", ".join(rule._origin.product_ids.mapped("display_name"))
-                or ", ".join(rule._origin.product_category_ids.mapped("display_name"))
+                and ", ".join(rule.product_ids._origin.mapped("display_name"))
+                or ", ".join(rule.product_category_ids.mapped("display_name"))
                 or ""
             )
 
