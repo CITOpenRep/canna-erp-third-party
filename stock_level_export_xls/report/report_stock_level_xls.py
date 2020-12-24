@@ -149,10 +149,18 @@ class StockLevelXls(models.AbstractModel):
         return domain
 
     def _get_stock_data_context(self, data, wiz, warehouse):
+        """
+        Passing both warehouse and location results in empty
+        report because the following intersection in
+        stock/models/product.py, method _get_domain_locations:
+            location_ids = w_ids & l_ids
+        w_ids are the warehouse view locations whereas we
+        pass the internal locations.
+        As a consequence we remove the warehouse from the context
+        when locations have been selected.
+        """
         ctx = self.env.context.copy()
         ctx["force_company"] = wiz.company_id.id
-        if warehouse:
-            ctx["warehouse"] = warehouse.id
         ctx["to_date"] = data["stock_level_date"] or fields.Datetime.now()
         ctx["active_test"] = False
         if wiz.lot_id:
@@ -167,6 +175,8 @@ class StockLevelXls(models.AbstractModel):
             ctx.update({"location": wiz.location_id.id})
         if wiz.location_ids:
             ctx.update({"location": wiz.location_ids.ids})
+        if not ctx.get("location") and warehouse:
+            ctx["warehouse"] = warehouse.id
         return ctx
 
     def _get_stock_data(self, data, wiz, warehouse):
