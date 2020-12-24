@@ -48,13 +48,13 @@ class WizExportStockLevel(models.TransientModel):
     # product_type limited to base.group_no_one since consumables
     # are not supposed to be used for stock management purposes
     product_type = fields.Selection(
-        [("product", "Storable Product"), ("consu", "Consumable")],
+        selection=[("product", "Storable Product"), ("consu", "Consumable")],
         string="Product Type",
         default="product",
         help="Leave blank to include Stockable and Consumable products",
     )
     product_select = fields.Selection(
-        [("all", "All Products"), ("select", "Selected Products")],
+        selection=[("all", "All Products"), ("select", "Selected Products")],
         string="Products",
         default=lambda self: self._default_product_select(),
     )
@@ -77,18 +77,11 @@ class WizExportStockLevel(models.TransientModel):
         "over time.",
     )
     company_id = fields.Many2one(
-        "res.company",
+        comodel_name="res.company",
         string="Company",
         required=True,
-        default=lambda self: self.env["res.company"]._company_default_get(
-            "stock.inventory"
-        ),
+        default=lambda self: self._default_company_id(),
     )
-
-    @api.onchange("import_compatible")
-    def _onchange_import_compatible(self):
-        self.location_id = False
-        self.location_ids = False
 
     @api.model
     def _default_product_select(self):
@@ -96,6 +89,15 @@ class WizExportStockLevel(models.TransientModel):
             return "select"
         else:
             return "all"
+
+    @api.model
+    def _default_company_id(self):
+        return self.env.company
+
+    @api.onchange("import_compatible")
+    def _onchange_import_compatible(self):
+        self.location_id = False
+        self.location_ids = False
 
     def xls_export(self):
         self.ensure_one()
