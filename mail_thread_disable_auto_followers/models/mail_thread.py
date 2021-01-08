@@ -11,7 +11,7 @@ class MailThread(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         daf_models = safe_eval(
-            self.env["ir.config_parameter"].get_param(
+            self.env["ir.config_parameter"].sudo().get_param(
                 "mail_thread_disable_auto_followers"
             )
             or "[]"
@@ -27,7 +27,7 @@ class MailThread(models.AbstractModel):
 
     def write(self, vals):
         daf_models = safe_eval(
-            self.env["ir.config_parameter"].get_param(
+            self.env["ir.config_parameter"].sudo().get_param(
                 "mail_thread_disable_auto_followers"
             )
             or "[]"
@@ -45,7 +45,7 @@ class MailThread(models.AbstractModel):
         """
         if self.env.context.get("mail_post_autofollow"):
             daf_models = safe_eval(
-                self.env["ir.config_parameter"].get_param(
+                self.env["ir.config_parameter"].sudo().get_param(
                     "mail_thread_disable_auto_followers"
                 )
                 or "[]"
@@ -64,7 +64,7 @@ class MailThread(models.AbstractModel):
         """
         if "mail_thread_disable_auto_followers" not in self.env.context:
             daf_models = safe_eval(
-                self.env["ir.config_parameter"].get_param(
+                self.env["ir.config_parameter"].sudo().get_param(
                     "mail_thread_disable_auto_followers"
                 )
                 or "[]"
