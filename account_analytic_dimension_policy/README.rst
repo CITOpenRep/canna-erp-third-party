@@ -89,3 +89,8 @@ This module is inspired by https://github.com/OCA/account-analytic/blob/13.0/acc
 
 |
 
+
+Known Issues
+------------
+
+The current version of this module requires a restart of the Odoo server after adding Analytic Dimensions.

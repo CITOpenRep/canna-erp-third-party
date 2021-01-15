@@ -32,7 +32,7 @@ class AccountMoveLine(models.Model):
     @classmethod
     def _build_model(cls, pool, cr):
         """
-        Add *_ui_modifier fields (* = dimenion field name) to facilitate
+        Add *_ui_modifier fields (* = dimension field name) to facilitate
         UI policy enforcement.
         """
         # cr.execute since ORM methods not yet fully available
