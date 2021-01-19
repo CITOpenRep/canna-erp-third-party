@@ -1,0 +1,10 @@
+<odoo>
+
+    <menuitem id="marketing_menu"
+        name="Marketing"
+        web_icon="marketing_menu,static/description/marketing.png"
+        active="True"
+        groups="base.group_user"
+        sequence="1"/>
+
+</odoo>
