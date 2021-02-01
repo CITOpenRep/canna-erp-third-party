@@ -1,0 +1,32 @@
+<odoo>
+
+    <record id="mis_report_instance_view_form_inherit" model="ir.ui.view">
+        <field name="name">mis.report.instance.view.form.inherit</field>
+        <field name="model">mis.report.instance</field>
+        <field name="inherit_id" ref="mis_builder.mis_report_instance_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <field name="state" widget="statusbar" options="{'clickable': '1'}" />
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mis_report_instance_ready_view_action" model="ir.actions.act_window">
+        <field name="name">MIS Reports Ready</field>
+        <field name="view_id" ref="mis_builder.mis_report_instance_view_tree" />
+        <field name="res_model">mis.report.instance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('temporary', '=', False), ('state', '=', 'ready')]</field>
+    </record>
+
+    <menuitem
+        id="mis_report_instance_ready_view_menu"
+        parent="mis_builder.mis_report_finance_menu"
+        name="MIS Reports Ready"
+        action="mis_report_instance_ready_view_action"
+        sequence="10"
+    />
+
+</odoo>
