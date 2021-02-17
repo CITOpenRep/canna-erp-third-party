@@ -1,5 +1,5 @@
 # Copyright (C) 2015 ICTSTUDIO (<http://www.ictstudio.eu>).
-# Copyright (C) 2016-2020 Noviat nv/sa (www.noviat.com).
+# Copyright (C) 2016-2021 Noviat nv/sa (www.noviat.com).
 # Copyright (C) 2016 Onestein (http://www.onestein.eu/).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -45,16 +45,11 @@ class SaleOrder(models.Model):
 
     @api.onchange("partner_id", "date_order")
     def _onchange_sale_discount_advanced_partner_id_(self):
-        res = self.onchange_partner_id()
-        if res:
-            vals = res.get("value") or {}
-            for k, v in vals.items():
-                setattr(self, k, v)
-            del res["value"]
         if self.partner_id:
             cpartner = self.partner_id.commercial_partner_id
             self.discount_ids = cpartner._get_active_sale_discounts(self.date_order)
-        return res
+        else:
+            self.discount_ids = False
 
     @api.onchange("date_order")
     def _onchange_date_order(self):
